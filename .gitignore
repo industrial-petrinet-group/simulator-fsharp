@@ -10,7 +10,7 @@ obj
 bin
 
 ### Symbol cache for Ionide VSCode extension ###
-.ionide/symbolCache.db
+.ionide/
 
 ### Linux ###
 *~
