@@ -1,7 +1,9 @@
 namespace CPN.Simulator.ColorSets
 
 module Common =
-    type ColorSetErrors = OutOfRange of int
+    type ColorSetErrors = 
+        | UnexcpectedValue of value: string
+        | OutOfRange of index: int
 
     let rnd = System.Random()
 
