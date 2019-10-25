@@ -7,6 +7,7 @@
     <Compile Include="ColorSets/Common.fs" />
     <Compile Include="ColorSets/Unit.fs" />
     <Compile Include="ColorSets/Boolean.fs" />
+    <Compile Include="ColorSets/Integer32.fs" />
     <Compile Include="Places.fs" />
     <None Include="Script.fsx" />
     <Compile Include="Simulator.fs" />
