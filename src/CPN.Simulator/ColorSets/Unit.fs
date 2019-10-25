@@ -40,10 +40,10 @@ module Unit =
     let defaultVal = ()
 
     /// Return a list of all posible values for this color set.
-    let all = Ok [ () ]
+    let all _ = Ok [ () ]
 
     /// Return the number of different vaules in this color set.
-    let size = Ok 1
+    let size _ = Ok 1
     
     /// Return the ordinal position of every value in this color set.
     let ordinal() = Ok 0

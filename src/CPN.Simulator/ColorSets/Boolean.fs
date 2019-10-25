@@ -44,10 +44,10 @@ module Boolean =
     let defaultVal = false
 
     /// Return a list of all posible values for this color set.
-    let all = Ok [ false; true ]
+    let all _ = Ok [ false; true ]
 
     /// Return the number of different vaules in this color set.
-    let size = Ok 2
+    let size _ = Ok 2
 
     /// Return the ordinal position of every value in this color set.
     let ordinal = function
