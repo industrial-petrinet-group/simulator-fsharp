@@ -8,13 +8,12 @@ type Unit =
 module Unit =
 
     [<AutoOpenAttribute>]
-    module private Implementation =
-        /// Trivially return the only actual converte value for the color set.
-        let innerVal _ _ = ()
-
-        /// Given a supposed member and a color set it return if it's an actual 
-        /// member of this set.
-        let isMember supposedMember unitCS = (unitCS.unit = supposedMember)
+    module private Implementation =        
+        /// Active pattern for identify color set cases.
+        let (|Unit|NotUnit|) (unitCS, value) = 
+            match unitCS.unit = value with
+            | true -> Unit 
+            | _ -> NotUnit
 
 
     /// Given an optional initinalization string it return a color set.
@@ -26,16 +25,16 @@ module Unit =
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string value if it is.
     let colorStr supposedMember unitCS = 
-        match isMember supposedMember unitCS with
-        | true -> Ok <| supposedMember
-        | false -> Error <| UnexcpectedValue supposedMember
+        match unitCS, supposedMember with
+        | Unit -> Ok <| supposedMember
+        | NotUnit -> Error <| IlegalValue supposedMember
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual converted value if it is.
     let colorVal supposedMember unitCS = 
-        match isMember supposedMember unitCS with
-        | true -> Ok <| innerVal supposedMember unitCS
-        | false -> Error <| UnexcpectedValue supposedMember
+        match unitCS, supposedMember with
+        | Unit -> Ok <| ()
+        | NotUnit -> Error <| IlegalValue supposedMember
 
     /// Return the default actual converted value for this color set.
     let defaultVal = ()

@@ -9,41 +9,36 @@ type Boolean =
 module Boolean =
     [<AutoOpenAttribute>]
     module private Implementation =
-        /// Active pattern for identify Falsy and Truthy values.
-        let (|Falsy|Truthy|) (value, booleanCS) = 
-            if booleanCS.falsy = value then Falsy else Truthy
-
-        /// Given a value and a color set it return the corresponding actual 
-        /// converted value for this set.
-        let innerVal value booleanCS =
-            match (value, booleanCS) with
-            | Falsy -> false
-            | Truthy -> true
-
-        /// Given a supposed member and a color set it return if it's an actual 
-        /// member of this set.
-        let isMember supposedMember booleanCS = 
-            supposedMember = booleanCS.falsy || supposedMember = booleanCS.truthy
+        /// Active pattern for identify color set cases.
+        let (|Falsy|Truthy|Neither|) (value, booleanCS) = 
+            match booleanCS.falsy = value, booleanCS.truthy = value with
+            | true, _ -> Falsy 
+            | _, true -> Truthy
+            | _, _ -> Neither
 
 
     /// Given an optional initinalization string it return a color set.
     let create = function
-        | None -> { falsy = "false"; truthy = "true" }
-        | Some(falsyVal, truthyVal) -> { falsy = falsyVal; truthy = truthyVal }
-
+        | None -> Ok <| { falsy = "false"; truthy = "true" }
+        | Some(falsyVal, truthyVal) when falsyVal <> truthyVal -> 
+            Ok <| { falsy = falsyVal; truthy = truthyVal }
+        | Some _ -> 
+            Error <| IlegalInitialState "falsy and truthy must be different"
+        
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string value if it is.
     let colorStr supposedMember booleanCS = 
-        match isMember supposedMember booleanCS with
-        | true -> Ok <| supposedMember
-        | false -> Error <| UnexcpectedValue supposedMember
+        match (supposedMember, booleanCS) with
+        | Neither -> Error <| IlegalValue supposedMember
+        | _ -> Ok <| supposedMember
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual converted value if it is.
     let colorVal supposedMember booleanCS =
-        match isMember supposedMember booleanCS with
-        | true -> Ok <| innerVal supposedMember booleanCS
-        | false -> Error <| UnexcpectedValue supposedMember
+        match (supposedMember, booleanCS) with
+        | Falsy -> Ok <| false
+        | Truthy -> Ok <| true
+        | Neither -> Error <| IlegalValue supposedMember
 
     /// Return the default actual converted value for this color set.
     let defaultVal = false
