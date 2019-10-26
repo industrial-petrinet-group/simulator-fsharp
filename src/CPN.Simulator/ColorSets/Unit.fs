@@ -21,23 +21,26 @@ module Unit =
         function
         | None -> Ok { unit = "()" }
         | Some unitVal -> Ok { unit = unitVal }
-    
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's string value if it is.
-    let colorStr supposedMember unitCS = 
-        match unitCS, supposedMember with
-        | Unit -> Ok supposedMember
-        | NonUnit -> Error <| IlegalValue supposedMember
 
     /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's actual converted value if it is.
+    /// member of the set and return it's actual value if it is.
     let colorVal supposedMember unitCS = 
         match unitCS, supposedMember with
         | Unit -> Ok ()
         | NonUnit -> Error <| IlegalValue supposedMember
 
-    /// Return the default actual converted value for this color set.
-    let defaultVal = ()
+    /// Return the base initial value for this color set.
+    let init = ()
+
+    /// Given a value of the type it checks if it's a legal one
+    let legal () = true
+
+    /// Given a supposed member and a color set it checks if the value is a 
+    /// member of the set and return it's string color set value if it is.
+    let makeString supposedMember unitCS = 
+        match unitCS, supposedMember with
+        | Unit -> Ok supposedMember
+        | NonUnit -> Error <| IlegalValue supposedMember
 
     /// Return a list of all posible values for this color set.
     let all _ = Ok [ () ]
@@ -48,7 +51,7 @@ module Unit =
     /// Return the ordinal position of every value in this color set.
     let ordinal() = Ok 0
 
-    /// Return the actual convert value for the given position in this color set.
+    /// Return the actual value for the given position in this color set.
     let colour =
         function
         | 0 -> Ok ()
