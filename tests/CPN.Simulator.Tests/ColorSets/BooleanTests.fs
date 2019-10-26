@@ -8,5 +8,7 @@ open CPN.Simulator.ColorSets
 let tests =
     testList "ColorSets/BooleanTests" [
         testCase "Boolean color set can be created and it's value for falsy is false" <| fun () ->
-            Boolean.create None |> Boolean.colorVal "false" =! (Ok false)
+            Boolean.create None 
+            |> Result.bind (Boolean.colorVal "false")
+            =! (Ok false)
     ]

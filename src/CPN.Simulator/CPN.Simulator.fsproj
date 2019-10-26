@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Operators.fs" />
     <Compile Include="ColorSets/Common.fs" />
     <Compile Include="ColorSets/Unit.fs" />
     <Compile Include="ColorSets/Boolean.fs" />

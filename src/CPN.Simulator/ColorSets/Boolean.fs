@@ -47,21 +47,23 @@ module Boolean =
         | _ -> Ok supposedMember
 
     /// Return a list of all posible values for this color set.
-    let all _ = Ok [ false; true ]
+    let all (_: Boolean) = Ok [ false; true ]
 
     /// Return the number of different vaules in this color set.
-    let size _ = Ok 2
+    let size (_: Boolean) = Ok 2
 
     /// Return the ordinal position of every value in this color set.
-    let ordinal = function
+    let ordinal b (_: Boolean) =
+        match b with
         | false -> Ok 0
         | true -> Ok 1
     
     /// Return the actual value for the given position in this color set.
-    let colour = function
+    let colour i (_: Boolean) =
+        match i with
         | 0 -> Ok false
         | 1 -> Ok true
         | i -> Error <| OutOfRange i
 
     /// Return a random value of this color set.
-    let random() = colour (rnd.Next(0,1))
+    let random booleanCS = colour (rnd.Next(0,1)) booleanCS

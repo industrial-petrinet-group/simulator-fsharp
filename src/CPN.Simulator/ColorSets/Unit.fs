@@ -43,19 +43,19 @@ module Unit =
         | NonUnit -> Error <| IlegalValue supposedMember
 
     /// Return a list of all posible values for this color set.
-    let all _ = Ok [ () ]
+    let all (_: Unit) = Ok [ () ]
 
     /// Return the number of different vaules in this color set.
-    let size _ = Ok 1
+    let size (_: Unit) = Ok 1
     
     /// Return the ordinal position of every value in this color set.
-    let ordinal() = Ok 0
+    let ordinal () (_: Unit) = Ok 0
 
     /// Return the actual value for the given position in this color set.
-    let colour =
-        function
+    let colour i (_: Unit) =
+        match i with
         | 0 -> Ok ()
         | i -> Error <| OutOfRange i
 
     /// Return a random value of this color set.
-    let random() = ()
+    let random (_: Unit) = Ok ()
