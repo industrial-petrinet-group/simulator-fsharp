@@ -41,27 +41,28 @@ module Integer32 =
             | true, true, false -> Error <| IlegalInitialState "low must be less than or equal to high"
             | _ -> Error <| IlegalInitialState "low and high must be 32 bits integer values"
 
-     /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's string value if it is.
-    let colorStr supposedMember booleanCS = 
-        match (supposedMember, booleanCS) with
-        | Integer _ -> Ok supposedMember
-        | OutOfRangeInteger i -> Error <| OutOfRange i
-        | NonInteger -> Error <| IlegalValue supposedMember
-
     /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's actual converted value if it is.
+    /// member of the set and return it's actual value if it is.
     let colorVal supposedMember booleanCS =
         match (supposedMember, booleanCS) with
         | Integer i -> Ok i
         | OutOfRangeInteger i -> Error <| OutOfRange i
         | NonInteger -> Error <| IlegalValue supposedMember
 
-    /// Return the default actual converted value for this color set.
-    let defaultVal = 0
+    /// Return the default actual value for this color set.
+    let init = 0
 
-    // #################################################################
-    // The next functions are only usable on ranged color sets
+    /// Given a value of the type it checks if it's a legal one
+    let legal (i: int32) booleanCS = 
+        match (i.ToString(), booleanCS) with Integer _ -> true | _ -> false
+
+    /// Given a supposed member and a color set it checks if the value is a 
+    /// member of the set and return it's string color set value if it is.
+    let makeString supposedMember booleanCS = 
+        match (supposedMember, booleanCS) with
+        | Integer _ -> Ok supposedMember
+        | OutOfRangeInteger i -> Error <| OutOfRange i
+        | NonInteger -> Error <| IlegalValue supposedMember
 
     /// Return a list of all posible values for this color set.
     let all = function
@@ -79,7 +80,7 @@ module Integer32 =
         | Range(low, high) when i >= low && i <= high -> Ok (i - low)
         | Range _ -> Error <| OutOfRange i
 
-    /// Return the actual convert value for the given position in this color set.
+    /// Return the actual value for the given position in this color set.
     let colour i = function
         | EmptyRange -> Error <| NotUsable "colour"
         | Range(low, high) when i >= low && i <= high -> Ok (i + low)

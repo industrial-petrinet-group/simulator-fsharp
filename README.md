@@ -1,7 +1,7 @@
 # simulator-fsharp
 F# based coloured petrinet simulator
 
-# Color Sets implemented
+# Colour Sets implemented
 ## Simple
 - [x] Unit
 - [x] Boolean
@@ -21,7 +21,8 @@ F# based coloured petrinet simulator
 - [ ] Alias
 
 
-# Color Sets functions implemented for every colour
+# Colour Sets functions implemented for every colour
+## All colours
 - [x] init (old base)
 - [x] legal
 - [x] makeString (old mkstr)
@@ -30,8 +31,9 @@ F# based coloured petrinet simulator
 - [ ] output
 - [ ] input_ms
 - [ ] output_ms
+## Small colour
 - [x] all
 - [x] size
-- [x] ordinal
-- [x] colour
-- [x] random
+- [x] ordinal (old ord)
+- [x] colour (old col)
+- [x] random (old ran)
