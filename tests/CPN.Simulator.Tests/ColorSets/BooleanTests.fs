@@ -13,13 +13,26 @@ let tests =
             (Boolean.create None >>= Boolean.colorVal "false") =! Ok false
         
         testCase "create and colorVal work as expected for Boolean" <| fun () ->
-            (Boolean.create None >>= Boolean.colorVal "true")
-            =! (Boolean.create (Some ("void", "whole")) >>= Boolean.colorVal "whole")
+            let booleanCS = Boolean.create None
+            let booleanWithedCS = Boolean.create (Some ("void", "whole"))
+
+            Boolean.create (Some ("void", "void")) =! Error (InvalidInitialState "falsy and truthy must be different")
+
+            (booleanCS >>= Boolean.colorVal "true") =! (booleanWithedCS >>= Boolean.colorVal "whole")
+            (booleanCS >>= Boolean.colorVal "true") =! Ok true
+
+            (booleanCS >>= Boolean.colorVal "yes") =! (booleanWithedCS >>= Boolean.colorVal "yes")
+            (booleanCS >>= Boolean.colorVal "yes") =! Error (InvalidValue "yes")
+
 
         testCase "Functions init and legal work as expected for Boolean" <| fun () ->
+            let booleanCS = Boolean.create None
+            let booleanWithedCS = Boolean.create (Some ("void", "whole"))
+
             Boolean.init =! false
-            Boolean.legal false =! true
-            Boolean.legal true =! true
+            
+            (booleanCS >>= switch (Boolean.isLegal false)) =! Ok true
+            (booleanWithedCS >>= switch (Boolean.isLegal true)) =! Ok true
             
         testCase "Small colour set functions work as expected for Boolean" <| fun () ->
             let booleanCS = Boolean.create None

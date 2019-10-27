@@ -13,13 +13,24 @@ let tests =
             Unit.create None >>= Unit.colorVal "()" =! Ok ()
         
         testCase "create and colorVal work as expected for Unit" <| fun () ->
-            (Unit.create None >>= Unit.colorVal "()")
-            =! (Unit.create (Some "void") >>= Unit.colorVal "void")
+            let unitCS = Unit.create None
+            let unitWithedCS = Unit.create (Some "void")
+
+            (unitCS >>= Unit.colorVal "()") =! (unitWithedCS >>= Unit.colorVal "void")
+            (unitCS >>= Unit.colorVal "()") =! Ok ()
+
+            (unitCS >>= Unit.colorVal "null") =! (unitWithedCS >>= Unit.colorVal "null")
+            (unitCS >>= Unit.colorVal "null") =! Error (InvalidValue "null")
 
         testCase "Functions init and legal work as expected for Unit" <| fun () ->
+            let unitCS = Unit.create None
+            let unitWithedCS = Unit.create (Some "no")
+
             Unit.init =! ()
-            Unit.legal () =! true
             
+            unitCS >>= switch (Unit.isLegal ()) =! Ok true
+            unitWithedCS >>= switch (Unit.isLegal ()) =! Ok true
+
         testCase "Small colour set functions work as expected for Unit" <| fun () ->
             let unitCS = Unit.create None
             let unitWithedCS = Unit.create (Some "nulo")

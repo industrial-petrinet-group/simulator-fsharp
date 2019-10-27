@@ -53,8 +53,8 @@ module Integer32 =
     let init = 0
 
     /// Given a value of the type it checks if it's a legal one
-    let legal (i: int32) booleanCS = 
-        match (i.ToString(), booleanCS) with Integer _ -> true | _ -> false
+    let isLegal (i: int32) integer32CS = 
+        match (i.ToString(), integer32CS) with Integer _ -> true | _ -> false
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
@@ -72,7 +72,7 @@ module Integer32 =
     /// Return the number of different vaules in this color set.
     let size = function
         | EmptyRange -> Error (NotUsable "size")
-        | Range (low, high) -> Ok (high - low)
+        | Range (low, high) -> Ok (high - low + 1)
 
     /// Return the ordinal position of every value in this color set.
     let ordinal i = function

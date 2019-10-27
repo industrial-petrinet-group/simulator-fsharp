@@ -24,7 +24,7 @@ F# based coloured petrinet simulator
 # Colour Sets functions implemented for every colour
 ## All colours
 - [x] init (old base)
-- [x] legal
+- [x] isLegal (old legal)
 - [x] makeString (old mkstr)
 - [ ] makeStringMS (old mkstr_ms)
 - [ ] input

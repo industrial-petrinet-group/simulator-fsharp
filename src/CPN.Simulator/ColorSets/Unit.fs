@@ -33,7 +33,7 @@ module Unit =
     let init = ()
 
     /// Given a value of the type it checks if it's a legal one
-    let legal () = true
+    let isLegal () (_: Unit) = true
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
