@@ -27,7 +27,7 @@ module Unit =
     let colorVal supposedMember unitCS = 
         match unitCS, supposedMember with
         | Unit -> Ok ()
-        | NonUnit -> Error <| IlegalValue supposedMember
+        | NonUnit -> Error <| InvalidValue supposedMember
 
     /// Return the base initial value for this color set.
     let init = ()
@@ -40,7 +40,7 @@ module Unit =
     let makeString supposedMember unitCS = 
         match unitCS, supposedMember with
         | Unit -> Ok supposedMember
-        | NonUnit -> Error <| IlegalValue supposedMember
+        | NonUnit -> Error <| InvalidValue supposedMember
 
     /// Return a list of all posible values for this color set.
     let all (_: Unit) = Ok [ () ]

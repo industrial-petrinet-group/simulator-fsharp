@@ -23,7 +23,7 @@ module Boolean =
         | Some(falsyVal, truthyVal) when falsyVal <> truthyVal -> 
             Ok { falsy = falsyVal; truthy = truthyVal }
         | Some _ -> 
-            Error <| IlegalInitialState "falsy and truthy must be different"
+            Error <| InvalidInitialState "falsy and truthy must be different"
         
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual value if it is.
@@ -31,7 +31,7 @@ module Boolean =
         match (supposedMember, booleanCS) with
         | Falsy -> Ok false
         | Truthy -> Ok true
-        | Neither -> Error <| IlegalValue supposedMember
+        | Neither -> Error <| InvalidValue supposedMember
 
     /// Return the default actual value for this color set.
     let init = false
@@ -43,7 +43,7 @@ module Boolean =
     /// member of the set and return it's string color set value if it is.
     let makeString supposedMember booleanCS = 
         match (supposedMember, booleanCS) with
-        | Neither -> Error <| IlegalValue supposedMember
+        | Neither -> Error <| InvalidValue supposedMember
         | _ -> Ok supposedMember
 
     /// Return a list of all posible values for this color set.

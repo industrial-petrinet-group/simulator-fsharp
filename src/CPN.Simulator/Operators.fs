@@ -11,4 +11,8 @@ module Operators =
         match m with
         | Error err -> Error err
         | Ok x -> f x
+
+    /// Result map function, converting a normal function to the result world
+    let switch f x = Ok <| f x
+
     
