@@ -63,7 +63,7 @@ module Boolean =
         match i with
         | 0 -> Ok false
         | 1 -> Ok true
-        | i -> Error <| OutOfRange i
+        | i -> Error <| OutOfRangeIndex i
 
     /// Return a random value of this color set.
     let random booleanCS = colour (rnd.Next(0,1)) booleanCS

@@ -6,7 +6,7 @@ F# based coloured petrinet simulator
 - [x] Unit
 - [x] Boolean
 - [x] Integer32 (old Integer)
-- [ ] LargeInteger
+- [x] BigInteger (old IntInf)
 - [ ] Real
 - [ ] Time
 - [ ] String
@@ -36,4 +36,4 @@ F# based coloured petrinet simulator
 - [x] size
 - [x] ordinal (old ord)
 - [x] colour (old col)
-- [x] random (old ran)
+- [x] random (old ran) - pending implementation for BigInteger

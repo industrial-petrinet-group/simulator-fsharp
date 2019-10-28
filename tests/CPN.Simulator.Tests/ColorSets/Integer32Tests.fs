@@ -23,7 +23,7 @@ let tests =
             (integer32CS >>= Integer32.colorVal "23") =! Ok 23
 
             (integer32CS >>= Integer32.colorVal "false") =! Error (InvalidValue "false")
-            (integer32WithedCS >>= Integer32.colorVal "26") =! Error (OutOfRange 26)
+            (integer32WithedCS >>= Integer32.colorVal "26") =! Error (OutOfRangeValue "26")
 
 
         testCase "Functions init and legal work as expected for Integer32" <| fun () ->
@@ -51,7 +51,7 @@ let tests =
             
             (integer32CS >>= Integer32.colour 1) =! Error (NotUsable "colour")
             (integer32WithedCS >>= Integer32.colour 1) =! Ok 2
-            (integer32WithedCS >>= Integer32.colour 11) =! Error (OutOfRange 11)
+            (integer32WithedCS >>= Integer32.colour 11) =! Error (OutOfRangeIndex 11)
 
             (integer32CS >>= Integer32.random) =! Error (NotUsable "random")
             
@@ -69,7 +69,7 @@ let tests =
             (integer32CS >>= Integer32.makeString "12") =! Ok "12"
             (integer32CS >>= Integer32.makeString "null") =! Error (InvalidValue "null")
 
-            (integer32WithedCS >>= Integer32.makeString "12") =! Error (OutOfRange 12)
+            (integer32WithedCS >>= Integer32.makeString "12") =! Error (OutOfRangeValue "12")
             (integer32WithedCS >>= Integer32.makeString "4") =! Ok "4"
             (integer32WithedCS >>= Integer32.makeString "NaN") =! Error (InvalidValue "NaN")
 

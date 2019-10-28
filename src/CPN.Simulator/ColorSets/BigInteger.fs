@@ -3,43 +3,45 @@ namespace CPN.Simulator.ColorSets
 open System
 open Common
 
-type Integer32 =
-    { low: int32
-      high: int32 }
+type BigInteger =
+    { low: bigint
+      high: bigint }
 
-module Integer32 =
+module BigInteger =
     [<AutoOpenAttribute>]
     module private Implementation =
         /// Auxiliary active pattern for determine if there is a range
-        let (|EmptyRange|Range|) (integer32CS) =
-            let low, high = integer32CS.low, integer32CS.high
+        let (|EmptyRange|Range|) (bigIntegerCS) =
+            let low, high = bigIntegerCS.low, bigIntegerCS.high
 
-            match low, high with (1, 0) -> EmptyRange | _ -> Range (low, high)
+            match low, high with 
+            | l, h when l = 1I && h = 0I -> EmptyRange 
+            | _ -> Range (low, high)
         
         /// Active pattern for identify color set cases.
-        let (|Integer|OutOfRangeInteger|NonInteger|) (value, integer32CS) = 
-            match integer32CS with
+        let (|Integer|OutOfRangeInteger|NonInteger|) (value, bigIntegerCS) = 
+            match bigIntegerCS with
             | EmptyRange -> 
-                match (Int32.TryParse value) with
+                match (bigint.TryParse value) with
                 | true, intVal ->  Integer intVal 
                 | false, _ -> NonInteger
             | Range (low, high) ->                 
-                match (Int32.TryParse value) with 
+                match (bigint.TryParse value) with 
                 | true, intVal when intVal >= low && intVal <= high -> Integer intVal
                 | true, _ -> OutOfRangeInteger
                 | false, _ -> NonInteger
 
     /// Given an optional initinalization string it return a color set.
     let create = function
-        | None -> Ok { low = 1; high = 0 }
+        | None -> Ok { low = bigint 1; high = bigint 0 }
         | Some(lowVal, highVal) -> 
-            let (lowBool, lowInt) = Int32.TryParse lowVal
-            let (highBool, highInt) = Int32.TryParse highVal
+            let (lowBool, lowInt) = bigint.TryParse lowVal
+            let (highBool, highInt) = bigint.TryParse highVal
             
             match lowBool, highBool, lowInt <= highInt with
             | true, true, true -> Ok { low = lowInt; high = highInt }
             | true, true, false -> Error <| InvalidInitialState "low must be less than or equal to high"
-            | _ -> Error <| InvalidInitialState "low and high must be 32 bits integer values"
+            | _ -> Error <| InvalidInitialState "low and high must be big integer values"
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual value if it is.
@@ -53,8 +55,8 @@ module Integer32 =
     let init = 0
 
     /// Given a value of the type it checks if it's a legal one
-    let isLegal (i: int32) integer32CS = 
-        match (i.ToString(), integer32CS) with Integer _ -> true | _ -> false
+    let isLegal (i: bigint) bigIntegerCS = 
+        match (i.ToString(), bigIntegerCS) with Integer _ -> true | _ -> false
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
@@ -72,7 +74,7 @@ module Integer32 =
     /// Return the number of different vaules in this color set.
     let size = function
         | EmptyRange -> Error (NotUsable "size")
-        | Range (low, high) -> Ok (high - low + 1)
+        | Range (low, high) -> Ok (high - low + 1I)
 
     /// Return the ordinal position of every value in this color set.
     let ordinal i = function
@@ -87,6 +89,8 @@ module Integer32 =
         | Range _ -> Error <| OutOfRangeIndex i
 
     /// Return a random value of this color set.
+    // TODO: Try to use NextByte for generating Big Integers
     let random = function
-        | EmptyRange -> Error <| NotUsable "random"
-        | Range(low, high) -> Ok <| rnd.Next(low, high)
+        | _ -> Error <| NotUsable "random"
+        // | EmptyRange -> Error <| NotUsable "random"
+        // | Range(low, high) -> Ok <| rnd.Next(low, high)

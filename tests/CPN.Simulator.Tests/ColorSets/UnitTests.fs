@@ -48,7 +48,7 @@ let tests =
             (unitCS >>= Unit.colour 0) =! Ok ()
 
             (unitCS >>= Unit.colour 1) =! (unitWithedCS >>= Unit.colour 1)
-            (unitCS >>= Unit.colour 1) =! Error (OutOfRange 1)
+            (unitCS >>= Unit.colour 1) =! Error (OutOfRangeIndex 1)
 
             (unitCS >>= Unit.random) =! (unitWithedCS >>= Unit.random)
             (unitCS >>= Unit.random) =! Ok ()

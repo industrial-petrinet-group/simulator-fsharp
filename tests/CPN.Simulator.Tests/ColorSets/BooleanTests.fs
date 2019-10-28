@@ -51,7 +51,7 @@ let tests =
             (booleanCS >>= Boolean.colour 1) =! Ok true
 
             (booleanCS >>= Boolean.colour 2) =! (booleanWithedCS >>= Boolean.colour 2)
-            (booleanCS >>= Boolean.colour 2) =! Error (OutOfRange 2)
+            (booleanCS >>= Boolean.colour 2) =! Error (OutOfRangeIndex 2)
 
             let csRandom = (booleanCS >>= Boolean.random) 
             (csRandom = Ok true || csRandom = Ok false) =! true
