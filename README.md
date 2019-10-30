@@ -5,9 +5,9 @@ F# based coloured petrinet simulator
 ## Simple
 - [x] Unit
 - [x] Boolean
-- [x] Integer32 (old Integer)
+- [x] Integer
 - [x] BigInteger (old IntInf)
-- [ ] Real
+- [x] Double (old Real)
 - [ ] Time
 - [ ] String
 - [ ] Enumerated

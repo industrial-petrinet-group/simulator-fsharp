@@ -11,8 +11,9 @@
   <ItemGroup>
     <Compile Include="ColorSets/UnitTests.fs" />
     <Compile Include="ColorSets/BooleanTests.fs" />
-    <Compile Include="ColorSets/Integer32Tests.fs" />
+    <Compile Include="ColorSets/IntegerTests.fs" />
     <Compile Include="ColorSets/BigIntegerTests.fs" />
+    <Compile Include="ColorSets/DoubleTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

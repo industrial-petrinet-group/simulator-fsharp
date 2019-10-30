@@ -3,22 +3,22 @@ namespace CPN.Simulator.ColorSets
 open System
 open Common
 
-type Integer32 =
-    { low: int32
-      high: int32 }
+type Integer =
+    { low: int
+      high: int }
 
-module Integer32 =
+module Integer =
     [<AutoOpenAttribute>]
     module private Implementation =
         /// Auxiliary active pattern for determine if there is a range
-        let (|EmptyRange|Range|) (integer32CS) =
-            let low, high = integer32CS.low, integer32CS.high
+        let (|EmptyRange|Range|) (integerCS) =
+            let low, high = integerCS.low, integerCS.high
 
             match low, high with (1, 0) -> EmptyRange | _ -> Range (low, high)
         
         /// Active pattern for identify color set cases.
-        let (|Integer|OutOfRangeInteger|NonInteger|) (value, integer32CS) = 
-            match integer32CS with
+        let (|Integer|OutOfRangeInteger|NonInteger|) (value, integerCS) = 
+            match integerCS with
             | EmptyRange -> 
                 match (Int32.TryParse value) with
                 | true, intVal ->  Integer intVal 
@@ -39,7 +39,7 @@ module Integer32 =
             match lowBool, highBool, lowInt <= highInt with
             | true, true, true -> Ok { low = lowInt; high = highInt }
             | true, true, false -> Error <| InvalidInitialState "low must be less than or equal to high"
-            | _ -> Error <| InvalidInitialState "low and high must be 32 bits integer values"
+            | _ -> Error <| InvalidInitialState "low and high must be integer (32bits) values"
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual value if it is.
@@ -53,8 +53,8 @@ module Integer32 =
     let init = 0
 
     /// Given a value of the type it checks if it's a legal one
-    let isLegal (i: int32) integer32CS = 
-        match (i.ToString(), integer32CS) with Integer _ -> true | _ -> false
+    let isLegal (i: int) integerCS = 
+        match (i.ToString(), integerCS) with Integer _ -> true | _ -> false
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
