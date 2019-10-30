@@ -30,7 +30,7 @@ let tests =
             let bigIntegerCS = BigInteger.create None
             let bigIntegerWithedCS = BigInteger.create (Some ("0", "9"))
             
-            BigInteger.init =! 0
+            BigInteger.init =! 0I
 
             (bigIntegerCS >>= switch (BigInteger.isLegal 12I)) =! Ok true
             (bigIntegerWithedCS >>= switch (BigInteger.isLegal 4I)) =! Ok true

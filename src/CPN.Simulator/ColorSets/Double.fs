@@ -44,7 +44,7 @@ module Double =
     let all doubleCS = Numeric.all emptyVal doubleCS
 
     /// Return the number of different vaules in this color set.
-    let size doubleCS = Numeric.size emptyVal doubleCS
+    let size doubleCS = Numeric.size emptyVal 1.0 doubleCS
 
     /// Return the ordinal position of every value in this color set.
     let ordinal n doubleCS = Numeric.ordinal emptyVal n doubleCS
@@ -53,6 +53,6 @@ module Double =
     let colour n doubleCS = Numeric.colour emptyVal n doubleCS
 
     /// Return a random value of this color set.
-    // TODO: NextDouble cant have limits; implement random
+    // TODO: implement random for Big Integers
     let random = function
         | _ -> Error <| NotUsable "random"

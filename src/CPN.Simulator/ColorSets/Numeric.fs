@@ -3,6 +3,7 @@ namespace CPN.Simulator.ColorSets
 open Common
 
 /// Interface for implementing in every Numeric Color Set
+// TODO: Better comment this section knowing that it's an abstract one
 type INumeric<'T> =
     abstract member Low : 'T
     abstract member High : 'T
@@ -98,6 +99,5 @@ module Numeric =
             | EmptyRange -> Error <| NotUsable "colour"
             | Range(low, high) when num >= low && num <= high -> Ok (num + low)
             | Range _ -> Error <| OutOfRangeIndex num
-                
                 
                 
