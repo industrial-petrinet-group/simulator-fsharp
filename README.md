@@ -36,4 +36,4 @@ F# based coloured petrinet simulator
 - [x] size
 - [x] ordinal (old ord)
 - [x] colour (old col)
-- [x] random (old ran) - pending implementation for BigInteger
+- [x] random (old ran) - pending implementation for BigInteger and Double

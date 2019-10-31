@@ -40,17 +40,20 @@ module Double =
     let makeString supposedMember doubleCS = 
          Numeric.makeString emptyVal parseFunc supposedMember doubleCS
 
+    //#########################################################################
+    // The next functions are not available for Doubles given the infinite 
+    // number of memebers between any given two.
+
     /// Return a list of all posible values for this color set.
-    let all doubleCS = Numeric.all emptyVal doubleCS
-
+    let all doubleCS =  Error <| NotUsable "all"
     /// Return the number of different vaules in this color set.
-    let size doubleCS = Numeric.size emptyVal 1.0 doubleCS
-
+    let size doubleCS =  Error <| NotUsable "size"
     /// Return the ordinal position of every value in this color set.
-    let ordinal n doubleCS = Numeric.ordinal emptyVal n doubleCS
-
+    let ordinal n doubleCS =  Error <| NotUsable "ordinal"
     /// Return the actual value for the given position in this color set.
-    let colour n doubleCS = Numeric.colour emptyVal n doubleCS
+    let colour n doubleCS =  Error <| NotUsable "colour"
+
+    //#########################################################################
 
     /// Return a random value of this color set.
     // TODO: implement random for Big Integers

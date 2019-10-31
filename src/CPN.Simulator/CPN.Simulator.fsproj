@@ -12,7 +12,6 @@
     <Compile Include="ColorSets/Integer.fs" />
     <Compile Include="ColorSets/BigInteger.fs" />
     <Compile Include="ColorSets/Double.fs" />
-    <Compile Include="Places.fs" />
     <None Include="Script.fsx" />
     <Compile Include="Simulator.fs" />
   </ItemGroup>
