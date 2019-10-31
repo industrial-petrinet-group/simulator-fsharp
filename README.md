@@ -1,6 +1,10 @@
 # simulator-fsharp
 F# based coloured petrinet simulator
 
+# Prototype Implementation
+## Naive Type System
+Implemented a Naive type system for representing the petrinet (src/Simulator.fs)
+
 # Colour Sets implemented
 ## Simple
 - [x] Unit

@@ -1,7 +1,11 @@
 namespace CPN.Simulator
 
+// Naive Implementation of the types involved in a petri Net; I'll be expanding
+// each of this in an iterative manner and trying to implement the simulation
+// for at least the Unit type without bindings
+
     type ColourSet = 
-        | Unit
+        | Unit of Unit
 
     type MultiSet = 
         { qty: int
@@ -14,7 +18,7 @@ namespace CPN.Simulator
 
     type Place = 
         { colour: ColourSet 
-          tokens: Token list }
+          marking: Token list }
 
     type Transition = Binding list
 
@@ -27,3 +31,8 @@ namespace CPN.Simulator
     type Arc = ArcStructure * Expression
 
     type CPN = Arc list
+
+
+    module Simulator =
+
+        let x = true
