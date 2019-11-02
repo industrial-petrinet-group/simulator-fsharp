@@ -3,7 +3,8 @@ F# based coloured petrinet simulator
 
 # Prototype Implementation
 ## Naive Type System
-Implemented a Naive type system for representing the petrinet (src/Simulator.fs)
+Implemented a Naive type system for representing the petrinet (src/Runtime.fs)
+Testing marking of the net and triggered transitions
 
 # Colour Sets implemented
 ## Simple
