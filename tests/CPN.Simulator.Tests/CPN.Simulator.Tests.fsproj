@@ -14,6 +14,7 @@
     <Compile Include="ColorSets/IntegerTests.fs" />
     <Compile Include="ColorSets/BigIntegerTests.fs" />
     <Compile Include="ColorSets/DoubleTests.fs" />
+    <Compile Include="RuntimeTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -12,8 +12,8 @@
     <Compile Include="ColorSets/Integer.fs" />
     <Compile Include="ColorSets/BigInteger.fs" />
     <Compile Include="ColorSets/Double.fs" />
+    <Compile Include="Runtime.fs" />
     <None Include="Script.fsx" />
-    <Compile Include="Simulator.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

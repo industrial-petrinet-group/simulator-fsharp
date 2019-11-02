@@ -1,11 +1,12 @@
-module CPN.Simulator.Tests
+namespace CPN.Simulator.Tests
 
 open Expecto
 
-[<EntryPoint>]
-let main argv =
-    Tests.runTestsInAssembly defaultConfig argv |> ignore
+module Run =
+    [<EntryPoint>]
+    let main argv =
+        Tests.runTestsInAssembly defaultConfig argv |> ignore
 
-    System.Console.ReadKey() |> ignore
+        System.Console.ReadKey() |> ignore
 
-    0
+        0
