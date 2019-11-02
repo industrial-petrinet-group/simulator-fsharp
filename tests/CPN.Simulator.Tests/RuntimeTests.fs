@@ -14,4 +14,11 @@ module RuntimeTests =
                 |> Runtime.netMarking 
                 |> List.map (fun p -> p.name, Runtime.parseMultiSet p.marking)
                 =! ["P1", "1`()"]
+            
+            testCase "test the triggered transitions" <| fun () ->
+                // TODO: further test this and make mor complicated nets
+                Runtime.simpleNet
+                |> Runtime.trigger
+                =! ([] |> Map.ofList)
+
         ]

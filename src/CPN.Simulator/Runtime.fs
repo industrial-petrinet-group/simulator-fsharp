@@ -76,7 +76,17 @@ module Runtime =
         |> List.map (function Input (p, _), _-> p | Output (_, p), _ -> p )
         |> List.filter (fun p -> p.marking <> [])
 
-
+    /// return the triggered transitions
+    let trigger (net: CPN) =
+        net
+        |> List.filter (function Input _, _-> true | _ -> false)
+        |> List.fold (fun (acc: Map<Transition,Place list>) (Input (place, trans), _) ->
+            match acc.TryFind trans with
+            | None -> acc.Add (trans, [place])
+            | Some placeList -> acc.Add (trans, place :: placeList)
+        ) ([] |> Map.ofList)
+        |> Map.filter (fun _ placeList -> 
+            placeList |> List.forall (fun p -> p.marking <> []))
         
 
 
