@@ -14,7 +14,7 @@ type Integer =
 module Integer =
     let private typeName = "integer (32bits)"
     let private emptyVal = (1, 0)
-    let private parseFunc =  Int32.TryParse
+    let private parseFunc (value: string ) =  Int32.TryParse value
 
     /// Return the default actual value for this color set.
     let init = 0

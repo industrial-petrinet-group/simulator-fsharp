@@ -11,26 +11,26 @@ module DoubleTests =
     [<Tests>]
     let tests =
         testList "ColorSets/DoubleTests" [
-            testCase "Double color set can be created and it's value for '3,1415' is 3.1415" <| fun () ->
-                (Double.create None >>= Double.colorVal "3,1415") =! Ok 3.1415
+            testCase "Double color set can be created and it's value for '3.1415' is 3.1415" <| fun () ->
+                (Double.create None >>= Double.colorVal "3.1415") =! Ok 3.1415
             
             testCase "create and colorVal work as expected for Double" <| fun () ->
                 let doubleCS = Double.create None
-                let doubleWithedCS = Double.create (Some ("20,1", "2345,67"))
+                let doubleWithedCS = Double.create (Some ("20.1", "2345.67"))
                 
-                Double.create (Some ("25,1", "22,2")) =! Error (InvalidInitialState "low must be less than or equal to high")
+                Double.create (Some ("25.1", "22.2")) =! Error (InvalidInitialState "low must be less than or equal to high")
                 Double.create (Some ("false", "20")) =! Error (InvalidInitialState "low and high must be double (64bits) values")
 
-                (doubleCS >>= Double.colorVal "24154215,12354") 
+                (doubleCS >>= Double.colorVal "24154215.12354") 
                 =! Ok 24154215.12354
 
                 (doubleCS >>= Double.colorVal "false") =! Error (InvalidValue "false")
-                (doubleWithedCS >>= Double.colorVal "20,05") =! Error (OutOfRangeValue "20,05")
+                (doubleWithedCS >>= Double.colorVal "20.05") =! Error (OutOfRangeValue "20.05")
 
 
             testCase "Functions init and legal work as expected for Double" <| fun () ->
                 let doubleCS = Double.create None
-                let doubleWithedCS = Double.create (Some ("0,0", "9,10"))
+                let doubleWithedCS = Double.create (Some ("0.0", "9.10"))
                 
                 Double.init =! 0.0
 
@@ -60,7 +60,7 @@ module DoubleTests =
                 let doubleCS = Double.create None
                 let doubleWithedCS = Double.create (Some ("1", "5"))
 
-                (doubleCS >>= Double.makeString "12,5") =! Ok "12,5"
+                (doubleCS >>= Double.makeString "12.5") =! Ok "12.5"
                 (doubleCS >>= Double.makeString "null") =! Error (InvalidValue "null")
 
                 (doubleWithedCS >>= Double.makeString "12") =! Error (OutOfRangeValue "12")

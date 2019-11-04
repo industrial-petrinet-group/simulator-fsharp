@@ -2,7 +2,6 @@ namespace CPN.Simulator.ColorSets
 
 open System
 open Common
-open Numeric
 
 type Double =
     { low: double
@@ -16,7 +15,7 @@ type Double =
 module Double =
     let private typeName = "double (64bits)"
     let private emptyVal = (1.0, 0.0)
-    let private parseFunc =  Double.TryParse
+    let private parseFunc (value: string ) =  Double.TryParse value
 
     /// Return the default actual value for this color set.
     let init = 0.0

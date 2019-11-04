@@ -14,7 +14,7 @@ type BigInteger =
 module BigInteger =
     let private typeName = "big integer"
     let private emptyVal = (1I, 0I)
-    let private parseFunc =  bigint.TryParse
+    let private parseFunc (value: string ) =  bigint.TryParse value
 
     /// Return the default actual value for this color set.
     let init = 0I
