@@ -1,100 +1,9 @@
 namespace CPN.Simulator
 
-open CPN.Simulator.ColorSets
-// Naive Implementation of the types involved in a petri Net; I'll be expanding
-// each of this in an iterative manner and trying to implement the simulation
-// for at least the Unit type without bindings
+open CPN.Simulator.Domain
 
-type ColorSet = 
-    | UnitCS of Unit
-
-type MultiSet = 
-    { qty: int
-      value: string
-      colour: ColorSet }
-
-type Marking = MultiSet list
-
-type Binding = string list
-
-type Place = 
-    { name: string
-      colour: ColorSet 
-      marking: Marking }
-
-type Transition =
-    { name: string
-      bindings: Binding list }
-
-type ArcStructure = 
-    | Input of Place * Transition
-    | Output of Transition * Place
-
-type Expression = string
-
-type Arc = ArcStructure * Expression
-
-type CPN = Arc list
-/// Runtime module in charge of effectively do the simulation.
+/// Runtime module in charge of simulate the network.
 module Runtime =
-    // Simple definitions for convinience
-    let (Ok unitCS) = Unit.create None
-    let unitColour = UnitCS unitCS
-    let unitToken = { qty = 1; value = "()"; colour = unitColour}
-    
-    /// Definition of the most simple petri net
-    let simpleNet =
-   
-        let places = [|
-            { name = "P1"; colour = unitColour; marking = [unitToken]}
-            { name = "P2"; colour = unitColour; marking = []}
-        |]
-
-        let transition = { name = "T1"; bindings = [] }  
-
-        let net : CPN = [
-            Input (places.[0], transition), ""
-            Output (transition, places.[1]), ""
-        ]
-
-        net
-    
-    let notSoSimpleNet = 
-        
-        let places = [|
-            { name = "P1"; colour = unitColour; marking = [{unitToken with qty = 3}]}
-            { name = "P2"; colour = unitColour; marking = [unitToken]}
-            { name = "P3"; colour = unitColour; marking = []}
-            { name = "P4"; colour = unitColour; marking = []}
-            { name = "P5"; colour = unitColour; marking = []}
-        |]
-
-        let transitions = [|
-            { name = "T1"; bindings = [] }
-            { name = "T2"; bindings = [] }
-        |]
-
-        let net : CPN = [
-            Input (places.[0], transitions.[0]), ""
-            Input (places.[1], transitions.[0]), ""
-            Output (transitions.[0], places.[1]), ""
-            Output (transitions.[0], places.[2]), ""
-            Input (places.[2], transitions.[1]), ""
-            Output (transitions.[1], places.[3]), ""
-            Output (transitions.[1], places.[4]), ""
-        ]
-
-        net
-
-
-    /// parse a multi set color to string (this is needed because multiset are 
-    /// not implemented yet)
-    let parseMultiSet placeMarking = 
-        "" |> List.foldBack (fun { qty = qty; value = value } acc ->
-            match acc with
-            | "" -> sprintf "%i`%s" qty value 
-            | acc -> sprintf "%s++%i`%s" acc qty value 
-        ) placeMarking
 
     /// return the state of the net; i.e the list of places with it's 
     /// respectives tokens for every place that have tokens
@@ -128,10 +37,11 @@ module Runtime =
             | Input (p, t), e when toTrigger.ContainsKey t ->
                 let newMarking = 
                     p.marking
-                    |> List.head // Given it's only one type there is no need for more logic now
+                    |> List.tryHead // Given it's only one type there is no need for more logic now
                     |> function
-                        | {qty = 1} -> []
-                        | token -> [{token with qty = token.qty - 1}]
+                        | None -> [] // None is needed if more than one transition try to consume the same place
+                        | Some {qty = 1} -> []
+                        | Some token -> [{token with qty = token.qty - 1}]
 
                 Input ({p with marking = newMarking} , t), e    
             | otherwise -> otherwise)
@@ -144,7 +54,7 @@ module Runtime =
                 let newMarking = 
                     p.marking
                     |> function
-                        | [] -> [unitToken]
+                        | [] -> [SampleNets.unitToken]
                         | token::rest -> {token with qty = token.qty + 1} :: rest
                         // as in it's counterpart; it's simple beacause there is only 1 token
 

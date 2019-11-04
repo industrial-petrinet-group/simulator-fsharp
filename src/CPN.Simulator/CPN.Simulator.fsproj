@@ -5,13 +5,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Operators.fs" />
-    <Compile Include="ColorSets/Common.fs" />
-    <Compile Include="ColorSets/Unit.fs" />
-    <Compile Include="ColorSets/Boolean.fs" />
-    <Compile Include="ColorSets/Numeric.fs" />
-    <Compile Include="ColorSets/Integer.fs" />
-    <Compile Include="ColorSets/BigInteger.fs" />
-    <Compile Include="ColorSets/Double.fs" />
+    <Compile Include="Domain/ColorSets/Common.fs" />
+    <Compile Include="Domain/ColorSets/Unit.fs" />
+    <Compile Include="Domain/ColorSets/Boolean.fs" />
+    <Compile Include="Domain/ColorSets/Numeric.fs" />
+    <Compile Include="Domain/ColorSets/Integer.fs" />
+    <Compile Include="Domain/ColorSets/BigInteger.fs" />
+    <Compile Include="Domain/ColorSets/Double.fs" />
+    <Compile Include="Domain/ColorSet.fs" />
+    <Compile Include="Domain/MultiSet.fs" />
+    <Compile Include="Domain/Domain.fs" />
+    <Compile Include="SampleNets.fs" />
     <Compile Include="Runtime.fs" />
     <None Include="Script.fsx" />
   </ItemGroup>

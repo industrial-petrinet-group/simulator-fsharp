@@ -3,8 +3,8 @@ namespace CPN.Simulator.Tests.ColorSets
 open Expecto
 open Swensen.Unquote
 open CPN.Simulator.Operators
-open CPN.Simulator.ColorSets
-open CPN.Simulator.ColorSets.Common
+open CPN.Simulator.Domain.ColorSets
+open CPN.Simulator.Domain.ColorSets.Common
 
 module BooleanTests =
 

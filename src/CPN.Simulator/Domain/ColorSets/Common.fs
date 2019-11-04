@@ -1,4 +1,4 @@
-namespace CPN.Simulator.ColorSets
+namespace CPN.Simulator.Domain.ColorSets
 
 module Common =
     type ColorSetErrors = 

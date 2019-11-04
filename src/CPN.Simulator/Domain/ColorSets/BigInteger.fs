@@ -1,4 +1,4 @@
-namespace CPN.Simulator.ColorSets
+namespace CPN.Simulator.Domain.ColorSets
 
 open System
 open Common

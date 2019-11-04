@@ -3,13 +3,14 @@ namespace CPN.Simulator.Tests
 open Expecto
 open Swensen.Unquote
 open CPN.Simulator
+open CPN.Simulator.Domain
 
 module RuntimeTests =
 
     open System.Collections.Generic
     
     let simplifyNetMarking =
-        List.map (fun (p: Place) -> p.name, Runtime.parseMultiSet p.marking)    
+        List.map (fun (p: Place) -> p.name, MultiSet.makeListString p.marking)    
 
     let simplifyTriggered =
         Seq.map (fun (keyVal: KeyValuePair<Transition, Place list>) -> 
@@ -21,29 +22,29 @@ module RuntimeTests =
     let tests = 
         testList "RuntimeTests" [
             testCase "test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
-                Runtime.simpleNet
+                SampleNets.simpleNet
                 |> Runtime.netMarking 
                 |> simplifyNetMarking
                 =! ["P1", "1`()"]
 
-                Runtime.notSoSimpleNet
+                SampleNets.notSoSimpleNet
                 |> Runtime.netMarking 
                 |> simplifyNetMarking
                 =! [("P1", "3`()"); ("P2", "1`()")]
             
             testCase "test the triggered transitions" <| fun () ->
-                Runtime.simpleNet
+                SampleNets.simpleNet
                 |> Runtime.trigger
                 |> simplifyTriggered
                 =! ["T1", ["P1"]]
 
-                Runtime.notSoSimpleNet
+                SampleNets.notSoSimpleNet
                 |> Runtime.trigger
                 |> simplifyTriggered
                 =! ["T1", ["P1"; "P2"]]
 
             testCase "test the steps involved in the simple net" <| fun () ->
-                let modified, firstStepNet = Runtime.simpleNet |> Runtime.step
+                let modified, firstStepNet = SampleNets.simpleNet |> Runtime.step
 
                 modified =! true 
 
