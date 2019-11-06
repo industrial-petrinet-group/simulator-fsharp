@@ -14,7 +14,10 @@
     <Compile Include="Domain/ColorSets/Double.fs" />
     <Compile Include="Domain/ColorSet.fs" />
     <Compile Include="Domain/MultiSet.fs" />
-    <Compile Include="Domain/Domain.fs" />
+    <Compile Include="Domain/Place.fs" />
+    <Compile Include="Domain/Transition.fs" />
+    <Compile Include="Domain/Arc.fs" />
+    <Compile Include="Domain/CPN.fs" />
     <Compile Include="SampleNets.fs" />
     <Compile Include="Runtime.fs" />
     <None Include="Script.fsx" />

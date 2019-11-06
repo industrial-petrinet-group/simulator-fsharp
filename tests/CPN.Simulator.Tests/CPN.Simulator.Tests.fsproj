@@ -9,12 +9,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RuntimeTests.fs" />
     <Compile Include="Domain/ColorSets/UnitTests.fs" />
     <Compile Include="Domain/ColorSets/BooleanTests.fs" />
     <Compile Include="Domain/ColorSets/IntegerTests.fs" />
     <Compile Include="Domain/ColorSets/BigIntegerTests.fs" />
     <Compile Include="Domain/ColorSets/DoubleTests.fs" />
+    <Compile Include="RuntimeTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -1,15 +1,15 @@
 namespace CPN.Simulator.Domain
 
-/// Type representing a Multi Set by a qty; a string value and it's color.
+/// Type representing a Multi Set
 type MultiSet = 
     { qty: int
       value: string
       colour: ColorSet }
 
-/// Module implementing Multi Set operations
+/// Module implementing MultiSet's operations
 module MultiSet =
-    /// parse a multi set color list to string
-    let makeListString placeMarking = 
+    /// Given a MultiSet list return it's elements parsed as a single string.
+    let listAsString placeMarking = 
         "" |> List.foldBack (fun { qty = qty; value = value } acc ->
             match acc with
             | "" -> sprintf "%i`%s" qty value 
