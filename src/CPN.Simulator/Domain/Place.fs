@@ -13,7 +13,13 @@ type PlaceData =
 type Places = Map<PlaceId, PlaceData>
 
 /// Module implementing Place's operations.
-module Place =  
+module Place =
+    /// Given Places and a pid it return if it has at least one token
+    let hasTokens places pid =
+        match places |> Map.tryFind pid with
+        | None -> false
+        | Some placeData -> placeData.marking <> [] // FIXME: only works for a unique CS    
+
     /// Given a PlaceData it return it's marking parsed as a string.
     let markingAsString placeData =
         MultiSet.listAsString placeData.marking

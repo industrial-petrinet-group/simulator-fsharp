@@ -4,23 +4,31 @@ open CPN.Simulator.Domain
 
 /// Runtime module in charge of simulate the network.
 module Runtime =
-    let runtime = "f"
-    // /// remove the input tokens from the places involved in trigggering the 
-    // /// transition.
-    // let removeInputTokens (toTrigger: Map<Transition, Place list>) net : CPN =
-    //     net 
-    //     |> List.map (function
-    //         | Input (p, t), e when toTrigger.ContainsKey t ->
-    //             let newMarking = 
-    //                 p.marking
-    //                 |> List.tryHead // Given it's only one type there is no need for more logic now
-    //                 |> function
-    //                     | None -> [] // None is needed if more than one transition try to consume the same place
-    //                     | Some {qty = 1} -> []
-    //                     | Some token -> [{token with qty = token.qty - 1}]
+    /// remove the input tokens from the places involved in trigggering the 
+    /// transition.
+    // TODO: implement it with the new trigger type
+    let removeInputTokens (toTrigger: Trigger) net =
+        let (CPN (places, transitions, arcs)) = net 
+        let triggered = []
+        triggered
 
-    //             Input ({p with marking = newMarking} , t), e    
-    //         | otherwise -> otherwise)
+        // (places, triggered)
+        // |> List.foldBack (fun arc (actPlaces, triggered) ->
+        //     match arc with
+        //     | Input (_pid, tid), _exp ->
+        //         match toTrigger |> Map.tryFind tid with
+        //         | None -> actPlaces, triggered
+        //         | Some pids ->
+        //             match pids |> List.forall (Place.hasTokens actPlaces) with
+        //             | false -> actPlaces, triggered
+        //             | true ->
+        //                 let newPlaces = Place.removeOneFrom actPlaces pids
+
+        //                 newPlaces, toTrigger                        
+                            
+
+        //         Input ({p with marking = newMarking} , t), e    
+        //     | _otherwise -> net, triggered) arcs
     
     // /// add the output tokens for the places reached by the triggered transition.
     // let addOutputTokens (toTrigger: Map<Transition, Place list>) net : CPN =
@@ -37,17 +45,17 @@ module Runtime =
     //             Output (t, {p with marking = newMarking}), e    
     //         | otherwise -> otherwise)
 
-    // /// make a step in the net
+    /// Given a CPN net it executes a Step in the simulation
     // let step (net: CPN) =
-    //     let toTrigger = trigger net
+    //     let toTrigger = CPN.toTrigger net
 
-    //     match Map.isEmpty toTrigger with
+    //     match toTrigger |> Map.isEmpty with
     //     | true -> false, net
     //     | false ->
     //         net 
     //         |> removeInputTokens toTrigger 
-    //         |> addOutputTokens toTrigger
-    //         |> fun modifiedNet -> true, modifiedNet
+            //|> addOutputTokens toTrigger
+            //|> fun modifiedNet -> true, modifiedNet
     
     // /// Make a sequence of all posible Steps
     // let rec allSteps (actNet: CPN) = seq {

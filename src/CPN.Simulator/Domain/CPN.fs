@@ -1,5 +1,13 @@
 namespace CPN.Simulator.Domain
 
+type IOTrigger = 
+    { input: PlaceId list
+      output: PlaceId list }
+
+/// Type representing the transitions posible to execute a step with it's input
+/// and output places
+type Trigger = Map<TransitionId, IOTrigger>
+
 /// Type representing the Coloured Petri Net
 type CPN = 
     | CPN of Places * Transitions * Arc list
@@ -16,21 +24,34 @@ module CPN =
         |> List.filter (fun (_, marking) -> marking <> "")
 
     /// Given a CPN it return the transitions avaliable to be triggered.
-    let toTrigger (CPN (places, transitions, arcs)) =  
+    let toTrigger (CPN (places, transitions, arcs)) : Trigger =  
         let filteredNet = 
             arcs |> List.filter (function Input _, _-> true | _ -> false)
 
+        let filteredMap =
+            Map.empty
+            |> List.foldBack (fun (Input (pid, tid), _) acc ->
+                match acc.TryFind tid with
+                | None -> acc.Add (tid, [pid])
+                | Some placeList -> acc.Add (tid, pid :: placeList)
+            ) filteredNet
+            |> Map.filter (fun _ pids -> 
+                pids 
+                |> List.forall (fun pid -> 
+                    places 
+                    |> Map.tryFind pid 
+                    |> function 
+                        | None -> false
+                        | Some placeData -> placeData.marking <> []))
         Map.empty
-        |> List.foldBack (fun (Input (pid, tid), _) acc ->
-            match acc.TryFind tid with
-            | None -> acc.Add (tid, [pid])
-            | Some placeList -> acc.Add (tid, pid :: placeList)
-        ) filteredNet
-        |> Map.filter (fun _ pids -> 
-            pids 
-            |> List.forall (fun pid -> 
-                places 
-                |> Map.tryFind pid 
-                |> function 
-                    | None -> false
-                    | Some placeData -> placeData.marking <> []))
+        |> Map.foldBack (fun actTid inputPids acc ->
+            let outputPids = 
+                arcs 
+                |> List.filter (function 
+                    | Output (tid, _), _ when tid = actTid -> true 
+                    | _ -> false)
+                |> List.map (fun (Output (_, pid), _) -> pid)
+            
+            acc.Add(actTid, {input = inputPids; output = outputPids})
+
+        ) filteredMap
