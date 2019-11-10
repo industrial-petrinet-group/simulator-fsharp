@@ -1,12 +1,10 @@
 namespace CPN.Simulator.Domain
 
-/// Type representing the structure of the two kinds of Arcs
-type ArcStructure = 
-    | Input of PlaceId * TransitionId
-    | Output of TransitionId * PlaceId
+/// Type representing an Arc Id
+type ArcId = A of int
 
-/// Type repressenting a Expressión associated to an Arc
-type Expression = string
+/// Type representing a Arc Data
+type ArcData = { expression: string }
 
-/// Type representing the Arc
-type Arc = ArcStructure * Expression
+/// Type representing a collection the Arcs
+type Arcs = Map<ArcId, ArcData>

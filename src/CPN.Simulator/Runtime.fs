@@ -7,10 +7,11 @@ module Runtime =
     /// remove the input tokens from the places involved in trigggering the 
     /// transition.
     // TODO: implement it with the new trigger type
-    let removeInputTokens (toTrigger: Trigger) net =
-        let (CPN (places, transitions, arcs)) = net 
-        let triggered = []
-        triggered
+    let x = ""
+    // let removeInputTokens (toTrigger: Trigger) net =
+    //     let (CPN (places, transitions, arcs)) = net 
+    //     let triggered = []
+    //     triggered
 
         // (places, triggered)
         // |> List.foldBack (fun arc (actPlaces, triggered) ->

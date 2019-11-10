@@ -21,12 +21,16 @@ module SampleNets =
             Map.empty.
                 Add(T 1, { name = "T1"; bindings = [] })
 
-        let arcs = [
-            Input (P 1, T 1), ""
-            Output (T 1, P 2), ""
-        ]
+        let arcs = 
+            Map.empty.
+                Add(A 1, {expression = ""}).
+                Add(A 2, {expression = ""})
         
-        CPN (places, transitions, arcs)
+        let net = 
+            Map.empty.
+                Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
+        
+        CPN (net, (places, transitions, arcs))
     
     /// Definition of an slightly more complex net
     let notSoSimpleNet : CPN = 
@@ -44,14 +48,24 @@ module SampleNets =
                 Add(T 1, { name = "T1"; bindings = [] }).
                 Add(T 2, { name = "T2"; bindings = [] })
 
-        let arcs = [
-            Input (P 1, T 1), ""
-            Input (P 2, T 1), ""
-            Output (T 1, P 2), ""
-            Output (T 1, P 3), ""
-            Input (P 3, T 2), ""
-            Output (T 2, P 4), ""
-            Output (T 2, P 5), ""
-        ]
+        let arcs = 
+            Map.empty.
+                Add(A 1, {expression = ""}).
+                Add(A 2, {expression = ""}).
+                Add(A 3, {expression = ""}).
+                Add(A 4, {expression = ""}).
+                Add(A 5, {expression = ""}).
+                Add(A 6, {expression = ""}).
+                Add(A 7, {expression = ""})
+        
+        let net =
+            Map.empty.
+                Add(T 1, 
+                        { i = [(P 1, A 1); (P 2, A 2)]
+                          o = [(P 2, A 3); (P 3, A 4)]}).
+                Add(T 2, 
+                        { i = [(P 3, A 5)]
+                          o = [(P 4, A 5); (P 5, A 7)]})
+        
 
-        CPN (places, transitions, arcs)
+        CPN (net, (places, transitions, arcs))
