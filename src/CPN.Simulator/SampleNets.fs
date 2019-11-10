@@ -60,12 +60,11 @@ module SampleNets =
         
         let net =
             Map.empty.
-                Add(T 1, 
-                        { i = [(P 1, A 1); (P 2, A 2)]
-                          o = [(P 2, A 3); (P 3, A 4)]}).
-                Add(T 2, 
-                        { i = [(P 3, A 5)]
-                          o = [(P 4, A 5); (P 5, A 7)]})
+                Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
+                           o = [(P 2, A 3); (P 3, A 4)]}).
+                           
+                Add(T 2, { i = [(P 3, A 5)]
+                           o = [(P 4, A 5); (P 5, A 7)]})
         
 
         CPN (net, (places, transitions, arcs))

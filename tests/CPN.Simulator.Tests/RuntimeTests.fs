@@ -16,49 +16,45 @@ module RuntimeTests =
     //         keyVal.Value |> List.map (fun p -> p.name))
     //     >> Seq.toList
     
-    // [<Tests>]
-    // let tests = 
-    //     testList "RuntimeTests" [
-    //         testCase "test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
-    //             SampleNets.simpleNet
-    //             |> Runtime.netMarking 
-    //             |> simplifyNetMarking
-    //             =! ["P1", "1`()"]
+    [<Tests>]
+    let tests = 
+        testList "RuntimeTests" [
+            testCase "test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
+                SampleNets.simpleNet
+                |> CPN.netMarking
+                =! [P 1, "1`()"]
 
-    //             SampleNets.notSoSimpleNet
-    //             |> Runtime.netMarking 
-    //             |> simplifyNetMarking
-    //             =! [("P1", "3`()"); ("P2", "1`()")]
+                SampleNets.notSoSimpleNet
+                |> CPN.netMarking 
+                =! [(P 1, "3`()"); (P 2, "1`()")]
             
-    //         testCase "test the triggered transitions" <| fun () ->
-    //             SampleNets.simpleNet
-    //             |> Runtime.trigger
-    //             |> simplifyTriggered
-    //             =! ["T1", ["P1"]]
+            testCase "test the triggered transitions" <| fun () ->              
+                SampleNets.simpleNet
+                |> CPN.toTrigger
+                =! Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
 
-    //             SampleNets.notSoSimpleNet
-    //             |> Runtime.trigger
-    //             |> simplifyTriggered
-    //             =! ["T1", ["P1"; "P2"]]
+                SampleNets.notSoSimpleNet
+                |> CPN.toTrigger
+                =! Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
+                                        o = [(P 2, A 3); (P 3, A 4)]})
 
-    //         testCase "test the steps involved in the simple net" <| fun () ->
-    //             let modified, firstStepNet = SampleNets.simpleNet |> Runtime.step
+            testCase "test the steps involved in the simple net" <| fun () ->
+                let (Ok (modified, firstStepNet)) = 
+                    SampleNets.simpleNet |> Runtime.step
 
-    //             modified =! true 
+                modified =! true 
 
-    //             firstStepNet 
-    //             |> Runtime.trigger 
-    //             |> simplifyTriggered
-    //             =! []
+                firstStepNet 
+                |> CPN.toTrigger
+                =! Map.empty
 
-    //             firstStepNet
-    //             |> Runtime.netMarking
-    //             |> simplifyNetMarking
-    //             =! ["P2", "1`()"]
+                firstStepNet
+                |> CPN.netMarking
+                =! [P 2, "1`()"]
             
-    //         testCase "test the steps involved in the not so simple net" <| fun () ->
+            testCase "test the steps involved in the not so simple net" <| fun () ->
                 
-    //             printfn "%A" (SampleNets.notSoSimpleNet |> Runtime.allSteps)
+                printfn "%A" (SampleNets.notSoSimpleNet |> Runtime.allSteps)
 
-    //             true =! true
-    //     ]
+                true =! true
+        ]

@@ -29,6 +29,6 @@ module CPN =
                 | None -> false
                 | Some placeData -> placeData.marking <> [])
 
-    /// Given a CPN it return the transitions avaliable to be triggered.
+    /// Given a CPN it returns a Net with transitions avaliable to be triggered.
     let toTrigger (CPN (net, (places, _, _))) : Net =  
         net |> Map.filter (isTriggerable places)

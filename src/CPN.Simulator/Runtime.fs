@@ -5,8 +5,9 @@ open CPN.Simulator.Operators
 
 /// Runtime module in charge of simulate the network.
 module Runtime =
-
-    let private modifyTokensForTriggered (toTrigger, places) modifyFunc =
+    /// remove the input tokens from the places involved in trigggering the 
+    /// transition.    
+    let removeInputTokens (toTrigger, places) =
         let randomKeyList = toTrigger |> Net.randomKeyList
         
         Ok (Map.empty, places)
@@ -20,7 +21,7 @@ module Runtime =
                 | true -> 
                     let { i = inputs } = actTriggered
                     
-                    let partialModifyFunc = modifyFunc 1 "()" SampleNets.unitColour
+                    let partialModifyFunc = Place.removeTokens 1 "()" SampleNets.unitColour
                     
                     let resNewPlaces =
                         newPlaces 
@@ -32,15 +33,24 @@ module Runtime =
 
         ) randomKeyList
 
-    /// remove the input tokens from the places involved in trigggering the 
-    /// transition.    
-    let removeInputTokens (toTrigger, places) =
-       modifyTokensForTriggered (toTrigger, places) Place.removeTokens
-
     /// add the output tokens for the places reached by the triggered transition.
-    let addOutputTokens (toTrigger, places) = 
-        modifyTokensForTriggered (toTrigger, places) Place.addTokens
-
+    let addOutputTokens (toTrigger, places) =         
+        Ok places
+        |> Map.foldBack (fun tid actTriggered acc ->            
+            acc 
+            >>= fun newPlaces ->
+                let { o = outputs } = actTriggered
+                
+                let partialModifyFunc = Place.addTokens 1 "()" SampleNets.unitColour
+                
+                let resNewPlaces =
+                    newPlaces 
+                    |> Place.modifyTokensForList 
+                        partialModifyFunc (outputs |> List.map fst)
+                
+                resNewPlaces 
+        ) toTrigger
+        >>= fun newPlaces -> Ok (toTrigger, newPlaces)
     
     /// Given a CPN net it executes a Step in the simulation
     let step (cpn: CPN) =

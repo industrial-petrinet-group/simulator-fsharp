@@ -99,5 +99,3 @@ let net2 =
 let a = SampleNets.notSoSimpleNet |> Runtime.step
 let b = net1 |> Runtime.step
 let c = net2 |> Runtime.step;;
-
-// Not working at adding but working on removing
