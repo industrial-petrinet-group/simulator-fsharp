@@ -17,6 +17,7 @@
     <Compile Include="Domain/Place.fs" />
     <Compile Include="Domain/Transition.fs" />
     <Compile Include="Domain/Arc.fs" />
+    <Compile Include="Domain/Net.fs" />
     <Compile Include="Domain/CPN.fs" />
     <Compile Include="SampleNets.fs" />
     <Compile Include="Runtime.fs" />

@@ -1,5 +1,7 @@
 namespace CPN.Simulator.Domain
 
+open CPN.Simulator.Operators
+
 /// Type representing a Place Id
 type PlaceId = P of int
 
@@ -11,6 +13,11 @@ type PlaceData =
 
 /// Type representing a collection of places
 type Places = Map<PlaceId, PlaceData>
+
+/// Type representing Place Errors
+type PlaceErrors =
+    | InexistenPid of pid: PlaceId * places: Places
+    | InsufficientTokens of pid: PlaceId * places: Places
 
 /// Module implementing Place's operations.
 module Place =
@@ -33,3 +40,33 @@ module Place =
             | false -> acc
             | true -> (pid, markingAsString placeData) :: acc    
         ) places
+
+    let removeTokens removeQty _value _colour pid (places: Places) =
+        // value and colour are ignored for know given that there is a unique value ()
+        match places |> Map.tryFind pid with
+        | None -> Error <| InexistenPid (pid, places)
+        | Some placeData -> 
+            match placeData.marking with 
+            | [] -> Error <| InsufficientTokens (pid, places) 
+            | [{ qty = actQty }] when actQty = removeQty -> Ok <| []
+            | token :: rest -> Ok <| {token with qty = token.qty - removeQty} :: rest
+            >>= fun newMarking ->
+                Ok <| places.
+                        Remove(pid).
+                        Add(pid, { placeData with marking = newMarking })
+    
+    let addTokens addQty value colour pid (places: Places) =
+        match places |> Map.tryFind pid with
+        | None -> Error <| InexistenPid (pid, places)
+        | Some placeData -> 
+            match placeData.marking with 
+            | [] -> Ok [{ qty = 1;  value = value; colour = colour}] 
+            | token :: rest -> Ok <| {token with qty = token.qty + addQty} :: rest
+            >>= fun newMarking ->
+                Ok <| places.
+                        Remove(pid).
+                        Add(pid, { placeData with marking = newMarking })
+    
+    let modifyTokensForList partialModifyFunc pids (places: Places) =        
+        pids 
+        |> List.fold (fun acc pid -> acc >>= (partialModifyFunc pid)) (Ok places)

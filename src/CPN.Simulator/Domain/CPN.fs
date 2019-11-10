@@ -1,14 +1,5 @@
 namespace CPN.Simulator.Domain
 
-/// Type representing the the list of inputs and outputs of a transition.
-type TransitionIO = 
-    { i: (PlaceId * ArcId) list
-      o: (PlaceId * ArcId) list }
-
-/// Type representing the whole Net; it's core is based upon transitions because
-/// it's the center of the simulation.
-type Net = Map<TransitionId, TransitionIO>
-
 /// Type representing the Coloured Petri Net
 type CPN = 
     | CPN of Net * (Places * Transitions * Arcs)

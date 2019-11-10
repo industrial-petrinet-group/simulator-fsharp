@@ -7,6 +7,7 @@
 #load "./Domain/Place.fs"
 #load "./Domain/Transition.fs"
 #load "./Domain/Arc.fs"
+#load "./Domain/Net.fs"
 #load "./Domain/CPN.fs"
 
 
@@ -95,6 +96,8 @@ let net2 =
 
     CPN (net, (places, transitions, arcs))
 
-let a = SampleNets.notSoSimpleNet |> CPN.toTrigger
-let b = net1 |> CPN.toTrigger
-let c = net2 |> CPN.toTrigger
+let a = SampleNets.notSoSimpleNet |> Runtime.step
+let b = net1 |> Runtime.step
+let c = net2 |> Runtime.step;;
+
+// Not working at adding but working on removing
