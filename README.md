@@ -1,10 +1,27 @@
 # simulator-fsharp
 F# based coloured petrinet simulator
 
-# Prototype Implementation
-## Naive Type System
-Implemented a Naive type system for representing the petrinet (src/Runtime.fs)
-Testing marking of the net and triggered transitions
+# Simulator Implementation
+## Type System
+The type system has evolved; it's not so far of a minimal viable simulator 
+without bindings and implementing only unit types. 
+
+### Domain
+The types and modules are defined inside `src/CPN.Simulator/Domain`
+
+- ColorSet.fs (Unit)
+- MultiSet.fs
+- Place.fs
+- Transition.fs
+- Arc.fs
+- Net.fs
+- CPN.fs
+
+### Simulator
+The modules are defined inside `src/CPN.Simulator`
+
+- SampleNets.fs
+- Runtime.fs
 
 # Colour Sets implemented
 ## Simple
