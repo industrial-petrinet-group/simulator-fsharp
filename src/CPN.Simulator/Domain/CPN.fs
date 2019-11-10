@@ -1,8 +1,12 @@
 namespace CPN.Simulator.Domain
 
+open System.Text.RegularExpressions
+
 /// Type representing the Coloured Petri Net
+[<StructuredFormatDisplay("CPN = {Show}")>]
 type CPN = 
     | CPN of Net * (Places * Transitions * Arcs)
+
 
 /// Module for implementing all CPN's operations
 module CPN = 
@@ -32,3 +36,16 @@ module CPN =
     /// Given a CPN it returns a Net with transitions avaliable to be triggered.
     let toTrigger (CPN (net, (places, _, _))) : Net =  
         net |> Map.filter (isTriggerable places)
+
+/// Type representing a way of showing the CPN
+type ShowableCPN = 
+        { netMarking: (PlaceId * string) list; 
+          net: (TransitionId * TransitionIO) list}
+
+type CPN with
+    /// Reimplements the way of showing th CPN
+    member this.Show = 
+        let (CPN (net, _)) = this
+        let netMarking = CPN.netMarking this
+
+        {netMarking = netMarking; net = net |> Map.toList}

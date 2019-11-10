@@ -64,7 +64,7 @@ module SampleNets =
                            o = [(P 2, A 3); (P 3, A 4)]}).
                            
                 Add(T 2, { i = [(P 3, A 5)]
-                           o = [(P 4, A 5); (P 5, A 7)]})
+                           o = [(P 4, A 6); (P 5, A 7)]})
         
 
         CPN (net, (places, transitions, arcs))

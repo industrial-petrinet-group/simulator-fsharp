@@ -53,8 +53,12 @@ module RuntimeTests =
                 =! [P 2, "1`()"]
             
             testCase "test the steps involved in the not so simple net" <| fun () ->
-                
-                printfn "%A" (SampleNets.notSoSimpleNet |> Runtime.allSteps)
+                let steps = SampleNets.notSoSimpleNet |> Runtime.allSteps
 
-                true =! true
+                steps |> Seq.length =! 5
+
+                steps 
+                |> Seq.last 
+                |> CPN.netMarking 
+                =! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]                
         ]
