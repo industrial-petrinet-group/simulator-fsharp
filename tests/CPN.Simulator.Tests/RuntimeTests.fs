@@ -6,15 +6,6 @@ open CPN.Simulator
 open CPN.Simulator.Domain
 
 module RuntimeTests =
-
-    open System.Collections.Generic
-    
-
-    // let simplifyTriggered =
-    //     Seq.map (fun (keyVal: KeyValuePair<Transition, Place list>) -> 
-    //         keyVal.Key.name, 
-    //         keyVal.Value |> List.map (fun p -> p.name))
-    //     >> Seq.toList
     
     [<Tests>]
     let tests = 
