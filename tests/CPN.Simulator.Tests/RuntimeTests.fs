@@ -51,5 +51,18 @@ module RuntimeTests =
                 steps 
                 |> Seq.last 
                 |> CPN.netMarking 
-                =! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]                
+                =! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]
+                
+            testCase "test the steps involved in the randomly pathed net" <| fun () ->
+                let nLastFromRPN = 
+                    (fun _ -> SampleNets.randomlyPathedNet |> Runtime.allSteps)
+                    |> List.init 10 
+                    |> List.map (Seq.last >> CPN.netMarking)
+                
+                nLastFromRPN
+                |> List.fold (fun (equals, prior) nLast ->
+                    equals && prior = nLast, nLast
+                ) (true, nLastFromRPN |> List.head)
+                |> fst 
+                =! false
         ]

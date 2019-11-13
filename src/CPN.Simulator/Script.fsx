@@ -18,12 +18,12 @@ open CPN.Simulator
 open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets;;
 
-SampleNets.notSoSimpleNet |> printfn "%A";;
+SampleNets.randomlyPathedNet |> printfn "%A";;
 
 
 
 
-//SampleNets.notSoSimpleNet |> Runtime.allSteps;;
+SampleNets.notSoSimpleNet |> Runtime.allSteps;;
 
 
 // let (Ok unitCS) = Unit.create None

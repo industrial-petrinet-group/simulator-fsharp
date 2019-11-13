@@ -16,7 +16,7 @@ module Runtime =
             
             acc 
             >>= fun (newToTrigger, newPlaces) ->
-                match CPN.isTriggerable places tid actTriggered with
+                match CPN.isTriggerable newPlaces tid actTriggered with
                 | false -> Ok (newToTrigger, newPlaces)
                 | true -> 
                     let { i = inputs } = actTriggered
