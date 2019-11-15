@@ -21,6 +21,11 @@ type PlaceErrors =
 
 /// Module implementing Place's operations.
 module Place =
+    /// Given Places i returns new Places with it's multiset values reduced
+    let reduceMarking places =
+        // TODO
+        places
+
     /// Given Places and a pid it return if it has at least one token
     let hasTokens places pid =
         match places |> Map.tryFind pid with

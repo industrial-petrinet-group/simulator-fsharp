@@ -9,8 +9,8 @@ module RuntimeTests =
     
     [<Tests>]
     let tests = 
-        testList "RuntimeTests" [
-            testCase "test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
+        testList "Simulator.RuntimeTests." [
+            testCase "Test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
                 SampleNets.simpleNet
                 |> CPN.netMarking
                 =! [P 1, "1`()"]
@@ -19,7 +19,7 @@ module RuntimeTests =
                 |> CPN.netMarking 
                 =! [(P 1, "3`()"); (P 2, "1`()")]
             
-            testCase "test the triggered transitions" <| fun () ->              
+            testCase "Test the triggered transitions" <| fun () ->              
                 SampleNets.simpleNet
                 |> CPN.toTrigger
                 =! Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
@@ -29,7 +29,7 @@ module RuntimeTests =
                 =! Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
                                         o = [(P 2, A 3); (P 3, A 4)]})
 
-            testCase "test the steps involved in the simple net" <| fun () ->
+            testCase "Test the steps involved in the simple net" <| fun () ->
                 let (Ok (modified, firstStepNet)) = 
                     SampleNets.simpleNet |> Runtime.step
 
@@ -43,7 +43,7 @@ module RuntimeTests =
                 |> CPN.netMarking
                 =! [P 2, "1`()"]
             
-            testCase "test the steps involved in the not so simple net" <| fun () ->
+            testCase "Test the steps involved in the not so simple net" <| fun () ->
                 let steps = SampleNets.notSoSimpleNet |> Runtime.allSteps
 
                 steps |> Seq.length =! 5
@@ -53,7 +53,7 @@ module RuntimeTests =
                 |> CPN.netMarking 
                 =! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]
                 
-            testCase "test the steps involved in the randomly pathed net" <| fun () ->
+            testCase "Test the steps involved in the randomly pathed net" <| fun () ->
                 let nLastFromRPN = 
                     (fun _ -> SampleNets.randomlyPathedNet |> Runtime.allSteps)
                     |> List.init 10 

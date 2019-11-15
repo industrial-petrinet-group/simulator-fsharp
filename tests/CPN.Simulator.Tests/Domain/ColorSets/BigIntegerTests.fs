@@ -10,7 +10,7 @@ module BigIntegerTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets/BigIntegerTests" [
+        testList "ColorSets.BigIntegerTests." [
             testCase "BigInteger color set can be created and it's value for '1353' is 1353" <| fun () ->
                 (BigInteger.create None >>= BigInteger.colorVal "1353") =! Ok 1353I
             

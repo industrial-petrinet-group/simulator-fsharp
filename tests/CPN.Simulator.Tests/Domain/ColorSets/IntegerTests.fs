@@ -10,7 +10,7 @@ module IntegerTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets/IntegerTests" [
+        testList "ColorSets.IntegerTests." [
             testCase "Integer color set can be created and it's value for '135' is 135" <| fun () ->
                 (Integer.create None >>= Integer.colorVal "135") =! Ok 135
             

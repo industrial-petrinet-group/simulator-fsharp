@@ -10,8 +10,8 @@ module DoubleTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets/DoubleTests" [
-            testCase "Double color set can be created and it's value for '3.1415' is 3.1415" <| fun () ->
+        testList "ColorSets.DoubleTests." [
+            testCase "Double color set can be creted and it's value for '3,1415' is 3,1415" <| fun () ->
                 (Double.create None >>= Double.colorVal "3.1415") =! Ok 3.1415
             
             testCase "create and colorVal work as expected for Double" <| fun () ->

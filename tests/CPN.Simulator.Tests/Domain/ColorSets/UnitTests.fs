@@ -10,7 +10,7 @@ module UnitTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets/UnitTests" [
+        testList "ColorSets.UnitTests." [
             testCase "Unit color set can be created and it's value is ()" <| fun () ->
                 Unit.create None >>= Unit.colorVal "()" =! Ok ()
             

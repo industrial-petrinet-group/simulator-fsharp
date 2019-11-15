@@ -10,7 +10,7 @@ module BooleanTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets/BooleanTests" [
+        testList "ColorSets.BooleanTests." [
             testCase "Boolean color set can be created and it's value for falsy is false" <| fun () ->
                 (Boolean.create None >>= Boolean.colorVal "false") =! Ok false
             
