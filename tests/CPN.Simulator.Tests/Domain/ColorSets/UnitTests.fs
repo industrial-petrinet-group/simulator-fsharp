@@ -59,10 +59,8 @@ module UnitTests =
                 let unitCS = Unit.create None
                 let unitWithedCS = Unit.create (Some "nulo")
 
-                (unitCS >>= Unit.makeString "()") =! Ok "()"
-                (unitCS >>= Unit.makeString "nulo") =! Error (InvalidValue "nulo")
+                (unitCS >>= Unit.makeString ()) =! Ok "()"
 
-                (unitWithedCS >>= Unit.makeString "()") =! Error (InvalidValue "()")
-                (unitWithedCS >>= Unit.makeString "nulo") =! Ok "nulo"
+                (unitWithedCS >>= Unit.makeString ()) =! Ok "nulo"
 
         ]

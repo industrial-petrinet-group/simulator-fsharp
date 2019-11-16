@@ -2,6 +2,7 @@ namespace CPN.Simulator
 
 /// Module for common operators inside the Simulator namespace
 module Operators =
+    let private random = System.Random()
 
     /// Return the identity inside a Result
     let rid x = Ok x
@@ -15,4 +16,7 @@ module Operators =
     /// Result map function, converting a normal function to the result world
     let switch f x = Ok <| f x
 
+    /// Randomize a list order
+    let randomizeList xs =
+        xs |> List.sortBy (fun _ -> random.Next())    
     

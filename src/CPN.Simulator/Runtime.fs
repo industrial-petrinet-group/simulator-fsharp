@@ -7,64 +7,60 @@ open CPN.Simulator.Operators
 module Runtime =
     /// remove the input tokens from the places involved in trigggering the 
     /// transition.    
-    let removeInputTokens (toTrigger, places) =
-        let randomKeyList = toTrigger |> Net.randomKeyList
+    let removeInputTokens (enabled, places) =
+        let randomKeyList = enabled |> Net.randomKeyList
         
         Ok (Map.empty, places)
         |> List.foldBack (fun tid acc ->
-            let actTriggered = toTrigger |> Map.find tid
+            let actEnabled = enabled |> Map.find tid
             
             acc 
-            >>= fun (newToTrigger, newPlaces) ->
-                match CPN.isTriggerable newPlaces tid actTriggered with
-                | false -> Ok (newToTrigger, newPlaces)
+            >>= fun (occurred, lastPlaces) ->
+                match CPN.isEnabled lastPlaces tid actEnabled with
+                | false -> Ok (occurred, lastPlaces)
                 | true -> 
-                    let { i = inputs } = actTriggered
-                    
-                    let partialModifyFunc = Place.removeTokens 1 "()" SampleNets.unitColour
-                    
-                    let resNewPlaces =
-                        newPlaces 
+                    let { i = inputs } = actEnabled
+                                        
+                    let resModifiedPlaces =
+                        lastPlaces 
                         |> Place.modifyTokensForList 
-                            partialModifyFunc (inputs |> List.map fst)
+                            Place.removeTokens 1 (inputs |> List.map fst)
                     
-                    resNewPlaces >>= fun actNewPlaces -> 
-                        Ok (newToTrigger.Add(tid, actTriggered), actNewPlaces)
+                    resModifiedPlaces >>= fun modifiedPlaces -> 
+                        Ok (occurred.Add(tid, actEnabled), modifiedPlaces)
 
         ) randomKeyList
 
     /// add the output tokens for the places reached by the triggered transition.
-    let addOutputTokens (toTrigger, places) =         
+    let addOutputTokens (ocurred, places) =         
         Ok places
-        |> Map.foldBack (fun tid actTriggered acc ->            
+        |> Map.foldBack (fun _ actOcurred acc ->            
             acc 
-            >>= fun newPlaces ->
-                let { o = outputs } = actTriggered
-                
-                let partialModifyFunc = Place.addTokens 1 "()" SampleNets.unitColour
-                
-                let resNewPlaces =
-                    newPlaces 
+            >>= fun lastPlaces ->
+                let { o = outputs } = actOcurred
+
+                let resModifiedPlaces =
+                    lastPlaces 
                     |> Place.modifyTokensForList 
-                        partialModifyFunc (outputs |> List.map fst)
+                        Place.addTokens 1 (outputs |> List.map fst)
                 
-                resNewPlaces 
-        ) toTrigger
-        >>= fun newPlaces -> Ok (toTrigger, newPlaces)
+                resModifiedPlaces 
+        ) ocurred
+        >>= fun modifiedPlaces -> Ok (ocurred, modifiedPlaces)
     
     /// Given a CPN net it executes a Step in the simulation
     let step (cpn: CPN) =
-        let toTrigger = CPN.toTrigger cpn
+        let enabled = CPN.enabled cpn
         let (CPN (net, (places, transitions, arcs))) = cpn 
 
-        match toTrigger |> Map.isEmpty with
+        match enabled |> Map.isEmpty with
         | true -> Ok (false, cpn)
         | false ->
-            (toTrigger, places) 
+            (enabled, places) 
             |> removeInputTokens
             >>= addOutputTokens
-            >>= fun (_ , newPlaces) ->
-                Ok (true, (CPN (net, (newPlaces, transitions, arcs))))
+            >>= fun (_ , modifiedPlaces) ->
+                Ok (true, (CPN (net, (modifiedPlaces, transitions, arcs))))
     
     /// Make a sequence of all posible Steps
     let rec allSteps (actNet: CPN) = seq {

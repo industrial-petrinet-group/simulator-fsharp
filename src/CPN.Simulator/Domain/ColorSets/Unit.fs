@@ -38,9 +38,9 @@ module Unit =
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
     let makeString supposedMember unitCS = 
-        match unitCS, supposedMember with
-        | Unit -> Ok supposedMember
-        | NonUnit -> Error <| InvalidValue supposedMember
+        match isLegal supposedMember unitCS with
+        | false -> Error <| InvalidValue (sprintf "%A" supposedMember)
+        | true -> Ok unitCS.unit 
 
     /// Return a list of all posible values for this color set.
     let all (_: Unit) = Ok [ () ]

@@ -1,5 +1,5 @@
 namespace CPN.Simulator.Domain.ColorSets
-
+//TODO: makeString should take a value form the CS not a string!!
 open Common
 
 /// Interface for implementing in every Numeric Color Set

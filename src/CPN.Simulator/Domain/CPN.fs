@@ -21,8 +21,8 @@ module CPN =
         |> List.filter (fun (_, marking) -> marking <> "")
 
     /// Given a transition Id and It's Transition IO it returns if it's available
-    /// for triggering.
-    let isTriggerable places _ {i = inputs} =
+    /// to occur.
+    let isEnabled places _ {i = inputs} =
         // FIXME: Due to naive implementation it only checks that a token exist
         inputs
         |> List.map fst
@@ -33,9 +33,9 @@ module CPN =
                 | None -> false
                 | Some placeData -> placeData.marking <> [])
 
-    /// Given a CPN it returns a Net with transitions avaliable to be triggered.
-    let toTrigger (CPN (net, (places, _, _))) : Net =  
-        net |> Map.filter (isTriggerable places)
+    /// Given a CPN it returns a Net with transitions avaliable to occur.
+    let enabled (CPN (net, (places, _, _))) : Net =  
+        net |> Map.filter (isEnabled places)
 
 /// Type representing a way of showing the CPN
 type ShowableCPN = 

@@ -67,9 +67,7 @@ module BooleanTests =
                 let booleanCS = Boolean.create None
                 let booleanWithedCS = Boolean.create (Some ("null", "some"))
 
-                (booleanCS >>= Boolean.makeString "true") =! Ok "true"
-                (booleanCS >>= Boolean.makeString "null") =! Error (InvalidValue "null")
+                (booleanCS >>= Boolean.makeString true) =! Ok "true"
 
-                (booleanWithedCS >>= Boolean.makeString "false") =! Error (InvalidValue "false")
-                (booleanWithedCS >>= Boolean.makeString "some") =! Ok "some"
+                (booleanWithedCS >>= Boolean.makeString false) =! Ok "null"
         ]

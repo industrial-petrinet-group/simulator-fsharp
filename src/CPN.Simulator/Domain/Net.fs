@@ -1,5 +1,7 @@
 namespace CPN.Simulator.Domain
 
+open CPN.Simulator.Operators
+
 /// Type representing the the list of inputs and outputs of a transition.
 type TransitionIO = 
     { i: (PlaceId * ArcId) list
@@ -18,4 +20,4 @@ module Net =
     let randomKeyList (net: Net) = 
         net
         |> Map.fold (fun acc key _ -> key :: acc ) []
-        |> List.sortBy (fun _ -> random.Next())
+        |> randomizeList

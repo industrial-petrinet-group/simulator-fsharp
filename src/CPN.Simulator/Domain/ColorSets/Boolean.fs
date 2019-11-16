@@ -42,9 +42,10 @@ module Boolean =
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's string color set value if it is.
     let makeString supposedMember booleanCS = 
-        match (supposedMember, booleanCS) with
-        | Neither -> Error <| InvalidValue supposedMember
-        | _ -> Ok supposedMember
+        match isLegal supposedMember booleanCS with
+        | false -> Error <| InvalidValue (sprintf "%A" supposedMember)
+        | true -> Ok <| if supposedMember then booleanCS.truthy 
+                                          else booleanCS.falsy
 
     /// Return a list of all posible values for this color set.
     let all (_: Boolean) = Ok [ false; true ]

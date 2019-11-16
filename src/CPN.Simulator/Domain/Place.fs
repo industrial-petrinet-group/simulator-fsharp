@@ -16,12 +16,13 @@ type Places = Map<PlaceId, PlaceData>
 
 /// Type representing Place Errors
 type PlaceErrors =
+    | UnexectedError of msg: string
     | InexistenPid of pid: PlaceId * places: Places
     | InsufficientTokens of pid: PlaceId * places: Places
 
 /// Module implementing Place's operations.
 module Place =
-    /// Given Places i returns new Places with it's multiset values reduced
+    /// Given Places it returns new Places with it's multiset values reduced
     let reduceMarking places =
         // TODO
         places
@@ -30,7 +31,7 @@ module Place =
     let hasTokens places pid =
         match places |> Map.tryFind pid with
         | None -> false
-        | Some placeData -> placeData.marking <> [] // FIXME: only works for a unique CS    
+        | Some placeData -> placeData.marking <> []  
 
     /// Given a PlaceData it return it's marking parsed as a string.
     let markingAsString placeData =
@@ -46,32 +47,48 @@ module Place =
             | true -> (pid, markingAsString placeData) :: acc    
         ) places
 
-    let removeTokens removeQty _value _colour pid (places: Places) =
-        // value and colour are ignored for know given that there is a unique value ()
+    let removeTokens removeQty pid (places: Places) =
+        // FIXME: the pick is random in a list of multisets, not implemented 
+        // value nor colour
         match places |> Map.tryFind pid with
         | None -> Error <| InexistenPid (pid, places)
         | Some placeData -> 
             match placeData.marking with 
             | [] -> Error <| InsufficientTokens (pid, places) 
             | [{ qty = actQty }] when actQty = removeQty -> Ok <| []
-            | token :: rest -> Ok <| {token with qty = token.qty - removeQty} :: rest
+            | [ token ] -> Ok <| [{token with qty = token.qty - removeQty}]
+            | _token :: _rest as tokenList -> 
+                    tokenList        
+                    |> randomizeList         
+                    |> fun (token :: rest) -> 
+                        Ok <| {token with qty = token.qty - removeQty} :: rest
+
             >>= fun newMarking ->
                 Ok <| places.
                         Remove(pid).
                         Add(pid, { placeData with marking = newMarking })
     
-    let addTokens addQty value colour pid (places: Places) =
+    let addTokens addQty pid (places: Places) =
         match places |> Map.tryFind pid with
         | None -> Error <| InexistenPid (pid, places)
         | Some placeData -> 
             match placeData.marking with 
-            | [] -> Ok [{ qty = 1;  value = value; colour = colour}] 
-            | token :: rest -> Ok <| {token with qty = token.qty + addQty} :: rest
+            | [] -> 
+                match placeData.colour |> ColorSet.randomVal with
+                | Error _ -> Error <| UnexectedError "Can't initialize random"
+                | Ok random ->
+                    Ok [{ qty = 1; value = random; colour = placeData.colour }]
+            | _token :: _rest as tokenList -> 
+                    tokenList        
+                    |> randomizeList         
+                    |> fun (token :: rest) -> 
+                        Ok <| {token with qty = token.qty + addQty} :: rest
+
             >>= fun newMarking ->
                 Ok <| places.
                         Remove(pid).
                         Add(pid, { placeData with marking = newMarking })
     
-    let modifyTokensForList partialModifyFunc pids (places: Places) =        
+    let modifyTokensForList modifyFunc qty pids (places: Places) =        
         pids 
-        |> List.fold (fun acc pid -> acc >>= (partialModifyFunc pid)) (Ok places)
+        |> List.fold (fun acc pid -> acc >>= (modifyFunc qty pid)) (Ok places)

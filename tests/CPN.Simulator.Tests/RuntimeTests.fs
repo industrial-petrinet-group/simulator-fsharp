@@ -21,11 +21,11 @@ module RuntimeTests =
             
             testCase "Test the triggered transitions" <| fun () ->              
                 SampleNets.simpleNet
-                |> CPN.toTrigger
+                |> CPN.enabled
                 =! Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
 
                 SampleNets.notSoSimpleNet
-                |> CPN.toTrigger
+                |> CPN.enabled
                 =! Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
                                         o = [(P 2, A 3); (P 3, A 4)]})
 
@@ -36,7 +36,7 @@ module RuntimeTests =
                 modified =! true 
 
                 firstStepNet 
-                |> CPN.toTrigger
+                |> CPN.enabled
                 =! Map.empty
 
                 firstStepNet
