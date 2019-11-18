@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CPN.Simulator.Tests", "tests\CPN.Simulator.Tests\CPN.Simulator.Tests.fsproj", "{97BC4ECB-35DC-48FF-A7BA-359E01FE58EB}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CPN.Simulator.Tests", "tests\CPN.Simulator.Tests\CPN.Simulator.Tests.fsproj", "{97BC4ECB-35DC-48FF-A7BA-359E01FE58EB}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CPN.Simulator", "src\CPN.Simulator\CPN.Simulator.fsproj", "{6FFB7067-1C79-4303-8879-68D26A440FDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CPN.Simulator.Tests.CSharp", "tests\CPN.Simulator.Tests.CSharp\CPN.Simulator.Tests.CSharp.csproj", "{1790866A-2A20-46C0-98BA-1818545F0CEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6FFB7067-1C79-4303-8879-68D26A440FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FFB7067-1C79-4303-8879-68D26A440FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FFB7067-1C79-4303-8879-68D26A440FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1790866A-2A20-46C0-98BA-1818545F0CEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1790866A-2A20-46C0-98BA-1818545F0CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1790866A-2A20-46C0-98BA-1818545F0CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1790866A-2A20-46C0-98BA-1818545F0CEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
