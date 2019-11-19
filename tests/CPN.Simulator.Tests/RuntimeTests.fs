@@ -22,12 +22,12 @@ module RuntimeTests =
             testCase "Test the triggered transitions" <| fun () ->              
                 SampleNets.simpleNet
                 |> CPN.enabled
-                =! Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
+                =! Net (Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]}))
 
                 SampleNets.notSoSimpleNet
                 |> CPN.enabled
-                =! Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
-                                        o = [(P 2, A 3); (P 3, A 4)]})
+                =! Net (Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
+                                             o = [(P 2, A 3); (P 3, A 4)]}))
 
             testCase "Test the steps involved in the simple net" <| fun () ->
                 let (Ok (modified, firstStepNet)) = 
@@ -37,7 +37,7 @@ module RuntimeTests =
 
                 firstStepNet 
                 |> CPN.enabled
-                =! Map.empty
+                =! Net (Map.empty)
 
                 firstStepNet
                 |> CPN.netMarking

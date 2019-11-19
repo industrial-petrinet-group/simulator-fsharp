@@ -13,4 +13,4 @@ type TransitionData =
 
 /// Type representing a collection of transitions; check if a Dictionary is
 /// needed due to the dinamic nature of bindings and the opposed inmutable maps.
-type Transitions = Map<TransitionId, TransitionData>
+type Transitions = Transitions of Map<TransitionId, TransitionData>

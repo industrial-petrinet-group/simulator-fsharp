@@ -7,8 +7,8 @@ open CPN.Simulator.Operators
 module Runtime =
     /// remove the input tokens from the places involved in trigggering the 
     /// transition.    
-    let removeInputTokens (enabled, places) =
-        let randomKeyList = enabled |> Net.randomKeyList
+    let removeInputTokens (enabled, places: Places) =
+        let randomKeyList = Net enabled |> Net.randomKeyList
         
         Ok (Map.empty, places)
         |> List.foldBack (fun tid acc ->
@@ -50,7 +50,7 @@ module Runtime =
     
     /// Given a CPN net it executes a Step in the simulation
     let step (cpn: CPN) =
-        let enabled = CPN.enabled cpn
+        let (Net enabled) = CPN.enabled cpn
         let (CPN (net, (places, transitions, arcs))) = cpn 
 
         match enabled |> Map.isEmpty with

@@ -7,4 +7,4 @@ type ArcId = A of int
 type ArcData = { expression: string }
 
 /// Type representing a collection the Arcs
-type Arcs = Map<ArcId, ArcData>
+type Arcs = Arcs of Map<ArcId, ArcData>
