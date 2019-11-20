@@ -8,10 +8,6 @@ open CPN.Simulator.Domain.ColorSets
 type ColorSet = 
     | UnitCS of Unit
     | BooleanCS of Boolean
-    
-type ColorValue =
-    | UnitVal of unit
-    | BooleanVal of bool
 
 /// Module implementing ColorSet's operations
 module ColorSet =

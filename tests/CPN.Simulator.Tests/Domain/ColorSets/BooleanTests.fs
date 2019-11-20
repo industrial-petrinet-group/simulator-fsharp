@@ -3,8 +3,8 @@ namespace CPN.Simulator.Tests.ColorSets
 open Expecto
 open Swensen.Unquote
 open CPN.Simulator.Operators
+open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets
-open CPN.Simulator.Domain.ColorSets.Common
 
 module BooleanTests =
 
@@ -18,13 +18,13 @@ module BooleanTests =
                 let booleanCS = Boolean.create None
                 let booleanWithedCS = Boolean.create (Some ("void", "whole"))
 
-                Boolean.create (Some ("void", "void")) =! Error (InvalidInitialState "falsy and truthy must be different")
+                Boolean.create (Some ("void", "void")) =! (Error <| CSErrors (InvalidInitialState "falsy and truthy must be different"))
 
                 (booleanCS >>= Boolean.colorVal "true") =! (booleanWithedCS >>= Boolean.colorVal "whole")
                 (booleanCS >>= Boolean.colorVal "true") =! Ok true
 
                 (booleanCS >>= Boolean.colorVal "yes") =! (booleanWithedCS >>= Boolean.colorVal "yes")
-                (booleanCS >>= Boolean.colorVal "yes") =! Error (InvalidValue "yes")
+                (booleanCS >>= Boolean.colorVal "yes") =! (Error <| CSErrors (InvalidValue "yes"))
 
 
             testCase "Functions init and legal work as expected for Boolean" <| fun () ->
@@ -53,7 +53,7 @@ module BooleanTests =
                 (booleanCS >>= Boolean.colour 1) =! Ok true
 
                 (booleanCS >>= Boolean.colour 2) =! (booleanWithedCS >>= Boolean.colour 2)
-                (booleanCS >>= Boolean.colour 2) =! Error (OutOfRangeIndex 2)
+                (booleanCS >>= Boolean.colour 2) =! (Error <| CSErrors (OutOfRangeIndex 2))
 
                 let csRandom = (booleanCS >>= Boolean.random) 
                 (csRandom = Ok true || csRandom = Ok false) =! true

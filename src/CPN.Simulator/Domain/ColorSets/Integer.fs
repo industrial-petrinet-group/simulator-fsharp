@@ -2,6 +2,7 @@ namespace CPN.Simulator.Domain.ColorSets
 
 open System
 open Common
+open CPN.Simulator.Domain
 
 type Integer =
     { low: int
@@ -54,4 +55,4 @@ module Integer =
     let random integerCS = 
         match Numeric.size emptyVal 1 integerCS with
         | Ok _ -> Ok <| rnd.Next(integerCS.low, integerCS.high)
-        | Error _ -> Error <| NotUsable "random"
+        | Error _ -> Error <| CSErrors (NotUsable "random")

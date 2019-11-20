@@ -1,6 +1,6 @@
 namespace CPN.Simulator.Domain.ColorSets
 
-open Common
+open CPN.Simulator.Domain
 
 type Unit =
     { unit: string }
@@ -27,7 +27,7 @@ module Unit =
     let colorVal supposedMember unitCS = 
         match unitCS, supposedMember with
         | Unit -> Ok ()
-        | NonUnit -> Error <| InvalidValue supposedMember
+        | NonUnit -> Error <| CSErrors (InvalidValue supposedMember)
 
     /// Return the base initial value for this color set.
     let init = ()
@@ -39,7 +39,7 @@ module Unit =
     /// member of the set and return it's string color set value if it is.
     let makeString supposedMember unitCS = 
         match isLegal supposedMember unitCS with
-        | false -> Error <| InvalidValue (sprintf "%A" supposedMember)
+        | false -> Error <| CSErrors (InvalidValue (sprintf "%A" supposedMember))
         | true -> Ok unitCS.unit 
 
     /// Return a list of all posible values for this color set.
@@ -55,7 +55,7 @@ module Unit =
     let colour i (_: Unit) =
         match i with
         | 0 -> Ok ()
-        | i -> Error <| OutOfRangeIndex i
+        | i -> Error <| CSErrors (OutOfRangeIndex i)
 
     /// Return a random value of this color set.
     let random (_: Unit) = Ok ()

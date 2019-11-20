@@ -3,8 +3,8 @@ namespace CPN.Simulator.Tests.ColorSets
 open Expecto
 open Swensen.Unquote
 open CPN.Simulator.Operators
+open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets
-open CPN.Simulator.Domain.ColorSets.Common
 
 module UnitTests =
 
@@ -22,7 +22,7 @@ module UnitTests =
                 (unitCS >>= Unit.colorVal "()") =! Ok ()
 
                 (unitCS >>= Unit.colorVal "null") =! (unitWithedCS >>= Unit.colorVal "null")
-                (unitCS >>= Unit.colorVal "null") =! Error (InvalidValue "null")
+                (unitCS >>= Unit.colorVal "null") =! (Error <| CSErrors (InvalidValue "null"))
 
             testCase "Functions init and legal work as expected for Unit" <| fun () ->
                 let unitCS = Unit.create None
@@ -50,7 +50,7 @@ module UnitTests =
                 (unitCS >>= Unit.colour 0) =! Ok ()
 
                 (unitCS >>= Unit.colour 1) =! (unitWithedCS >>= Unit.colour 1)
-                (unitCS >>= Unit.colour 1) =! Error (OutOfRangeIndex 1)
+                (unitCS >>= Unit.colour 1) =! (Error <| CSErrors (OutOfRangeIndex 1))
 
                 (unitCS >>= Unit.random) =! (unitWithedCS >>= Unit.random)
                 (unitCS >>= Unit.random) =! Ok ()

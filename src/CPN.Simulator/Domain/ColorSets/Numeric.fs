@@ -1,6 +1,6 @@
 namespace CPN.Simulator.Domain.ColorSets
 //TODO: makeString should take a value form the CS not a string!!
-open Common
+open CPN.Simulator.Domain
 
 /// Interface for implementing in every Numeric Color Set
 // TODO: Better comment this section knowing that it's an abstract one
@@ -44,8 +44,8 @@ module Numeric =
             
             match lowBool, highBool, lowNum <= highNum with
             | true, true, true -> Ok (lowNum, highNum)
-            | true, true, false -> Error <| InvalidInitialState lowerErrMsg
-            | _ -> Error <| InvalidInitialState parseErrMsg
+            | true, true, false -> Error <| CSErrors (InvalidInitialState lowerErrMsg)
+            | _ -> Error <| CSErrors (InvalidInitialState parseErrMsg)
 
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual value if it is.
@@ -53,8 +53,8 @@ module Numeric =
         fun supposedMember numberCS -> 
             match (emptyVal, numParseFunc supposedMember, numberCS) with
             | Number i -> Ok i
-            | OutOfRangeNumber -> Error <| OutOfRangeValue supposedMember
-            | NaN -> Error <| InvalidValue supposedMember
+            | OutOfRangeNumber -> Error <| CSErrors (OutOfRangeValue supposedMember)
+            | NaN -> Error <| CSErrors (InvalidValue supposedMember)
 
     /// Given a value of the type it checks if it's a legal one
     let isLegal emptyVal =
@@ -67,37 +67,37 @@ module Numeric =
         fun supposedMember booleanCS ->
             match (emptyVal, numParseFunc supposedMember, booleanCS) with
             | Number _ -> Ok supposedMember
-            | OutOfRangeNumber -> Error <| OutOfRangeValue supposedMember
-            | NaN -> Error <| InvalidValue supposedMember
+            | OutOfRangeNumber -> Error <| CSErrors (OutOfRangeValue supposedMember)
+            | NaN -> Error <| CSErrors (InvalidValue supposedMember)
 
     /// Return a list of all posible values for this color set.
     let inline all emptyVal = 
         fun numericCS ->
             match (emptyVal, numericCS) with
-            | EmptyRange -> Error (NotUsable "all")
+            | EmptyRange -> Error <| CSErrors (NotUsable "all")
             | Range (low, high) -> Ok [low..high]
 
     /// Return the number of different vaules in this color set.
     let inline size emptyVal plusUnit = 
         fun numericCS ->
             match (emptyVal, numericCS) with
-            | EmptyRange -> Error (NotUsable "size")
+            | EmptyRange -> Error <| CSErrors (NotUsable "size")
             | Range (low, high) -> Ok (high - low + plusUnit)
 
     /// Return the ordinal position of every value in this color set.
     let inline ordinal emptyVal = 
         fun num numericCS ->
             match (emptyVal, numericCS) with
-            | EmptyRange -> Error <| NotUsable "ordinal"
+            | EmptyRange -> Error <| CSErrors (NotUsable "ordinal")
             | Range(low, high) when num >= low && num <= high -> Ok (num - low)
-            | Range _ -> Error <| OutOfRangeValue (string num)
+            | Range _ -> Error <| CSErrors (OutOfRangeValue (string num))
 
     /// Return the actual value for the given position in this color set.
     let inline colour emptyVal =
         fun num numericCS ->
             match (emptyVal, numericCS) with
-            | EmptyRange -> Error <| NotUsable "colour"
+            | EmptyRange -> Error <| CSErrors (NotUsable "colour")
             | Range(low, high) when num >= low && num <= high -> Ok (num + low)
-            | Range _ -> Error <| OutOfRangeIndex num
+            | Range _ -> Error <| CSErrors (OutOfRangeIndex num)
                 
                 

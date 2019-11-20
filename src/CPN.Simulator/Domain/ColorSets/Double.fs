@@ -1,7 +1,7 @@
 namespace CPN.Simulator.Domain.ColorSets
 
 open System
-open Common
+open CPN.Simulator.Domain
 
 type Double =
     { low: double
@@ -44,17 +44,17 @@ module Double =
     // number of memebers between any given two.
 
     /// Return a list of all posible values for this color set.
-    let all doubleCS =  Error <| NotUsable "all"
+    let all doubleCS =  Error <| CSErrors (NotUsable "all")
     /// Return the number of different vaules in this color set.
-    let size doubleCS =  Error <| NotUsable "size"
+    let size doubleCS =  Error <| CSErrors (NotUsable "size")
     /// Return the ordinal position of every value in this color set.
-    let ordinal n doubleCS =  Error <| NotUsable "ordinal"
+    let ordinal n doubleCS =  Error <| CSErrors (NotUsable "ordinal")
     /// Return the actual value for the given position in this color set.
-    let colour n doubleCS =  Error <| NotUsable "colour"
+    let colour n doubleCS =  Error <| CSErrors (NotUsable "colour")
 
     //#########################################################################
 
     /// Return a random value of this color set.
     // TODO: implement random for Big Integers
     let random = function
-        | _ -> Error <| NotUsable "random"
+        | _ -> Error <| CSErrors (NotUsable "random")

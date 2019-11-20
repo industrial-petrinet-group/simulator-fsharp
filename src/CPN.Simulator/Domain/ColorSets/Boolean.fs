@@ -1,6 +1,7 @@
 namespace CPN.Simulator.Domain.ColorSets
 
 open Common
+open CPN.Simulator.Domain
 
 type Boolean =
     { falsy: string
@@ -23,7 +24,7 @@ module Boolean =
         | Some(falsyVal, truthyVal) when falsyVal <> truthyVal -> 
             Ok { falsy = falsyVal; truthy = truthyVal }
         | Some _ -> 
-            Error <| InvalidInitialState "falsy and truthy must be different"
+            Error <| CSErrors (InvalidInitialState "falsy and truthy must be different")
         
     /// Given a supposed member and a color set it checks if the value is a 
     /// member of the set and return it's actual value if it is.
@@ -31,7 +32,7 @@ module Boolean =
         match (supposedMember, booleanCS) with
         | Falsy -> Ok false
         | Truthy -> Ok true
-        | Neither -> Error <| InvalidValue supposedMember
+        | Neither -> Error <| CSErrors (InvalidValue supposedMember)
 
     /// Return the default actual value for this color set.
     let init = false
@@ -43,7 +44,7 @@ module Boolean =
     /// member of the set and return it's string color set value if it is.
     let makeString supposedMember booleanCS = 
         match isLegal supposedMember booleanCS with
-        | false -> Error <| InvalidValue (sprintf "%A" supposedMember)
+        | false -> Error <| CSErrors (InvalidValue (sprintf "%A" supposedMember))
         | true -> Ok <| if supposedMember then booleanCS.truthy 
                                           else booleanCS.falsy
 
@@ -64,7 +65,7 @@ module Boolean =
         match i with
         | 0 -> Ok false
         | 1 -> Ok true
-        | i -> Error <| OutOfRangeIndex i
+        | i -> Error <| CSErrors (OutOfRangeIndex i)
 
     /// Return a random value of this color set.
     let random booleanCS = colour (rnd.Next(0,1)) booleanCS

@@ -5,6 +5,7 @@ open CPN.Simulator.Operators
 
 /// Runtime module in charge of simulate the network.
 module Runtime =
+    // TODO: Remove the opening of types; moving logic towards every type
     /// remove the input tokens from the places involved in trigggering the 
     /// transition.    
     let removeInputTokens (enabled, places: Places) =

@@ -1,7 +1,7 @@
 namespace CPN.Simulator.Domain.ColorSets
 
 open System
-open Common
+open CPN.Simulator.Domain
 
 type BigInteger =
     { low: bigint
@@ -53,6 +53,6 @@ module BigInteger =
     /// Return a random value of this color set.
     // TODO: Try to use NextByte for generating Big Integers
     let random = function
-        | _ -> Error <| NotUsable "random"
+        | _ -> Error <| CSErrors (NotUsable "random")
         // | EmptyRange -> Error <| NotUsable "random"
         // | Range(low, high) -> Ok <| rnd.Next(low, high)
