@@ -1,7 +1,8 @@
 #load "./Operators.fs" 
-
+#load "./Domain/Errors.fs"
 #load "./Domain/ColorSets/Common.fs"
 #load "./Domain/ColorSets/Unit.fs"
+#load "./Domain/ColorSets/Boolean.fs"
 #load "./Domain/ColorSet.fs"
 #load "./Domain/MultiSet.fs"
 #load "./Domain/Place.fs"

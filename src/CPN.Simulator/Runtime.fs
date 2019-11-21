@@ -4,64 +4,18 @@ open CPN.Simulator.Domain
 open CPN.Simulator.Operators
 
 /// Runtime module in charge of simulate the network.
-module Runtime =
-    // TODO: Remove the opening of types; moving logic towards every type
-    /// remove the input tokens from the places involved in trigggering the 
-    /// transition.    
-    let removeInputTokens (enabled, places: Places) =
-        let randomKeyList = Net enabled |> Net.randomKeyList
-        
-        Ok (Map.empty, places)
-        |> List.foldBack (fun tid acc ->
-            let actEnabled = enabled |> Map.find tid
-            
-            acc 
-            >>= fun (occurred, lastPlaces) ->
-                match CPN.isEnabled lastPlaces tid actEnabled with
-                | false -> Ok (occurred, lastPlaces)
-                | true -> 
-                    let { i = inputs } = actEnabled
-                                        
-                    let resModifiedPlaces =
-                        lastPlaces 
-                        |> Place.modifyTokensForList 
-                            Place.removeTokens 1 (inputs |> List.map fst)
-                    
-                    resModifiedPlaces >>= fun modifiedPlaces -> 
-                        Ok (occurred.Add(tid, actEnabled), modifiedPlaces)
-
-        ) randomKeyList
-
-    /// add the output tokens for the places reached by the triggered transition.
-    let addOutputTokens (ocurred, places) =         
-        Ok places
-        |> Map.foldBack (fun _ actOcurred acc ->            
-            acc 
-            >>= fun lastPlaces ->
-                let { o = outputs } = actOcurred
-
-                let resModifiedPlaces =
-                    lastPlaces 
-                    |> Place.modifyTokensForList 
-                        Place.addTokens 1 (outputs |> List.map fst)
-                
-                resModifiedPlaces 
-        ) ocurred
-        >>= fun modifiedPlaces -> Ok (ocurred, modifiedPlaces)
-    
+module Runtime =   
     /// Given a CPN net it executes a Step in the simulation
     let step (cpn: CPN) =
-        let (Net enabled) = CPN.enabled cpn
-        let (CPN (net, (places, transitions, arcs))) = cpn 
+        let enabled = CPN.enabled cpn
 
-        match enabled |> Map.isEmpty with
+        match enabled |> Net.isEmpty with
         | true -> Ok (false, cpn)
         | false ->
-            (enabled, places) 
-            |> removeInputTokens
-            >>= addOutputTokens
-            >>= fun (_ , modifiedPlaces) ->
-                Ok (true, (CPN (net, (modifiedPlaces, transitions, arcs))))
+            (enabled, cpn) 
+            |> CPN.removeInputTokens
+            >>= CPN.addOutputTokens
+            >>= fun (_ , modifiedCPN) -> Ok (true, modifiedCPN)
     
     /// Make a sequence of all posible Steps
     let rec allSteps (actNet: CPN) = seq {

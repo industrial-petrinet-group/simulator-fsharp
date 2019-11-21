@@ -1,5 +1,7 @@
 namespace CPN.Simulator.Domain
 
+open CPN.Simulator.Operators
+
 /// Type representing the Coloured Petri Net
 [<StructuredFormatDisplay("CPN = {Show}")>]
 type CPN = CPN of Net * (Places * Transitions * Arcs)
@@ -16,23 +18,45 @@ module CPN =
         |> Place.placesMarkingAsStringList
         |> List.filter (fun (_, marking) -> marking <> "")
 
-    /// Given a transition Id and It's Transition IO it returns if it's available
-    /// to occur.
-    let isEnabled (Places places) _ {i = inputs} =
-        // FIXME: Due to naive implementation it only checks that a token exist
-        inputs
-        |> List.map fst
-        |> List.forall (fun pid -> 
-            places 
-            |> Map.tryFind pid 
-            |> function 
-                // Check if it could be abstracted, already present in Places!
-                | None -> false
-                | Some placeData -> not (placeData.marking |> MultiSet.isEmpty))
-
     /// Given a CPN it returns a Net with transitions avaliable to occur.
-    let enabled (CPN (Net net, (places, _, _))) : Net =  
-        Net <| (net |> Map.filter (isEnabled places))
+    let enabled (CPN (net, (places, _, _))) = net |> Net.enabledFor places 
+    
+    /// Remove the input tokens for the places reached by the enabled transitions.
+    let removeInputTokens (enabled, CPN (net, (places, transitions, arcs))) =
+        let randomKeyList = enabled |> Net.randomKeyList
+           
+        Ok (Net.empty, places)
+        |> List.foldBack (fun tid acc ->              
+            acc
+            >>= fun (occurred, lastPlaces) ->
+                match Net.isEnabled lastPlaces tid enabled with
+                    | false -> Ok (occurred, lastPlaces) 
+                    | true -> 
+                        lastPlaces 
+                        |> Place.modifyTokensForList 
+                            Place.removeTokens 1 (enabled |> Net.inputs tid)
+                        >>= fun modifiedPlaces -> 
+                            let tio = enabled |> Net.find tid 
+                            Ok (occurred |> Net.add tid tio, modifiedPlaces)
+        ) randomKeyList
+        >>= fun (ocurred, modifiedPlaces) -> 
+            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs)))
+
+
+    /// Add the output tokens for the places reached by the enabled transitions.
+    let addOutputTokens (ocurred, CPN (net, (places, transitions, arcs))) =         
+        let keyList = ocurred |> Net.keyList
+        
+        Ok places
+        |> List.foldBack (fun tid acc ->            
+            acc 
+            >>= fun lastPlaces ->
+                lastPlaces 
+                |> Place.modifyTokensForList 
+                    Place.addTokens 1 (ocurred |> Net.outputs tid)
+        ) keyList
+        >>= fun modifiedPlaces -> 
+            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs)))
 
 /// Type representing a way of showing the CPN
 type ShowableCPN = 
@@ -40,9 +64,9 @@ type ShowableCPN =
           net: (TransitionId * TransitionIO) list}
 
 type CPN with
-    /// Reimplements the way of showing th CPN
+    /// Reimplements the way of showing the CPN
     member this.Show = 
-        let (CPN (Net net, _)) = this
+        let (CPN (net, _)) = this
         let netMarking = CPN.netMarking this
 
-        {netMarking = netMarking; net = net |> Map.toList}
+        {netMarking = netMarking; net = net.Show}
