@@ -26,6 +26,8 @@ SampleNets.randomlyPathedNet |> printfn "%A";;
 
 SampleNets.notSoSimpleNet |> Runtime.allSteps;;
 
+let (Ok unitCS) = Unit.create None
+let unitColour = UnitCS unitCS
 
 // let (Ok unitCS) = Unit.create None
 // let unitColour = UnitCS unitCS

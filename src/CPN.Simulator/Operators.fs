@@ -1,5 +1,7 @@
 namespace CPN.Simulator
 
+open System.Text.RegularExpressions
+
 /// Module for common operators inside the Simulator namespace
 module Operators =
     let private random = System.Random()
@@ -19,4 +21,12 @@ module Operators =
     /// Randomize a list order
     let randomizeList xs =
         xs |> List.sortBy (fun _ -> random.Next())    
+    
+    /// Active pattern for regexp matching    
+    let (|Match|_|) pattern input =
+        [for m in Regex.Matches(input, pattern) -> m]
+        |> List.collect (fun m -> [ for g in m.Groups -> g.Value ] |> List.tail)
+        |> function 
+            | [] -> None
+            | list -> Some list      
     

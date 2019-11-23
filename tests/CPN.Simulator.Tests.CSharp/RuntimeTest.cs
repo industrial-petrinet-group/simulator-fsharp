@@ -74,7 +74,7 @@ namespace CPN.Simulator.Tests.CSharp
             Assert.Equal("[(P 2, 1`()); (P 4, 3`()); (P 5, 3`())]",
                          CPNModule.netMarking(cpn).ToString());
 
-            // The marking generated through all steps shold be equal, simulating
+            // The marking generated through all steps should be equal, simulating
             // them one by one or all at the same time.
             var completeMarking2 = 
                 Runtime.allSteps(SampleNets.notSoSimpleNet)

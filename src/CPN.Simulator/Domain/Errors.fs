@@ -10,6 +10,7 @@ type ColorSetErrors =
 
 /// Type representing MultiSet Errors
 type MultiSetErrors =
+    | BadFormattedInputString of input: string 
     | UnexpectedError of msg: string
     | InsufficientTokens
 
