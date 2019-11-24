@@ -1,4 +1,4 @@
-namespace CPN.Simulator.Tests.ColorSets
+namespace CPN.Simulator.Tests.Domain.ColorSets
 
 open Expecto
 open Swensen.Unquote
@@ -10,7 +10,7 @@ module IntegerTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets.IntegerTests." [
+        testList "Domain.ColorSets.IntegerTests." [
             testCase "Integer color set can be created and it's value for '135' is 135" <| fun () ->
                 (Integer.create None >>= Integer.colorVal "135") =! Ok 135
             

@@ -1,4 +1,4 @@
-namespace CPN.Simulator.Tests.ColorSets
+namespace CPN.Simulator.Tests.Domain.ColorSets
 
 open Expecto
 open Swensen.Unquote
@@ -10,7 +10,7 @@ module DoubleTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets.DoubleTests." [
+        testList "Domain.ColorSets.DoubleTests." [
             testCase "Double color set can be creted and it's value for '3,1415' is 3,1415" <| fun () ->
                 (Double.create None >>= Double.colorVal "3.1415") =! Ok 3.1415
             

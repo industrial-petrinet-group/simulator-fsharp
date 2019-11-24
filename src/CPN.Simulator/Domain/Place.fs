@@ -21,7 +21,7 @@ module Place =
     module private Implementation =
         /// Given a PlaceData it return it's marking parsed as a string.
         let markingAsString placeData =
-            MultiSet.listAsString placeData.marking
+            MultiSet.setAsString placeData.marking
     
         /// Given Places and a list of PlacesId to filter it returns a list of the 
         /// marking of all places parsed as a string and filtered based on the 

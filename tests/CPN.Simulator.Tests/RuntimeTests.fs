@@ -1,3 +1,4 @@
+#nowarn "025"
 namespace CPN.Simulator.Tests
 
 open Expecto
@@ -9,7 +10,7 @@ module RuntimeTests =
     
     [<Tests>]
     let tests = 
-        testList "Simulator.RuntimeTests." [
+        testList "Base.RuntimeTests." [
             testCase "Test the marking of the simple net to be P1 with 1 unit value" <| fun () ->
                 SampleNets.simpleNet
                 |> CPN.netMarking

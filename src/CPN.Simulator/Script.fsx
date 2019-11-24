@@ -19,6 +19,9 @@ open CPN.Simulator
 open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets;;
 
+let (Ok unitCS) = Unit.create None
+let unitColour = UnitCS unitCS
+
 SampleNets.randomlyPathedNet |> printfn "%A";;
 
 
@@ -26,8 +29,7 @@ SampleNets.randomlyPathedNet |> printfn "%A";;
 
 SampleNets.notSoSimpleNet |> Runtime.allSteps;;
 
-let (Ok unitCS) = Unit.create None
-let unitColour = UnitCS unitCS
+
 
 // let (Ok unitCS) = Unit.create None
 // let unitColour = UnitCS unitCS

@@ -1,4 +1,4 @@
-namespace CPN.Simulator.Tests.ColorSets
+namespace CPN.Simulator.Tests.Domain.ColorSets
 
 open Expecto
 open Swensen.Unquote
@@ -10,7 +10,7 @@ module UnitTests =
 
     [<Tests>]
     let tests =
-        testList "ColorSets.UnitTests." [
+        testList "Domain.ColorSets.UnitTests." [
             testCase "Unit color set can be created and it's value is ()" <| fun () ->
                 Unit.create None >>= Unit.colorVal "()" =! Ok ()
             

@@ -23,6 +23,7 @@
     <Compile Include="Domain\ColorSets\IntegerTests.fs" />
     <Compile Include="Domain\ColorSets\BigIntegerTests.fs" />
     <Compile Include="Domain\ColorSets\DoubleTests.fs" />
+    <Compile Include="Domain\MultiSetTests.fs" />
     <Compile Include="RuntimeTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
