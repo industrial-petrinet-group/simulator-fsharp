@@ -39,7 +39,7 @@ module BigIntegerTests =
                 (bigIntegerWithedCS >>= switch (BigInteger.isLegal 4I)) =! Ok true
                 (bigIntegerWithedCS >>= switch (BigInteger.isLegal 12I)) =! Ok false
                 
-            testCase "Small colour set functions work as expected for BigInteger" <| fun () ->
+            testCase "Small color set functions work as expected for BigInteger" <| fun () ->
                 let bigIntegerCS = BigInteger.create None
                 let bigIntegerWithedCS = BigInteger.create (Some ("1", "10"))
 
@@ -52,9 +52,9 @@ module BigIntegerTests =
                 (bigIntegerCS >>= BigInteger.ordinal 5I) =! (Error <| CSErrors (NotUsable "ordinal"))
                 (bigIntegerWithedCS >>= BigInteger.ordinal 5I) =! Ok 4I
                 
-                (bigIntegerCS >>= BigInteger.colour 1I) =! (Error <| CSErrors (NotUsable "colour"))
-                (bigIntegerWithedCS >>= BigInteger.colour 1I) =! Ok 2I
-                (bigIntegerWithedCS >>= BigInteger.colour 11I) =! (Error <| CSErrors (OutOfRangeIndex 11I))
+                (bigIntegerCS >>= BigInteger.color 1I) =! (Error <| CSErrors (NotUsable "color"))
+                (bigIntegerWithedCS >>= BigInteger.color 1I) =! Ok 2I
+                (bigIntegerWithedCS >>= BigInteger.color 11I) =! (Error <| CSErrors (OutOfRangeIndex 11I))
 
                 (bigIntegerCS >>= BigInteger.random) =! (Error <| CSErrors (NotUsable "random"))
                 

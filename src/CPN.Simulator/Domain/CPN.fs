@@ -3,7 +3,7 @@ namespace CPN.Simulator.Domain
 open CPN.Simulator.Operators
 
 /// Type representing the Coloured Petri Net
-[<StructuredFormatDisplay("CPN = {Show}")>]
+[<StructuredFormatDisplay("{Show}")>]
 type CPN = CPN of Net * (Places * Transitions * Arcs)
 
 

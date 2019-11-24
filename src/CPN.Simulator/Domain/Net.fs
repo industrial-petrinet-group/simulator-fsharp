@@ -9,7 +9,7 @@ type TransitionIO =
 
 /// Type representing the whole Net; it's core is based upon transitions because
 /// it's the center of the simulation.
-[<StructuredFormatDisplay("Net = {Show}")>]
+[<StructuredFormatDisplay("{Show}")>]
 type Net = Net of Map<TransitionId, TransitionIO>
 
 /// Module implementing Net's operations.

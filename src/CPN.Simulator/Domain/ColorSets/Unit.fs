@@ -15,10 +15,8 @@ module Unit =
             | true -> Unit 
             | _ -> NonUnit
 
-
     /// Given an optional initinalization string it return a color set.
-    let create =
-        function
+    let create = function
         | None -> Ok { unit = "()" }
         | Some unitVal -> Ok { unit = unitVal }
 
@@ -52,10 +50,19 @@ module Unit =
     let ordinal () (_: Unit) = Ok 0
 
     /// Return the actual value for the given position in this color set.
-    let colour i (_: Unit) =
+    let color i (_: Unit) =
         match i with
         | 0 -> Ok ()
         | i -> Error <| CSErrors (OutOfRangeIndex i)
 
     /// Return a random value of this color set.
     let random (_: Unit) = Ok ()
+
+    /// Return a string representing the Color Set
+    let asString unitCS = 
+        let allValues = 
+            match (all unitCS) with
+            | Error _ -> ""
+            | Ok list -> sprintf "%A" list
+
+        sprintf "Unit: %s" allValues

@@ -11,9 +11,16 @@ type ColorSetVal =
 
 /// Type representing all posible Color Sets; it's restricted to Unit and 
 /// Boolean for now.
+[<StructuredFormatDisplay("{Show}")>]
 type ColorSet = 
     | UnitCS of Unit
     | BooleanCS of Boolean
+
+    /// Reimplements the way of showing the CPN
+    member this.Show = 
+        match this with
+        | UnitCS unit -> Unit.asString unit
+        | BooleanCS boolean -> Boolean.asString boolean    
 
 /// Module implementing ColorSet's operations
 module ColorSet =

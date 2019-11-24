@@ -36,7 +36,7 @@ module BooleanTests =
                 (booleanCS >>= switch (Boolean.isLegal false)) =! Ok true
                 (booleanWithedCS >>= switch (Boolean.isLegal true)) =! Ok true
                 
-            testCase "Small colour set functions work as expected for Boolean" <| fun () ->
+            testCase "Small color set functions work as expected for Boolean" <| fun () ->
                 let booleanCS = Boolean.create None
                 let booleanWithedCS = Boolean.create (Some ("nulo", "todo"))
 
@@ -49,11 +49,11 @@ module BooleanTests =
                 (booleanCS >>= Boolean.ordinal false) =! (booleanWithedCS >>= Boolean.ordinal false)
                 (booleanCS >>= Boolean.ordinal false) =! Ok 0
                 
-                (booleanCS >>= Boolean.colour 1) =! (booleanWithedCS >>= Boolean.colour 1)
-                (booleanCS >>= Boolean.colour 1) =! Ok true
+                (booleanCS >>= Boolean.color 1) =! (booleanWithedCS >>= Boolean.color 1)
+                (booleanCS >>= Boolean.color 1) =! Ok true
 
-                (booleanCS >>= Boolean.colour 2) =! (booleanWithedCS >>= Boolean.colour 2)
-                (booleanCS >>= Boolean.colour 2) =! (Error <| CSErrors (OutOfRangeIndex 2))
+                (booleanCS >>= Boolean.color 2) =! (booleanWithedCS >>= Boolean.color 2)
+                (booleanCS >>= Boolean.color 2) =! (Error <| CSErrors (OutOfRangeIndex 2))
 
                 let csRandom = (booleanCS >>= Boolean.random) 
                 (csRandom = Ok true || csRandom = Ok false) =! true

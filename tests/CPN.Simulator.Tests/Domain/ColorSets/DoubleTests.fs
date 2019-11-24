@@ -38,7 +38,7 @@ module DoubleTests =
                 (doubleWithedCS >>= switch (Double.isLegal 4.0)) =! Ok true
                 (doubleWithedCS >>= switch (Double.isLegal 9.11)) =! Ok false
                 
-            testCase "Small colour set functions work as expected for Double" <| fun () ->
+            testCase "Small color set functions work as expected for Double" <| fun () ->
                 let doubleCS = Double.create None
                 let doubleWithedCS = Double.create (Some ("1", "10"))
 
@@ -51,8 +51,8 @@ module DoubleTests =
                 (doubleCS >>= Double.ordinal 5.4) =! (Error <| CSErrors (NotUsable "ordinal"))
                 (doubleWithedCS >>= Double.ordinal 5.4) =! (Error <| CSErrors (NotUsable "ordinal"))
                 
-                (doubleCS >>= Double.colour 1.0) =! (Error <| CSErrors (NotUsable "colour"))
-                (doubleWithedCS >>= Double.colour 1.0) =! (Error <| CSErrors (NotUsable "colour"))
+                (doubleCS >>= Double.color 1.0) =! (Error <| CSErrors (NotUsable "color"))
+                (doubleWithedCS >>= Double.color 1.0) =! (Error <| CSErrors (NotUsable "color"))
 
                 (doubleCS >>= Double.random) =! (Error <| CSErrors (NotUsable "random"))
                 

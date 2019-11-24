@@ -33,7 +33,7 @@ module UnitTests =
                 unitCS >>= switch (Unit.isLegal ()) =! Ok true
                 unitWithedCS >>= switch (Unit.isLegal ()) =! Ok true
 
-            testCase "Small colour set functions work as expected for Unit" <| fun () ->
+            testCase "Small color set functions work as expected for Unit" <| fun () ->
                 let unitCS = Unit.create None
                 let unitWithedCS = Unit.create (Some "nulo")
 
@@ -46,11 +46,11 @@ module UnitTests =
                 (unitCS >>= Unit.ordinal ()) =! (unitWithedCS >>= Unit.ordinal ())
                 (unitCS >>= Unit.ordinal ()) =! Ok 0
                 
-                (unitCS >>= Unit.colour 0) =! (unitWithedCS >>= Unit.colour 0)
-                (unitCS >>= Unit.colour 0) =! Ok ()
+                (unitCS >>= Unit.color 0) =! (unitWithedCS >>= Unit.color 0)
+                (unitCS >>= Unit.color 0) =! Ok ()
 
-                (unitCS >>= Unit.colour 1) =! (unitWithedCS >>= Unit.colour 1)
-                (unitCS >>= Unit.colour 1) =! (Error <| CSErrors (OutOfRangeIndex 1))
+                (unitCS >>= Unit.color 1) =! (unitWithedCS >>= Unit.color 1)
+                (unitCS >>= Unit.color 1) =! (Error <| CSErrors (OutOfRangeIndex 1))
 
                 (unitCS >>= Unit.random) =! (unitWithedCS >>= Unit.random)
                 (unitCS >>= Unit.random) =! Ok ()

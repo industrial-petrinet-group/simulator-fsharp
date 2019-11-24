@@ -8,7 +8,7 @@ type PlaceId = P of int
 /// Type representing a Place Data
 type PlaceData = 
     { name: string
-      colour: ColorSet 
+      color: ColorSet 
       marking: MultiSet }
 
 /// Type representing a collection of places
@@ -21,7 +21,7 @@ module Place =
     module private Implementation =
         /// Given a PlaceData it return it's marking parsed as a string.
         let markingAsString placeData =
-            MultiSet.setAsString placeData.marking
+            MultiSet.asString placeData.marking
     
         /// Given Places and a list of PlacesId to filter it returns a list of the 
         /// marking of all places parsed as a string and filtered based on the 
@@ -56,7 +56,7 @@ module Place =
 
     let removeTokens removeQty pid (Places places) =
         // FIXME: the pick is random in a list of multisets, not implemented 
-        // value nor colour
+        // value nor color
         match places |> Map.tryFind pid with
         | None -> Error <| PErrors (InexistenPid (pid, Places places))
         | Some placeData -> 

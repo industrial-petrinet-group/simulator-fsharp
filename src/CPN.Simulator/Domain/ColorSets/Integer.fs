@@ -49,7 +49,7 @@ module Integer =
     let ordinal n integerCS = Numeric.ordinal emptyVal n integerCS
 
     /// Return the actual value for the given position in this color set.
-    let colour n integerCS = Numeric.colour emptyVal n integerCS
+    let color n integerCS = Numeric.color emptyVal n integerCS
 
     /// Return a random value of this color set.
     let random integerCS = 

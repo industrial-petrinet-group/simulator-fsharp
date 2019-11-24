@@ -50,7 +50,7 @@ module Double =
     /// Return the ordinal position of every value in this color set.
     let ordinal n doubleCS =  Error <| CSErrors (NotUsable "ordinal")
     /// Return the actual value for the given position in this color set.
-    let colour n doubleCS =  Error <| CSErrors (NotUsable "colour")
+    let color n doubleCS =  Error <| CSErrors (NotUsable "color")
 
     //#########################################################################
 

@@ -93,10 +93,10 @@ module Numeric =
             | Range _ -> Error <| CSErrors (OutOfRangeValue (string num))
 
     /// Return the actual value for the given position in this color set.
-    let inline colour emptyVal =
+    let inline color emptyVal =
         fun num numericCS ->
             match (emptyVal, numericCS) with
-            | EmptyRange -> Error <| CSErrors (NotUsable "colour")
+            | EmptyRange -> Error <| CSErrors (NotUsable "color")
             | Range(low, high) when num >= low && num <= high -> Ok (num + low)
             | Range _ -> Error <| CSErrors (OutOfRangeIndex num)
                 

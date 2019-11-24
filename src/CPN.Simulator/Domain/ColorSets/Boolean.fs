@@ -17,7 +17,6 @@ module Boolean =
             | _, true -> Truthy
             | _, _ -> Neither
 
-
     /// Given an optional initinalization string it return a color set.
     let create = function
         | None -> Ok { falsy = "false"; truthy = "true" }
@@ -61,11 +60,20 @@ module Boolean =
         | true -> Ok 1
     
     /// Return the actual value for the given position in this color set.
-    let colour i (_: Boolean) =
+    let color i (_: Boolean) =
         match i with
         | 0 -> Ok false
         | 1 -> Ok true
         | i -> Error <| CSErrors (OutOfRangeIndex i)
 
     /// Return a random value of this color set.
-    let random booleanCS = colour (rnd.Next(0,1)) booleanCS
+    let random booleanCS = color (rnd.Next(0,1)) booleanCS
+
+    /// Return a string representing the Color Set
+    let asString booleanCS = 
+        let allValues = 
+            match (all booleanCS) with
+            | Error _ -> ""
+            | Ok list -> sprintf "%A" list
+
+        sprintf "Boolean: %s" allValues

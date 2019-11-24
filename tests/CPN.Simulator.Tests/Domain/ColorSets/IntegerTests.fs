@@ -38,7 +38,7 @@ module IntegerTests =
                 (integerWithedCS >>= switch (Integer.isLegal 4)) =! Ok true
                 (integerWithedCS >>= switch (Integer.isLegal 12)) =! Ok false
                 
-            testCase "Small colour set functions work as expected for Integer" <| fun () ->
+            testCase "Small color set functions work as expected for Integer" <| fun () ->
                 let integerCS = Integer.create None
                 let integerWithedCS = Integer.create (Some ("1", "10"))
 
@@ -51,9 +51,9 @@ module IntegerTests =
                 (integerCS >>= Integer.ordinal 5) =! (Error <| CSErrors (NotUsable "ordinal"))
                 (integerWithedCS >>= Integer.ordinal 5) =! Ok 4
                 
-                (integerCS >>= Integer.colour 1) =! (Error <| CSErrors (NotUsable "colour"))
-                (integerWithedCS >>= Integer.colour 1) =! Ok 2
-                (integerWithedCS >>= Integer.colour 11) =! (Error <| CSErrors (OutOfRangeIndex 11))
+                (integerCS >>= Integer.color 1) =! (Error <| CSErrors (NotUsable "color"))
+                (integerWithedCS >>= Integer.color 1) =! Ok 2
+                (integerWithedCS >>= Integer.color 11) =! (Error <| CSErrors (OutOfRangeIndex 11))
 
                 (integerCS >>= Integer.random) =! (Error <| CSErrors (NotUsable "random"))
                 

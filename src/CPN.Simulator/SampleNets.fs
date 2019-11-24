@@ -6,9 +6,9 @@ open CPN.Simulator.Domain.ColorSets
 module SampleNets =
     // Simple definitions for convinience
     let (Ok unitCS) = Unit.create None
-    let unitColour = UnitCS unitCS
-    let emptyMS = MultiSet.empty unitColour
-    let (Ok unitMS) = MultiSet.empty unitColour |> MultiSet.addTokens 1
+    let unitColor = UnitCS unitCS
+    let emptyMS = MultiSet.empty unitColor
+    let (Ok unitMS) = MultiSet.empty unitColor |> MultiSet.addTokens 1
     let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
 
     /// Definition of the most simple petri net
@@ -16,8 +16,8 @@ module SampleNets =
    
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; colour = unitColour; marking = unitMS }).
-                Add(P 2, { name = "P2"; colour = unitColour; marking = emptyMS })
+                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS }).
+                Add(P 2, { name = "P2"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -39,11 +39,11 @@ module SampleNets =
         
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; colour = unitColour; marking = unitMS3 }).
-                Add(P 2, { name = "P2"; colour = unitColour; marking = unitMS }).
-                Add(P 3, { name = "P3"; colour = unitColour; marking = emptyMS }).
-                Add(P 4, { name = "P4"; colour = unitColour; marking = emptyMS }).
-                Add(P 5, { name = "P5"; colour = unitColour; marking = emptyMS })
+                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS3 }).
+                Add(P 2, { name = "P2"; color = unitColor; marking = unitMS }).
+                Add(P 3, { name = "P3"; color = unitColor; marking = emptyMS }).
+                Add(P 4, { name = "P4"; color = unitColor; marking = emptyMS }).
+                Add(P 5, { name = "P5"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -74,11 +74,11 @@ module SampleNets =
     let randomlyPathedNet =
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; colour = unitColour; marking = unitMS }).
-                Add(P 2, { name = "P2"; colour = unitColour; marking = unitMS }).
-                Add(P 3, { name = "P3"; colour = unitColour; marking = unitMS }).
-                Add(P 4, { name = "P4"; colour = unitColour; marking = emptyMS }).
-                Add(P 5, { name = "P5"; colour = unitColour; marking = emptyMS })
+                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS }).
+                Add(P 2, { name = "P2"; color = unitColor; marking = unitMS }).
+                Add(P 3, { name = "P3"; color = unitColor; marking = unitMS }).
+                Add(P 4, { name = "P4"; color = unitColor; marking = emptyMS }).
+                Add(P 5, { name = "P5"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.

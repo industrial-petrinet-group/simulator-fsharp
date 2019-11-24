@@ -48,7 +48,7 @@ module BigInteger =
     let ordinal n bigIntegerCS = Numeric.ordinal emptyVal n bigIntegerCS
 
     /// Return the actual value for the given position in this color set.
-    let colour n bigIntegerCS = Numeric.colour emptyVal n bigIntegerCS
+    let color n bigIntegerCS = Numeric.color emptyVal n bigIntegerCS
 
     /// Return a random value of this color set.
     // TODO: Try to use NextByte for generating Big Integers

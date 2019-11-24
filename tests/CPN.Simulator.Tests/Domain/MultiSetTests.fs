@@ -41,7 +41,7 @@ module MultiSetTests =
                 let (Ok msAsString) = 
                     unitMSStr1 
                     |> MultiSet.ofString unitColour1 
-                    >>= fun multiSet -> Ok (multiSet |> MultiSet.setAsString)
+                    >>= fun multiSet -> Ok (multiSet |> MultiSet.asString)
 
                 "3`()" =! msAsString
                 
@@ -75,7 +75,7 @@ module MultiSetTests =
                 let (Ok msAsString) = 
                     boolMSStr1 
                     |> MultiSet.ofString boolColour1 
-                    >>= fun multiSet -> Ok (multiSet |> MultiSet.setAsString)
+                    >>= fun multiSet -> Ok (multiSet |> MultiSet.asString)
 
                 "2`false++1`true" =! msAsString
             
