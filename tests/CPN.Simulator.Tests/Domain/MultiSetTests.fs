@@ -78,5 +78,24 @@ module MultiSetTests =
                     >>= fun multiSet -> Ok (multiSet |> MultiSet.setAsString)
 
                 "2`false++1`true" =! msAsString
+            
+            testCase "equality and inequality of multisets" <| fun () ->
+                let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`()++1`()++1`()"
+                
+                let boolMSStr1, boolMSStr2, boolMSStr3 = 
+                    "1`true++2`false", "1`false++1`true++1`false", "1`true++1`false"
+
+                let (Ok msUnit1) = MultiSet.ofString unitColour1 unitMSStr1
+                let (Ok msUnit2) = MultiSet.ofString unitColour1 unitMSStr2
+
+                let (Ok msBool1) = MultiSet.ofString boolColour1 boolMSStr1
+                let (Ok msBool2) = MultiSet.ofString boolColour1 boolMSStr2
+                let (Ok msBool3) = MultiSet.ofString boolColour1 boolMSStr3
+
+                true =! (msUnit1 = msUnit2)
+                true =! (msBool1 = msBool2)
+
+                false =! (msUnit1 = msBool1)
+                false =! (msBool1 = msBool3)
 
          ]
