@@ -19,12 +19,23 @@ open CPN.Simulator
 open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets;;
 
-let (Ok unitCS) = Unit.create None
-let unitColour = UnitCS unitCS;;
+//let (Ok unitCS) = Unit.create None
+//let unitColour = UnitCS unitCS;;
 
-let (Ok ms1) = MultiSet.ofString unitColour "1`()++2`()"
-let (Ok ms2) = MultiSet.ofString unitColour "1`()++1`()++1`()"
-let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
+//let (Ok ms1) = MultiSet.ofString unitColour "1`()++2`()"
+//let (Ok ms2) = MultiSet.ofString unitColour "1`()++1`()++1`()"
+//let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
+
+
+let (Ok boolCS1) = Boolean.create None
+let (Ok boolCS2) = Boolean.create (Some ("none", "whole"))
+let boolColour1, boolColour2 = BooleanCS boolCS1, BooleanCS boolCS2
+
+let (Ok ms1) = MultiSet.ofString boolColour1 "1`true++2`false"
+let (Ok ms2) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
+let (Ok ms3) = MultiSet.ofString boolColour1 "1`true++1`false"
+let (Ok ms4) = MultiSet.ofString boolColour1 "1`false++1`true++1`false"
+let (Ok ms5) = MultiSet.ofString boolColour2 "2`none++1`whole"
 
 
 SampleNets.randomlyPathedNet |> printfn "%A";;

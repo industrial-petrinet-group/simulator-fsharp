@@ -79,7 +79,7 @@ module MultiSetTests =
 
                 "2`false++1`true" =! msAsString
             
-            testCase "equality and inequality of multisets" <| fun () ->
+            testCase "equality and inequality of MultiSets" <| fun () ->
                 let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`()++1`()++1`()"
                 
                 let boolMSStr1, boolMSStr2, boolMSStr3 = 
@@ -98,4 +98,32 @@ module MultiSetTests =
                 false =! (msUnit1 = msBool1)
                 false =! (msBool1 = msBool3)
 
+            testCase "comparisson of MultiSets" <| fun () ->            
+                let (Ok unitMS1) = MultiSet.ofString unitColour1 "1`()++2`()"
+                let (Ok unitMS2) = MultiSet.ofString unitColour1 "1`()++1`()++1`()"
+                let (Ok unitMS3) = MultiSet.ofString unitColour1 "1`()++1`()"
+
+                true =! (unitMS1 > unitMS3)
+                true =! (unitMS1 >= unitMS2)
+                true =! (unitMS2 >= unitMS1)
+
+                false =! (unitMS3 > unitMS2)
+                false =! (unitMS2 < unitMS1)
+                
+                let (Ok boolMS1) = MultiSet.ofString boolColour1 "1`true++2`false"
+                let (Ok boolMS2) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
+                let (Ok boolMS3) = MultiSet.ofString boolColour1 "1`true++1`false"
+                let (Ok boolMS4) = MultiSet.ofString boolColour1 "1`false++1`true++1`false"
+                let (Ok boolMS5) = MultiSet.ofString boolColour2 "2`none++1`whole"
+
+                true =! (boolMS3 < boolMS1)
+                true =! (boolMS4 <= boolMS1)
+                true =! (boolMS1 <= boolMS4)
+                true =! (boolMS2 >= boolMS5)
+
+                false =! (boolMS1 < boolMS4)
+                false =! (boolMS2 > boolMS5)
+                
+                raises<System.ArgumentException> <@ boolMS1 > unitMS1 @>
+                raises<System.ArgumentException> <@ boolMS1 > boolMS2 @>
          ]
