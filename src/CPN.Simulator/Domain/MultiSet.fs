@@ -9,9 +9,25 @@ type Token =
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
+[<CustomEquality; CustomComparison>]
 type MultiSet = 
     { set: Set<Token>
       color: ColorSet }
+    
+    override x.Equals(yObj) =
+        match yObj with
+        | :? MultiSet as y -> (x.color = y.color) && (x.set = y.set)
+        | _ -> false
+
+    override x.GetHashCode() = hash (x.color, x.set)
+
+    interface System.IComparable with
+      member x.CompareTo yObj =
+          match yObj with
+          | :? MultiSet as y when x.color = y.color -> compare x.set y.set
+          | :? MultiSet -> invalidArg "otherObj" "cannot compare multisets of different colors"
+          | _ -> invalidArg "otherObj" "cannot compare values of different types"
+
 
 /// Module implementing MultiSet's operations
 module MultiSet =

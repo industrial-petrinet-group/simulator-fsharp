@@ -22,11 +22,9 @@ open CPN.Simulator.Domain.ColorSets;;
 let (Ok unitCS) = Unit.create None
 let unitColour = UnitCS unitCS;;
 
-let ms1 = MultiSet.ofString unitColour "1`()++2`()"
-let ms2 = MultiSet.ofString unitColour "1`()++1`()++1`()"
-let ms3 = MultiSet.ofString unitColour "1`()++1`()"
-
-
+let (Ok ms1) = MultiSet.ofString unitColour "1`()++2`()"
+let (Ok ms2) = MultiSet.ofString unitColour "1`()++1`()++1`()"
+let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
 
 
 SampleNets.randomlyPathedNet |> printfn "%A";;
