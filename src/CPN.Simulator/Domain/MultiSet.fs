@@ -81,7 +81,6 @@ module MultiSet =
                         | Error err -> Error err
                         | Ok token -> Ok (token :: acc)
             ) (Ok [])
-            >>= switch reduceTokenList
             >>= switch setOfTokenList
             >>= fun tokenSet -> Ok { (empty color) with set = tokenSet }
         | _ -> Error <| MSErrors (BadFormattedInputString inputString)
@@ -93,7 +92,9 @@ module MultiSet =
             | "" -> sprintf "%i`%s" qty value 
             | acc -> sprintf "%s++%i`%s" acc qty value 
         ) placeMarking
-
+    
+    /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
+    /// removed - FIXME: Check if removed qty is less than actual
     let removeTokens removeQty {set = multiSet; color = color} =
         match multiSet with
         | Empty -> Error <| MSErrors InsufficientTokens 
@@ -102,7 +103,9 @@ module MultiSet =
         | Set (token, restOfSet) -> Ok <| restOfSet.Add({token with qty = token.qty - removeQty})
         >>= fun newSet ->
             Ok <| {set = newSet; color = color}
-
+    
+    /// Given a addedQty and a MultiSet it returns a MultiSet with the qty 
+    /// added
     let addTokens addedQty {set = multiSet; color = color} =  
         match multiSet with
         | Empty ->
@@ -115,7 +118,7 @@ module MultiSet =
             Ok <| {set = newSet; color = color}
 
 type MultiSet with
-    /// Reimplements the way of showing the CPN
+    /// Reimplements the way of showing the MultiSet
     member this.Show =
         let { color = color } = this
 

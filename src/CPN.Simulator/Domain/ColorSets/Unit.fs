@@ -65,4 +65,4 @@ module Unit =
             | Error _ -> ""
             | Ok list -> sprintf "%A" list
 
-        sprintf "Unit: %s" allValues
+        sprintf "Unit = %s" allValues

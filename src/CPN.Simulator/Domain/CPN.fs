@@ -3,7 +3,7 @@ namespace CPN.Simulator.Domain
 open CPN.Simulator.Operators
 
 /// Type representing the Coloured Petri Net
-[<StructuredFormatDisplay("{Show}")>]
+[<StructuredFormatDisplay("CPN = {Show}")>]
 type CPN = CPN of Net * (Places * Transitions * Arcs)
 
 
@@ -61,7 +61,7 @@ module CPN =
 /// Type representing a way of showing the CPN
 type ShowableCPN = 
         { netMarking: (PlaceId * string) list; 
-          net: (TransitionId * TransitionIO) list}
+          net: (TransitionId * TransitionIO) list }
 
 type CPN with
     /// Reimplements the way of showing the CPN
@@ -69,4 +69,4 @@ type CPN with
         let (CPN (net, _)) = this
         let netMarking = CPN.netMarking this
 
-        {netMarking = netMarking; net = net.Show}
+        { netMarking = netMarking; net = net.Show }

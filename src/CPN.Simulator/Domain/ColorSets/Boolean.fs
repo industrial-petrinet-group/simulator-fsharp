@@ -76,4 +76,4 @@ module Boolean =
             | Error _ -> ""
             | Ok list -> sprintf "%A" list
 
-        sprintf "Boolean: %s" allValues
+        sprintf "Boolean = %s" allValues
