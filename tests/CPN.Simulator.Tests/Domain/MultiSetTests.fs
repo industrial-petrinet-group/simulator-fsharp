@@ -24,11 +24,11 @@ module MultiSetTests =
             testCase "creation of a unit MultiSet using the string format" <| fun () ->
                 let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`none++1`none++1`none"
 
-                let (Ok { set = set1 }) = MultiSet.ofString unitColour1 unitMSStr1
-                let (Ok { set = set2 }) = MultiSet.ofString unitColour2 unitMSStr2
+                let (Ok { values = set1 }) = MultiSet.ofString unitColour1 unitMSStr1
+                let (Ok { values = set2 }) = MultiSet.ofString unitColour2 unitMSStr2
 
-                let { qty = qty1; value = value1 } = set1 |> Set.toList |> List.head
-                let { qty = qty2; value = value2 } = set2 |> Set.toList |> List.head
+                let (value1, qty1) = set1 |> Map.toList |> List.head
+                let (value2, qty2) = set2 |> Map.toList |> List.head
 
                 3 =! qty1
                 qty1 =! qty2
@@ -49,13 +49,11 @@ module MultiSetTests =
             testCase "creation of a boolean MultiSet using the string format" <| fun () ->
                 let boolMSStr1, boolMSStr2 = "1`true++2`false", "1`none++1`whole++1`none"
 
-                let (Ok { set = set1 }) = MultiSet.ofString boolColour1 boolMSStr1
-                let (Ok { set = set2 }) = MultiSet.ofString boolColour2 boolMSStr2
+                let (Ok { values = set1 }) = MultiSet.ofString boolColour1 boolMSStr1
+                let (Ok { values = set2 }) = MultiSet.ofString boolColour2 boolMSStr2
 
-                let [ { qty = qtyTrue1; value = valueTrue1 };
-                      { qty = qtyFalse1; value = valueFalse1 } ] = set1 |> Set.toList
-                let [ { qty = qtyTrue2; value = valueTrue2 };
-                      { qty = qtyFalse2; value = valueFalse2 } ] = set2 |> Set.toList
+                let [ (valueFalse1, qtyFalse1); (valueTrue1, qtyTrue1) ] = set1 |> Map.toList
+                let [ (valueFalse2, qtyFalse2); (valueTrue2, qtyTrue2) ] = set2 |> Map.toList
                 
                 (2, 1) =! (qtyFalse1, qtyTrue1)
                 (qtyFalse1, qtyTrue1) =! (qtyFalse2, qtyTrue2) 
@@ -77,7 +75,7 @@ module MultiSetTests =
                     |> MultiSet.ofString boolColour1 
                     >>= fun multiSet -> Ok (multiSet |> MultiSet.asString)
 
-                "2`false++1`true" =! msAsString
+                "1`true++2`false" =! msAsString
             
             testCase "equality and inequality of MultiSets" <| fun () ->
                 let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`()++1`()++1`()"
@@ -115,6 +113,8 @@ module MultiSetTests =
                 let (Ok boolMS3) = MultiSet.ofString boolColour1 "1`true++1`false"
                 let (Ok boolMS4) = MultiSet.ofString boolColour1 "1`false++1`true++1`false"
                 let (Ok boolMS5) = MultiSet.ofString boolColour2 "2`none++1`whole"
+                let (Ok boolMS6) = MultiSet.ofString boolColour2 "1`none"
+                let (Ok boolMS7) = MultiSet.ofString boolColour2 "1`whole"
 
                 true =! (boolMS3 < boolMS1)
                 true =! (boolMS4 <= boolMS1)
@@ -126,4 +126,6 @@ module MultiSetTests =
                 
                 raises<System.ArgumentException> <@ boolMS1 > unitMS1 @>
                 raises<System.ArgumentException> <@ boolMS1 > boolMS2 @>
+
+                true =! (boolMS6 > boolMS7)
          ]

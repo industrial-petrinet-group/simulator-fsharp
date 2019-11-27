@@ -2,31 +2,26 @@ namespace CPN.Simulator.Domain
 
 open CPN.Simulator.Operators
 
-/// Type representing an element of a Multi Set
-type Token = 
-    { qty: int
-      value: string }
-
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
 [<CustomEquality; CustomComparison>]
 type MultiSet = 
-    { set: Set<Token>
+    { values: Map<string, int>
       color: ColorSet }
     
     override x.Equals(yObj) =
         match yObj with
-        | :? MultiSet as y -> (x.color = y.color) && (x.set = y.set)
+        | :? MultiSet as y -> (x.color = y.color) && (x.values = y.values)
         | _ -> false
 
-    override x.GetHashCode() = hash (x.color, x.set)
+    override x.GetHashCode() = hash (x.color, x.values)
 
     interface System.IComparable with
       member x.CompareTo yObj =
           match yObj with
-          | :? MultiSet as y when x.color = y.color -> compare x.set y.set
-          | :? MultiSet -> invalidArg "otherObj" "cannot compare multisets of different colors"
-          | _ -> invalidArg "otherObj" "cannot compare values of different types"
+          | :? MultiSet as y when x.color = y.color -> compare x.values y.values
+          | :? MultiSet -> invalidArg "yObj" "cannot compare multisets of different colors"
+          | _ -> invalidArg "yObj" "cannot compare values of different types"
 
 
 /// Module implementing MultiSet's operations
@@ -36,41 +31,39 @@ module MultiSet =
     module private Implementation =
         /// Active pattern for MultiSet pattern matching
         let (|Empty|Unique|Set|) multiset =
-            match multiset |> Set.count with
+            match multiset |> Map.count with
             | 0 -> Empty
-            | 1 -> Unique (multiset |> Seq.pick (fun x -> Some x))
+            | 1 -> Unique (multiset |> Map.pick (fun value qty -> Some (value, qty)))
             | _ -> 
                 multiset
-                |> Set.toList
+                |> Map.toList
                 |> randomizeList         
                 |> fun (token :: rest) ->
-                    Set (token, rest |> Set.ofList) 
+                    Set (token, rest |> Map.ofList) 
 
         /// Empty Token Set
-        let emptyTS = Set.empty<Token>
+        let emptyTS = Map.empty<string, int>
 
         /// Given a Token list ir reduce it
         let reduceTokenList redundantTokenList = 
             redundantTokenList
-            |> List.groupBy (fun {value = value} -> value)
-            |> List.map (fun (_, equalTokenList) -> 
-                equalTokenList
-                |> List.fold (fun acc {qty = actQty} -> 
-                    { acc with qty = acc.qty + actQty }
-                ) { (equalTokenList |> List.head) with qty = 0 })
+            |> List.groupBy (fun (value, _qty) -> value)
+            |> List.map (fun (value, equalTokenList) -> 
+                value, 
+                equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0)
     
         // Given a Token list it reduce it and returns a set of them
-        let setOfTokenList tokenList =
+        let mapOfTokenList tokenList =
             tokenList
             |> reduceTokenList
-            |> List.fold (fun acc token -> acc |> Set.add token) emptyTS
+            |> List.fold (fun acc (value, qty) -> acc |> Map.add value qty) emptyTS
     
 
     /// Given a color it creates and empty MultiSet
-    let empty color = { set = Set.empty<Token> ; color = color }
+    let empty color = { values = emptyTS ; color = color }
 
     /// Given a MultiSet check if it's empty
-    let isEmpty { set = multiSet } = 
+    let isEmpty { values = multiSet } = 
         match multiSet with Empty -> true | _ -> false
     
     /// Given a MultiSet string it evaluates the expressions*, reduce the equal
@@ -87,51 +80,50 @@ module MultiSet =
                 | Ok acc -> 
                     color 
                     |> ColorSet.colorVal value
-                    >>= fun colorVal -> 
+                    >>= fun _colorVal -> 
                         match qty |> System.Int32.TryParse with
-                        | true, intVal -> Ok (intVal, colorVal)
+                        | true, intVal -> Ok (value, intVal)
                         | false, _ -> Error <| MSErrors (BadFormattedInputString inputString)
-                    >>= fun (intQty, _) -> 
-                        Ok { qty = intQty; value = value }
                     |> function
                         | Error err -> Error err
                         | Ok token -> Ok (token :: acc)
             ) (Ok [])
-            >>= switch setOfTokenList
-            >>= fun tokenSet -> Ok { (empty color) with set = tokenSet }
+            >>= switch mapOfTokenList
+            >>= fun tokenMap -> Ok { (empty color) with values = tokenMap }
         | _ -> Error <| MSErrors (BadFormattedInputString inputString)
 
     /// Given a MultiSet it returns it's elements parsed as a single string.
-    let asString { set = placeMarking } = 
-        "" |> Set.foldBack (fun { qty = qty; value = value } acc ->
+    let asString { values = placeMarking } = 
+        "" |> Map.foldBack (fun value qty acc ->
             match acc with
             | "" -> sprintf "%i`%s" qty value 
             | acc -> sprintf "%s++%i`%s" acc qty value 
         ) placeMarking
     
     /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
-    /// removed - FIXME: Check if removed qty is less than actual
-    let removeTokens removeQty {set = multiSet; color = color} =
+    /// removed
+    let removeTokens rmQty {values = multiSet; color = color} =
         match multiSet with
         | Empty -> Error <| MSErrors InsufficientTokens 
-        | Unique { qty = actQty } when actQty = removeQty -> Ok <| emptyTS
-        | Unique token -> Ok <| emptyTS.Add({token with qty = token.qty - removeQty})
-        | Set (token, restOfSet) -> Ok <| restOfSet.Add({token with qty = token.qty - removeQty})
-        >>= fun newSet ->
-            Ok <| {set = newSet; color = color}
+        | Unique (_, qty) when qty < rmQty -> Error <| MSErrors InsufficientTokens 
+        | Unique (_, qty) when qty = rmQty -> Ok <| emptyTS
+        | Unique (value, qty) -> Ok <| emptyTS.Add((value, qty - rmQty))
+        | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty - rmQty)  // It should check all of the above
+        >>= fun newValues ->
+            Ok <| {values = newValues; color = color}
     
     /// Given a addedQty and a MultiSet it returns a MultiSet with the qty 
     /// added
-    let addTokens addedQty {set = multiSet; color = color} =  
+    let addTokens addQty {values = multiSet; color = color} =  
         match multiSet with
         | Empty ->
             match color |> ColorSet.randomVal with
             | Error err -> Error err
-            | Ok random -> Ok <| emptyTS.Add({ qty = addedQty; value = random })
-        | Unique token -> Ok <| emptyTS.Add({token with qty = token.qty + addedQty})
-        | Set (token, restOfSet) -> Ok <| restOfSet.Add({token with qty = token.qty + addedQty})
-        >>= fun newSet ->
-            Ok <| {set = newSet; color = color}
+            | Ok random -> Ok <| emptyTS.Add(random, addQty)
+        | Unique (value, qty) -> Ok <| emptyTS.Add(value, qty + addQty)
+        | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty + addQty)
+        >>= fun newValues ->
+            Ok <| {values = newValues; color = color}
 
 type MultiSet with
     /// Reimplements the way of showing the MultiSet

@@ -27,6 +27,15 @@ open CPN.Simulator.Domain.ColorSets;;
 //let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
 
 
+let steps = SampleNets.notSoSimpleNet |> Runtime.allSteps
+
+steps |> Seq.length =! 5
+
+steps 
+|> Seq.last 
+|> CPN.netMarking 
+=! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]
+
 let (Ok boolCS1) = Boolean.create None
 let (Ok boolCS2) = Boolean.create (Some ("none", "whole"))
 let boolColour1, boolColour2 = BooleanCS boolCS1, BooleanCS boolCS2
