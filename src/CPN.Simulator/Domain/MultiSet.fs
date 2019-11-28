@@ -16,12 +16,56 @@ type MultiSet =
 
     override x.GetHashCode() = hash (x.color, x.values)
 
-    interface System.IComparable with
-      member x.CompareTo yObj =
-          match yObj with
-          | :? MultiSet as y when x.color = y.color -> compare x.values y.values
-          | :? MultiSet -> invalidArg "yObj" "cannot compare multisets of different colors"
-          | _ -> invalidArg "yObj" "cannot compare values of different types"
+    interface System.IComparable with      
+        member x.CompareTo yObj =
+            // FIXME: This is really complex, it should be refactored.
+            // Compare 2 maps and return if one is less than the other or they
+            // are disjoint
+            let compareMap compareCount lessMap moreMap =
+                let disjointExn () = invalidArg "yObj" "cannot compare disjoint multisets"
+                let lessKeys, moreKeys = lessMap |> getKeys, moreMap |> getKeys
+
+                match lessKeys = moreKeys, compareCount with
+                | true, 0 ->
+                    lessKeys |> List.fold (fun (mantained, lastComp) key ->
+                        match mantained with
+                        | false -> false, 0
+                        | true -> 
+                            let newComp = compare lessMap.[key] moreMap.[key]
+                            lastComp = newComp || newComp = 0, 
+                            if (newComp = 0) then lastComp else newComp
+                    ) (true, (compare lessMap.[List.head lessKeys] moreMap.[List.head lessKeys]))
+                    |> function
+                        | true, compared -> compared
+                        | false, _ -> disjointExn ()
+                | false, _ ->
+                    moreKeys 
+                    |> List.fold (fun acc key ->
+                        match acc with
+                        | [] -> acc
+                        | head :: tail -> if head = key then tail else head::tail 
+                    ) lessKeys
+                    |> function
+                        | [] -> 
+                            lessKeys 
+                            |> List.forall (fun key -> lessMap.[key] <= moreMap.[key])
+                            |> function
+                                | true -> compareCount
+                                | false -> disjointExn ()
+                        | _ -> disjointExn ()
+
+                | true, _ -> disjointExn ()
+            
+            
+
+            match yObj with
+            | :? MultiSet as y when x = y -> 0
+            | :? MultiSet as y when x.color = y.color -> 
+                match compare (x.values |> Map.count) (y.values |> Map.count) with
+                | 1 -> compareMap 1 y.values x.values
+                | compared -> compareMap compared x.values y.values
+            | :? MultiSet -> invalidArg "yObj" "cannot compare multisets of different colors"
+            | _ -> invalidArg "yObj" "cannot compare values of different types"
 
 
 /// Module implementing MultiSet's operations
@@ -108,7 +152,7 @@ module MultiSet =
         | Unique (_, qty) when qty < rmQty -> Error <| MSErrors InsufficientTokens 
         | Unique (_, qty) when qty = rmQty -> Ok <| emptyTS
         | Unique (value, qty) -> Ok <| emptyTS.Add((value, qty - rmQty))
-        | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty - rmQty)  // It should check all of the above
+        | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty - rmQty)  // FIXME: It should check all of the above
         >>= fun newValues ->
             Ok <| {values = newValues; color = color}
     

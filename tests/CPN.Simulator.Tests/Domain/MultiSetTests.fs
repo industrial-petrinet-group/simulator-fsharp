@@ -96,6 +96,19 @@ module MultiSetTests =
                 false =! (msUnit1 = msBool1)
                 false =! (msBool1 = msBool3)
 
+                let (Ok ms1AsString) = 
+                    boolMSStr1 
+                    |> MultiSet.ofString boolColour1 
+                    >>= fun multiSet -> Ok (multiSet |> MultiSet.asString)
+
+                let (Ok ms2AsString) = 
+                    boolMSStr2 
+                    |> MultiSet.ofString boolColour1 
+                    >>= fun multiSet -> Ok (multiSet |> MultiSet.asString)
+
+                "1`true++2`false" =! ms1AsString
+                ms1AsString =! ms2AsString
+
             testCase "comparisson of MultiSets" <| fun () ->            
                 let (Ok unitMS1) = MultiSet.ofString unitColour1 "1`()++2`()"
                 let (Ok unitMS2) = MultiSet.ofString unitColour1 "1`()++1`()++1`()"
@@ -116,16 +129,21 @@ module MultiSetTests =
                 let (Ok boolMS6) = MultiSet.ofString boolColour2 "1`none"
                 let (Ok boolMS7) = MultiSet.ofString boolColour2 "1`whole"
 
+                true =! ((MultiSet.empty boolColour1) < boolMS1)
                 true =! (boolMS3 < boolMS1)
                 true =! (boolMS4 <= boolMS1)
                 true =! (boolMS1 <= boolMS4)
                 true =! (boolMS2 >= boolMS5)
+                true =! (boolMS5 > boolMS6)
 
                 false =! (boolMS1 < boolMS4)
                 false =! (boolMS2 > boolMS5)
+                false =! (boolMS6 > boolMS5)
                 
+                //cannot compare different colors
                 raises<System.ArgumentException> <@ boolMS1 > unitMS1 @>
                 raises<System.ArgumentException> <@ boolMS1 > boolMS2 @>
 
-                true =! (boolMS6 > boolMS7)
+                //cannot compare disjoint multisets
+                raises<System.ArgumentException> <@ boolMS7 > boolMS6 @>
          ]

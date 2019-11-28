@@ -18,6 +18,10 @@ module Operators =
     /// Result map function, converting a normal function to the result world
     let switch f x = Ok <| f x
 
+    /// Get the keys of a Map
+    let getKeys map =
+        [] |> Map.foldBack (fun key _ acc -> key :: acc ) map
+
     /// Randomize a list order
     let randomizeList xs =
         xs |> List.sortBy (fun _ -> random.Next())    
