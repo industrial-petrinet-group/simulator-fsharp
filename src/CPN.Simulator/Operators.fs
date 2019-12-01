@@ -4,7 +4,7 @@ open System.Text.RegularExpressions
 
 /// Module for common operators inside the Simulator namespace
 module Operators =
-    let private random = System.Random()
+    let random = System.Random()
 
     /// Return the identity inside a Result
     let rid x = Ok x

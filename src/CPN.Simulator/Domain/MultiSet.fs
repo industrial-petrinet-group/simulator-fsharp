@@ -52,12 +52,24 @@ module MultiSet =
             match multiset |> Map.count with
             | 0 -> Empty
             | 1 -> Unique (multiset |> Map.pick (fun value qty -> Some (value, qty)))
-            | _ -> 
+            | _ ->
                 multiset
                 |> Map.toList
                 |> randomizeList         
                 |> fun (token :: rest) ->
-                    Set (token, rest |> Map.ofList) 
+                    Set (token, rest |> Map.ofList)
+                //match random with
+                //| false -> 
+                //    multiset 
+                //    |> Map.pick (fun key qty -> Some (key, qty))
+                //    |> fun ((key, _) as token) ->
+                //        Set (token, multiset |> Map.remove key)
+                //| true -> 
+                //    multiset
+                //    |> Map.toList
+                //    |> randomizeList         
+                //    |> fun (token :: rest) ->
+                //        RandomSet (token, rest |> Map.ofList) 
 
         /// Empty Token Set
         let emptyTS = Map.empty<string, int>
@@ -164,15 +176,41 @@ module MultiSet =
             with 
             | :? System.ArgumentException -> Error <| MSErrors SubstractorShouldBeLessOrEqual 
     
-    let scalar k (MS ms) =
+    /// Given a scalar value and a multiset it multiply every qty asociated to
+    /// the values of the multiset by the scalar.
+    let scalarMultiply k (MS ms) =
         ms.values 
         |> Map.fold (fun acc key qty -> acc |> Map.add key (k * qty)) emptyTS
         |> fun multipliedValues -> MS { ms with values = multipliedValues }
+    
+    let size (MS { values = multiset }) =
+        multiset |> Map.fold (fun acc _ qty -> acc + qty) 0
 
+    let random (MS { values = multiset }) =
+        let msList = multiset |> Map.toList
 
+        msList |> List.item (random.Next(msList.Length)) |> fst
+    
+    let colorFilter colorVal (MS { values = multiset }) =
+        multiset |> Map.tryFind colorVal |> function None -> 0 | Some n -> n
+
+    let filter predicate (MS { values = multiset }) = 
+        multiset |> Map.filter predicate
+    
+    let map mapping (MS { values = multiset }) =
+        multiset 
+        |> Map.fold (fun acc key qty -> 
+            acc |> Map.add (mapping key) qty) emptyTS
+    
+    // TODO: Check in CPNTools if this is the case!
+    let fold folder (MS { values = multiset }) =
+        multiset 
+        |> Map.fold (fun acc key qty -> 
+            acc + (folder key) * qty) 1
+        
     /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
     /// removed
-    let removeTokens rmQty (MS {values = multiSet; color = color}) =
+    let removeTokens rmQty (MS { values = multiSet; color = color }) =
         match multiSet with
         | Empty -> Error <| MSErrors InsufficientTokens 
         | Unique (_, qty) when qty < rmQty -> Error <| MSErrors InsufficientTokens 
@@ -180,11 +218,11 @@ module MultiSet =
         | Unique (value, qty) -> Ok <| emptyTS.Add((value, qty - rmQty))
         | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty - rmQty)  // FIXME: It should check all of the above
         >>= fun newValues ->
-            Ok <| MS {values = newValues; color = color}
+            Ok <| MS { values = newValues; color = color }
     
     /// Given a addedQty and a MultiSet it returns a MultiSet with the qty 
     /// added
-    let addTokens addQty (MS {values = multiSet; color = color}) =  
+    let addTokens addQty (MS { values = multiSet; color = color }) =  
         match multiSet with
         | Empty ->
             match color |> ColorSet.randomVal with
@@ -193,7 +231,7 @@ module MultiSet =
         | Unique (value, qty) -> Ok <| emptyTS.Add(value, qty + addQty)
         | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty + addQty)
         >>= fun newValues ->
-            Ok <| MS {values = newValues; color = color}
+            Ok <| MS { values = newValues; color = color }
 
 type MultiSet with
     /// Static operator implementation of MultiSet.add
@@ -202,7 +240,8 @@ type MultiSet with
     /// Static operator implementation of MultiSet.remove
     static member ( -- ) (xMS, yMS) = MultiSet.remove xMS yMS
     
-    static member ( * ) (xMS, k) = MultiSet.scalar k xMS
+    /// Static operator ( ** ) implementation of MultiSet.scalarMultiply
+    static member Pow (xMS, k) = MultiSet.scalarMultiply k xMS
 
     ///// Static operator implementation of MultiSet.scalar
     //static member ( ** ) (xMS, k) = MultiSet.scalar k xMS

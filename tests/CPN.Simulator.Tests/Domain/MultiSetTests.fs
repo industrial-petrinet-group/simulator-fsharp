@@ -204,11 +204,11 @@ module MultiSetTests =
                 let (Ok boolMS1) = MultiSet.ofString boolColour1 "1`true++2`false"
                 let (Ok boolMS2) = MultiSet.ofString boolColour1 "2`true++4`false"
 
-                unitMS2 =! (unitMS1 * 3)
-                boolMS2 =! (boolMS1 * 2)
+                unitMS2 =! (unitMS1 ** 3)
+                boolMS2 =! (boolMS1 ** 2)
 
                 // Identity, multiplying by 1 return the same multiset
-                unitMS1 =! (unitMS1 * 1)
-                boolMS1 =! (boolMS1 * 1)
+                unitMS1 =! (unitMS1 ** 1)
+                boolMS1 =! (boolMS1 ** 1)
 
          ]
