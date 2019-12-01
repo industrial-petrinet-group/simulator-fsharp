@@ -7,8 +7,8 @@ module SampleNets =
     // Simple definitions for convinience
     let (Ok unitCS) = Unit.create None
     let unitColor = UnitCS unitCS
-    let emptyMS = MultiSet.empty unitColor
-    let (Ok unitMS) = MultiSet.empty unitColor |> MultiSet.addTokens 1
+    let emptyMS = MultiSet.emptyWithColor unitColor
+    let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1
     let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
 
     /// Definition of the most simple petri net

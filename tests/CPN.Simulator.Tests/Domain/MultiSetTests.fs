@@ -24,8 +24,8 @@ module MultiSetTests =
             testCase "creation of a unit MultiSet using the string format" <| fun () ->
                 let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`none++1`none++1`none"
 
-                let (Ok { values = set1 }) = MultiSet.ofString unitColour1 unitMSStr1
-                let (Ok { values = set2 }) = MultiSet.ofString unitColour2 unitMSStr2
+                let (Ok (MS { values = set1 })) = MultiSet.ofString unitColour1 unitMSStr1
+                let (Ok (MS { values = set2 })) = MultiSet.ofString unitColour2 unitMSStr2
 
                 let (value1, qty1) = set1 |> Map.toList |> List.head
                 let (value2, qty2) = set2 |> Map.toList |> List.head
@@ -49,8 +49,8 @@ module MultiSetTests =
             testCase "creation of a boolean MultiSet using the string format" <| fun () ->
                 let boolMSStr1, boolMSStr2 = "1`true++2`false", "1`none++1`whole++1`none"
 
-                let (Ok { values = set1 }) = MultiSet.ofString boolColour1 boolMSStr1
-                let (Ok { values = set2 }) = MultiSet.ofString boolColour2 boolMSStr2
+                let (Ok (MS { values = set1 })) = MultiSet.ofString boolColour1 boolMSStr1
+                let (Ok (MS { values = set2 })) = MultiSet.ofString boolColour2 boolMSStr2
 
                 let [ (valueFalse1, qtyFalse1); (valueTrue1, qtyTrue1) ] = set1 |> Map.toList
                 let [ (valueFalse2, qtyFalse2); (valueTrue2, qtyTrue2) ] = set2 |> Map.toList
@@ -96,6 +96,8 @@ module MultiSetTests =
                 false =! (msUnit1 = msBool1)
                 false =! (msBool1 = msBool3)
 
+                true =! (msUnit1 <> msBool1) 
+
                 let (Ok ms1AsString) = 
                     boolMSStr1 
                     |> MultiSet.ofString boolColour1 
@@ -129,7 +131,7 @@ module MultiSetTests =
                 let (Ok boolMS6) = MultiSet.ofString boolColour2 "1`none"
                 let (Ok boolMS7) = MultiSet.ofString boolColour2 "1`whole"
 
-                true =! ((MultiSet.empty boolColour1) < boolMS1)
+                true =! ((MultiSet.emptyWithColor boolColour1) < boolMS1)
                 true =! (boolMS3 < boolMS1)
                 true =! (boolMS4 <= boolMS1)
                 true =! (boolMS1 <= boolMS4)
@@ -146,4 +148,29 @@ module MultiSetTests =
 
                 //cannot compare disjoint multisets
                 raises<System.ArgumentException> <@ boolMS7 > boolMS6 @>
+
+            testCase "comparisson of empty MultiSets and checking emptyness" <| fun () ->
+                let (Ok unitMS1) = MultiSet.ofString unitColour1 "1`()++2`()"
+                let (Ok boolMS1) = MultiSet.ofString boolColour1 "1`true++2`false"
+
+                let empty = MultiSet.empty 
+                let emptyU = MultiSet.emptyWithColor unitColour1
+                let emptyB = MultiSet.emptyWithColor boolColour1
+                
+                // Can't compare empty color-bounded MultiSets given that they 
+                // have different color
+                raises<System.ArgumentException> <@ emptyU < boolMS1 @>
+                raises<System.ArgumentException> <@ emptyB < unitMS1 @>
+
+                true =! MultiSet.isEmpty empty
+                true =! MultiSet.isEmpty emptyU
+                true =! MultiSet.isEmpty emptyB
+
+                // not bounded empty multisets can be compared with any multiset
+                // bounded only with it's color
+                true =! (empty < unitMS1)
+                true =! (empty < boolMS1)
+                true =! (emptyU < unitMS1)
+                true =! (emptyB < boolMS1)
+
          ]

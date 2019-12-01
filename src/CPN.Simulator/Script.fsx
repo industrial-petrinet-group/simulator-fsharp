@@ -29,12 +29,12 @@ open CPN.Simulator.Domain.ColorSets;;
 
 let steps = SampleNets.notSoSimpleNet |> Runtime.allSteps
 
-steps |> Seq.length =! 5
+steps |> Seq.length
 
 steps 
 |> Seq.last 
 |> CPN.netMarking 
-=! [(P 2, "1`()"); (P 4, "3`()"); (P 5, "3`()")]
+
 
 let (Ok boolCS1) = Boolean.create None
 let (Ok boolCS2) = Boolean.create (Some ("none", "whole"))

@@ -32,5 +32,44 @@ module Operators =
         |> List.collect (fun m -> [ for g in m.Groups -> g.Value ] |> List.tail)
         |> function 
             | [] -> None
-            | list -> Some list      
+            | list -> Some list
+    
+    /// Compare 2 maps expecting the first to be less thanm the second and 
+    // returns 1, 0 and -1 as compare function or an exception if they are 
+    // disjoint key-wise.
+    // FIXME: This is really complex, it should be refactored.
+    let compareMap disjointMsg compareCount lessMap moreMap =
+        let disjointExn () = invalidArg "yObj" disjointMsg
+        let lessKeys, moreKeys = lessMap |> getKeys, moreMap |> getKeys
+
+        match lessKeys = moreKeys, compareCount with
+        | true, 0 ->
+            lessKeys |> List.fold (fun (mantained, lastComp) key ->
+                match mantained with
+                | false -> false, 0
+                | true -> 
+                    let newComp = compare lessMap.[key] moreMap.[key]
+                    lastComp = newComp || newComp = 0, 
+                    if (newComp = 0) then lastComp else newComp
+            ) (true, (compare lessMap.[List.head lessKeys] moreMap.[List.head lessKeys]))
+            |> function
+                | true, compared -> compared
+                | false, _ -> disjointExn ()
+        | false, _ ->
+            moreKeys 
+            |> List.fold (fun acc key ->
+                match acc with
+                | [] -> acc
+                | head :: tail -> if head = key then tail else head::tail 
+            ) lessKeys
+            |> function
+                | [] -> 
+                    lessKeys 
+                    |> List.forall (fun key -> lessMap.[key] <= moreMap.[key])
+                    |> function
+                        | true -> compareCount
+                        | false -> disjointExn ()
+                | _ -> disjointExn ()
+
+        | true, _ -> disjointExn ()   
     
