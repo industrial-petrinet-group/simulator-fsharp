@@ -163,7 +163,13 @@ module MultiSet =
                         Ok <| MS { values = removedValues; color = x.color }
             with 
             | :? System.ArgumentException -> Error <| MSErrors SubstractorShouldBeLessOrEqual 
-        
+    
+    let scalar k (MS ms) =
+        ms.values 
+        |> Map.fold (fun acc key qty -> acc |> Map.add key (k * qty)) emptyTS
+        |> fun multipliedValues -> MS { ms with values = multipliedValues }
+
+
     /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
     /// removed
     let removeTokens rmQty (MS {values = multiSet; color = color}) =
@@ -191,11 +197,16 @@ module MultiSet =
 
 type MultiSet with
     /// Static operator implementation of MultiSet.add
-    static member (++) (xMS, yMS) = MultiSet.add xMS yMS
+    static member ( ++ ) (xMS, yMS) = MultiSet.add xMS yMS
     
     /// Static operator implementation of MultiSet.remove
-    static member (--) (xMS, yMS) = MultiSet.remove xMS yMS
+    static member ( -- ) (xMS, yMS) = MultiSet.remove xMS yMS
+    
+    static member ( * ) (xMS, k) = MultiSet.scalar k xMS
 
+    ///// Static operator implementation of MultiSet.scalar
+    //static member ( ** ) (xMS, k) = MultiSet.scalar k xMS
+  
     /// Reimplements the way of showing the MultiSet
     member this.Show =
         let (MS { color = color }) = this
