@@ -11,6 +11,8 @@ type ColorSetErrors =
 /// Type representing MultiSet Errors
 type MultiSetErrors =
     | BadFormattedInputString of input: string 
+    | UnmatchedColors of colors: string list
+    | SubstractorShouldBeLessOrEqual
     | UnexpectedError of msg: string
     | InsufficientTokens
 

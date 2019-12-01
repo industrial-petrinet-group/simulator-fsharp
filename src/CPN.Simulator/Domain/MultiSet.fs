@@ -13,6 +13,10 @@ type MultiSetData =
 type MultiSet = 
     | MS of MultiSetData
     
+    member xMS.colorMatch yMS = 
+        let (MS x, MS y) = xMS, yMS
+        x.color = y.color || x.color = ColorSet.empty || y.color = ColorSet.empty
+
     override xMS.Equals(yObj) =
         match yObj with
         | :? MultiSet as yMS -> 
@@ -25,13 +29,10 @@ type MultiSet =
     interface System.IComparable with      
         member xMS.CompareTo yObj =
             let disjointCompare = compareMap "cannot compare disjoint multisets"
-            let colorMatch xMS yMS = 
-                let (MS x, MS y) = xMS, yMS
-                x.color = y.color || x.color = ColorSet.empty || y.color = ColorSet.empty
 
             match yObj with
             | :? MultiSet as yMS when xMS = yMS -> 0
-            | :? MultiSet as yMS when colorMatch xMS yMS -> 
+            | :? MultiSet as yMS when xMS.colorMatch yMS -> 
                 let (MS x, MS y) = xMS, yMS
                 match compare (x.values |> Map.count) (y.values |> Map.count) with
                 | 1 -> disjointCompare 1 y.values x.values
@@ -60,6 +61,9 @@ module MultiSet =
 
         /// Empty Token Set
         let emptyTS = Map.empty<string, int>
+
+        /// Given two MultiSets it returns if they colors match
+        let colorMatch (xMS: MultiSet) yMS = xMS.colorMatch yMS
 
         /// Given a Token list ir reduce it
         let reduceTokenList redundantTokenList = 
@@ -118,6 +122,48 @@ module MultiSet =
             | acc -> sprintf "%s++%i`%s" acc qty value 
         ) placeMarking
     
+    /// Given two MultiSets it returns the first with the elements of the
+    /// second added.
+    let add (MS x as xMS) (MS y as yMS) =
+        match (colorMatch xMS yMS) with
+        | false -> Error <| MSErrors (UnmatchedColors [x.color.ToString(); y.color.ToString()])
+        | true -> 
+            let { values = xVals }, { values = yVals } = x, y
+            
+            yVals
+            |> Map.fold (fun acc key qty ->
+                match acc |> Map.tryFind(key) with
+                | None -> acc |> Map.add key qty
+                | Some actQty -> 
+                    acc |> Map.remove(key) |> Map.add key (actQty + qty)) xVals
+            |> fun addedValues -> 
+                Ok <| MS { values = addedValues; color = x.color }
+
+    /// Given two MultiSets it returns the first without the elements of the 
+    /// second; it only works if the second one is less than or equal.
+    let remove (MS x as xMS) (MS y as yMS) =
+        match (colorMatch xMS yMS) with
+        | false -> Error <| MSErrors (UnmatchedColors [x.color.ToString(); y.color.ToString()])
+        | true -> 
+            try 
+                match (yMS <= xMS) with
+                | false -> Error <| MSErrors SubstractorShouldBeLessOrEqual 
+                | true -> 
+                    let { values = xVals }, { values = yVals } = x, y
+                    
+                    yVals
+                    |> Map.fold (fun acc key qty ->
+                        acc 
+                        |> Map.find key 
+                        |> fun actQty ->
+                            match (actQty - qty) with
+                            | 0 -> acc |> Map.remove key
+                            | newQty -> acc |> Map.remove key |> Map.add key newQty) xVals
+                    |> fun removedValues -> 
+                        Ok <| MS { values = removedValues; color = x.color }
+            with 
+            | :? System.ArgumentException -> Error <| MSErrors SubstractorShouldBeLessOrEqual 
+        
     /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
     /// removed
     let removeTokens rmQty (MS {values = multiSet; color = color}) =
@@ -144,6 +190,12 @@ module MultiSet =
             Ok <| MS {values = newValues; color = color}
 
 type MultiSet with
+    /// Static operator implementation of MultiSet.add
+    static member (++) (xMS, yMS) = MultiSet.add xMS yMS
+    
+    /// Static operator implementation of MultiSet.remove
+    static member (--) (xMS, yMS) = MultiSet.remove xMS yMS
+
     /// Reimplements the way of showing the MultiSet
     member this.Show =
         let (MS { color = color }) = this
