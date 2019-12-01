@@ -173,4 +173,28 @@ module MultiSetTests =
                 true =! (emptyU < unitMS1)
                 true =! (emptyB < boolMS1)
 
+            testCase "adding and removing of MultiSets with ++ and --" <| fun () ->
+                let (Ok unitMS1) = MultiSet.ofString unitColour1 "1`()++2`()"
+                let (Ok boolMS1) = MultiSet.ofString boolColour1 "1`true++2`false"
+                let (Ok boolMS2) = MultiSet.ofString boolColour1 "1`false"
+                let (Ok boolMS3) = MultiSet.ofString boolColour1 "1`true++1`false"
+
+                Ok boolMS2 =! (boolMS1 -- boolMS3)
+                Ok boolMS1 =! (boolMS2 ++ boolMS3)
+
+                // Can't substract a multiset greater than the substracted one
+                Error (MSErrors SubstractorShouldBeLessOrEqual) =! (boolMS3 -- boolMS1)
+                // Or With different colors
+                let colorList = ["Boolean = [false; true]"; "Unit = [()]"]
+                Error (MSErrors (UnmatchedColors colorList)) =! (boolMS1 -- unitMS1)
+
+                let empty = MultiSet.empty 
+                let emptyB = MultiSet.emptyWithColor boolColour1
+
+                // Identity, substracting an empty MultiSet returns the same
+                Ok boolMS1 =! (boolMS1 -- empty)
+                Ok boolMS2 =! (boolMS2 -- emptyB)
+
+                // Substracting itself return the empty color-bounded multiset
+                Ok emptyB =! (boolMS1 -- boolMS1)
          ]
