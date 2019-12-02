@@ -211,4 +211,25 @@ module MultiSetTests =
                 unitMS1 =! (unitMS1 ** 1)
                 boolMS1 =! (boolMS1 ** 1)
 
+            testCase "test size, random and colorOcurrence" <| fun () ->
+                let (Ok boolMS1) = MultiSet.ofString boolColour1 "2`true++4`false"
+                let (Ok unitMS1) = MultiSet.ofString unitColour2 "1`none++1`none++3`none"
+
+                6 =! (boolMS1 |> MultiSet.size)
+                5 =! (unitMS1 |> MultiSet.size)
+
+                let empty = MultiSet.empty 
+                0 =! (empty |> MultiSet.size)
+
+                let randomBool = [for i in [1..10] do (boolMS1 |> MultiSet.random)] 
+                
+                false =! (randomBool |> List.forall (fun b -> b = (randomBool |> List.head)))
+                true =! (randomBool |> List.forall (fun b -> b = "true" || b = "false"))
+
+                4 =! (boolMS1 |> MultiSet.colorOcurrences "false")
+                2 =! (boolMS1 |> MultiSet.colorOcurrences "true")
+                0 =! (boolMS1 |> MultiSet.colorOcurrences "other")
+
+                5 =! (unitMS1 |> MultiSet.colorOcurrences "none")
+                0 =! (unitMS1 |> MultiSet.colorOcurrences "()")
          ]

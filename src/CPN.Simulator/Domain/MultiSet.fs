@@ -183,19 +183,27 @@ module MultiSet =
         |> Map.fold (fun acc key qty -> acc |> Map.add key (k * qty)) emptyTS
         |> fun multipliedValues -> MS { ms with values = multipliedValues }
     
+    /// Given a multiset it returns it's size
     let size (MS { values = multiset }) =
         multiset |> Map.fold (fun acc _ qty -> acc + qty) 0
-
+    
+    /// Given a multiset it returs a random value
+    // FIXME: better managing of randomness counting the number of elements per 
+    // value, use size, a random up to it and fold the map counting the number
     let random (MS { values = multiset }) =
         let msList = multiset |> Map.toList
 
         msList |> List.item (random.Next(msList.Length)) |> fst
     
-    let colorFilter colorVal (MS { values = multiset }) =
+    /// Given a color value and a multiset it returns the number of ocurrences 
+    /// of it in the multiset.
+    let colorOcurrences colorVal (MS { values = multiset }) =
         multiset |> Map.tryFind colorVal |> function None -> 0 | Some n -> n
-
-    let filter predicate (MS { values = multiset }) = 
-        multiset |> Map.filter predicate
+    
+    /// Given a predicate and a multiset it returns only the values that satisfy
+    /// the predicate
+    let filter predicate (MS ({ values = multiset } as msData)) = 
+        { msData with values = multiset |> Map.filter predicate }
     
     let map mapping (MS { values = multiset }) =
         multiset 
