@@ -20,7 +20,7 @@ module MultiSetTests =
 
     [<Tests>]
     let tests = 
-         testList "Domain.MultiSet." [
+        testList "Domain.MultiSet." [
             testCase "creation of a unit MultiSet using the string format" <| fun () ->
                 let unitMSStr1, unitMSStr2 = "1`()++2`()", "1`none++1`none++1`none"
 
@@ -232,4 +232,23 @@ module MultiSetTests =
 
                 5 =! (unitMS1 |> MultiSet.colorOcurrences "none")
                 0 =! (unitMS1 |> MultiSet.colorOcurrences "()")
+
+            testCase "test filtering of MultiSets" <| fun () ->
+                let (Ok boolMS1) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
+
+                let falsyFilteredMS =
+                    boolMS1 
+                    |> MultiSet.filter (fun value _ -> 
+                        Ok (BooleanVal false) = ColorSet.colorVal value boolColour2)
+
+                "2`none" =! (falsyFilteredMS |> MultiSet.asString)
+
+                let exactlyOneValuesMS =
+                    boolMS1 
+                    |> MultiSet.filter (fun _ qty -> qty = 1)
+
+                "1`whole" =! (exactlyOneValuesMS |> MultiSet.asString)
+                
+                
+
          ]

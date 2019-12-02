@@ -203,7 +203,7 @@ module MultiSet =
     /// Given a predicate and a multiset it returns only the values that satisfy
     /// the predicate
     let filter predicate (MS ({ values = multiset } as msData)) = 
-        { msData with values = multiset |> Map.filter predicate }
+        MS { msData with values = multiset |> Map.filter predicate }
     
     let map mapping (MS { values = multiset }) =
         multiset 
