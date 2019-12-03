@@ -13,7 +13,6 @@ type MultiSetErrors =
     | BadFormattedInputString of input: string 
     | UnmatchedColors of colors: string list
     | SubstractorShouldBeLessOrEqual
-    | UnexpectedMSError of msg: string
     | InsufficientTokens
 
 /// Type representing Place Errors

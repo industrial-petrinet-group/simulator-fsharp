@@ -188,8 +188,6 @@ module MultiSet =
         multiset |> Map.fold (fun acc _ qty -> acc + qty) 0
     
     /// Given a multiset it returs a random value
-    // FIXME: better managing of randomness counting the number of elements per 
-    // value, use size, a random up to it and fold the map counting the number
     let random (MS { values = multiset } as ms) =
         multiset 
         |> Map.fold (fun (finish, acc, result) value qty ->
