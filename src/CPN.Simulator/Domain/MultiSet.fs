@@ -190,10 +190,15 @@ module MultiSet =
     /// Given a multiset it returs a random value
     // FIXME: better managing of randomness counting the number of elements per 
     // value, use size, a random up to it and fold the map counting the number
-    let random (MS { values = multiset }) =
-        let msList = multiset |> Map.toList
-
-        msList |> List.item (random.Next(msList.Length)) |> fst
+    let random (MS { values = multiset } as ms) =
+        multiset 
+        |> Map.fold (fun (finish, acc, result) value qty ->
+            match finish, acc < qty with
+            | true, _ -> finish, acc, result
+            | false, true -> true, acc, value
+            | false, false -> false, acc - qty, result
+        ) (false, random.Next(ms |> size), "")
+        |> fun (_, _, result) -> result
     
     /// Given a color value and a multiset it returns the number of ocurrences 
     /// of it in the multiset.

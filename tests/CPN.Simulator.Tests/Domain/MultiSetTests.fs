@@ -248,7 +248,4 @@ module MultiSetTests =
                     |> MultiSet.filter (fun _ qty -> qty = 1)
 
                 "1`whole" =! (exactlyOneValuesMS |> MultiSet.asString)
-                
-                
-
-         ]
+        ]
