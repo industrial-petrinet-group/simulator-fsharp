@@ -208,16 +208,24 @@ module MultiSet =
     let filter predicate (MS ({ values = multiset } as msData)) = 
         MS { msData with values = multiset |> Map.filter predicate }
     
-    let map mapping (MS { values = multiset }) =
+    /// Given a mapping function it produces a new one mapping every element
+    // FIXME: Cant be a mapping between colors and it should be probably i need 
+    // to rethink if being an string Map is the way to go or
+    // take a generic approach and define multisets of every color.
+    let mapColors mapping (MS ({ values = multiset } as ms)) =
         multiset 
         |> Map.fold (fun acc key qty -> 
             acc |> Map.add (mapping key) qty) emptyTS
+        |> fun mappedValues -> MS { ms with values = mappedValues }
     
-    // TODO: Check in CPNTools if this is the case!
-    let fold folder (MS { values = multiset }) =
+    /// Given a mapping function that turns a value into a MultiSet and a Multiset
+    /// it returns a new one created from boths.
+    let mapMultiSets mapping (MS { values = multiset; color = color}) =
         multiset 
-        |> Map.fold (fun acc key qty -> 
-            acc + (folder key) * qty) 1
+        |> Map.fold (fun accRes key qty -> 
+            accRes 
+            >>= fun acc -> add acc (scalarMultiply qty (mapping key))
+        ) (Ok <| emptyWithColor color)
         
     /// Given a removeQty and a MultiSet it returns a MultiSet with the qty 
     /// removed

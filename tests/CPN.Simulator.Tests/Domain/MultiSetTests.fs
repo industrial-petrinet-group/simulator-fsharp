@@ -248,4 +248,55 @@ module MultiSetTests =
                     |> MultiSet.filter (fun _ qty -> qty = 1)
 
                 "1`whole" =! (exactlyOneValuesMS |> MultiSet.asString)
+
+            testCase "test map and fold functions for Multiset" <| fun () ->
+                let (Ok boolMS1) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
+                let (Ok boolMS2) = MultiSet.ofString boolColour2 "2`whole++1`none"
+
+                // old ext_col
+                let notBoolMS2 =
+                    boolMS2 
+                    |> MultiSet.mapColors (fun value ->
+                        value
+                        |> ColorSet.colorVal <| boolColour2
+                        >>= fun colorVal -> 
+                            let (BooleanVal bool) = colorVal
+                            
+                            bool
+                            |> not
+                            |> fun b -> BooleanVal b
+                            |> ColorSet.makeString <| boolColour2
+                        |> function
+                            | Ok colorStr -> colorStr
+                            | Error _ -> "")
+
+                boolMS1 =! notBoolMS2
+
+                // old ext_ms
+                let notBoolMS1x2 =
+                    boolMS1 
+                    |> MultiSet.mapMultiSets (fun value ->
+                        value
+                        |> ColorSet.colorVal <| boolColour2
+                        >>= fun colorVal -> 
+                            let (BooleanVal bool) = colorVal
+                            
+                            bool
+                            |> not
+                            |> fun b -> BooleanVal b
+                            |> ColorSet.makeString <| boolColour2
+                            >>= fun colorStr -> 
+                                MultiSet.ofString boolColour2 (sprintf "2`%s" colorStr)
+                        |> function
+                            | Ok ms -> ms
+                            | Error _ -> MultiSet.empty)
+                
+                Ok (boolMS2 ** 2) =! notBoolMS1x2
+
+
+
+                        
+
+
+
         ]

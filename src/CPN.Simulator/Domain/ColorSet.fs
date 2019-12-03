@@ -42,6 +42,11 @@ module ColorSet =
             boolean 
             |> Boolean.colorVal supposedMember 
             >>= fun colorVal -> Ok <| BooleanVal colorVal
+    
+    let makeString colorVal colorSet =
+        match colorVal, colorSet with
+        | UnitVal unitVal, UnitCS unit -> Unit.makeString unitVal unit
+        | BooleanVal boolVal, BooleanCS bool -> Boolean.makeString boolVal bool
 
     /// Given a Color Set it returns a random value from it; only work for 
     /// small Color Sets.
