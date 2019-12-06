@@ -3,7 +3,10 @@ namespace CPN.Simulator.Domain.ColorSets
 open CPN.Simulator.Domain
 
 /// Type representing MetaData for all Color Sets
-type CSMetaData = { name: string; internalType: System.Type }
+type CSMetaData = 
+    { name: string
+      internalType: System.Type
+      colorSetHash: int }
 
 type IColorSet<'T> =
     /// Return the Meta Data asociated with the Color Set
@@ -47,6 +50,6 @@ module Common =
             | Error _ -> ""
             | Ok list -> sprintf "%A" list
     
-        sprintf "%s = %s" (^T: (member MetaData: CSMetaData) cs).name allValues   
+        sprintf "%s" allValues   
    
 

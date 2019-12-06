@@ -1,11 +1,12 @@
 namespace CPN.Simulator.Domain
 
 open CPN.Simulator.Operators
+open CPN.Simulator.Domain.ColorSets
 
 /// Type representing the data of a Multiset
 type MultiSetData<'T when 'T: comparison> =
     { values: Map<'T, int>
-      color: ColorSet }
+      color: IColorSet<'T> }
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
@@ -14,8 +15,12 @@ type MultiSet<'T when 'T: comparison> =
     | MS of MultiSetData<'T>
     
     member xMS.colorMatch yMS = 
+        let (MS x, MS y) = xMS, yMS in x.color.MetaData = y.color.MetaData
+
+    member xMS.atLeastOneIsEmpty yMS =
         let (MS x, MS y) = xMS, yMS
-        x.color = y.color || x.color = ColorSet.empty || y.color = ColorSet.empty
+        x.color.MetaData = ColorSet.empty.MetaData || 
+        y.color.MetaData = ColorSet.empty.MetaData
 
     override xMS.Equals(yObj) =
         match yObj with
@@ -30,8 +35,18 @@ type MultiSet<'T when 'T: comparison> =
         member xMS.CompareTo yObj =
             let disjointCompare = compareMap "cannot compare disjoint multisets"
 
+            // CHeck that colormatch accept the Empty set but it cannot compare
+            // values for diferent maps; I need to treat Empty as an special Case
             match yObj with
             | :? MultiSet<'T> as yMS when xMS = yMS -> 0
+            | :? MultiSet<'T> as yMS when xMS.atLeastOneIsEmpty yMS ->
+                let (MS x, MS y) = xMS, yMS
+                let bothEmpty = x.color.MetaData = ColorSet.empty.MetaData,
+                                y.color.MetaData = ColorSet.empty.MetaData    
+                match bothEmpty with
+                | true, true -> 0
+                | true, false -> -1
+                | false, true -> 1
             | :? MultiSet<'T> as yMS when xMS.colorMatch yMS -> 
                 let (MS x, MS y) = xMS, yMS
                 match compare (x.values |> Map.count) (y.values |> Map.count) with

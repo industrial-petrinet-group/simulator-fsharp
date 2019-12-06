@@ -3,16 +3,16 @@
 #load "./Domain/ColorSets/Common.fs"
 #load "./Domain/ColorSets/Unit.fs"
 #load "./Domain/ColorSets/Boolean.fs"
-#load "./Domain/ColorSet.fs"
-#load "./Domain/MultiSet.fs"
-#load "./Domain/Place.fs"
-#load "./Domain/Transition.fs"
-#load "./Domain/Arc.fs"
-#load "./Domain/Net.fs"
+//#load "./Domain/ColorSet.fs"
+//#load "./Domain/MultiSet.fs"
+//#load "./Domain/Place.fs"
+//#load "./Domain/Transition.fs"
+//#load "./Domain/Arc.fs"
+//#load "./Domain/Net.fs"
 
-#load "./Domain/CPN.fs"
-#load "./SampleNets.fs"
-#load "./Runtime.fs" 
+//#load "./Domain/CPN.fs"
+//#load "./SampleNets.fs"
+//#load "./Runtime.fs" 
 
 
 open CPN.Simulator

@@ -11,7 +11,12 @@ type BooleanCS =
     | BooleanCS of BooleanCSData
 
     interface IColorSet<bool> with
-        member _.MetaData = { name = "Boolean"; internalType = false.GetType() }
+        member this.MetaData = 
+            let (BooleanCS booleanCSD) = this
+
+            { name = "BooleanCS"
+              internalType = typeof<bool> 
+              colorSetHash = hash booleanCSD }
         
         member _.Init = fun () -> false
         
