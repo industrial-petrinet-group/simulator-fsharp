@@ -7,7 +7,7 @@ module SampleNets =
     // Simple definitions for convinience
     let (Ok unitCS) = Unit.create None
     let unitColor = UnitCS unitCS
-    let emptyMS = MultiSet.emptyWithColor unitColor
+    let emptyMS = MultiSet.emptyWithColor<string> unitColor
     let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1
     let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
 

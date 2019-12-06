@@ -3,77 +3,63 @@ namespace CPN.Simulator.Domain.ColorSets
 open Common
 open CPN.Simulator.Domain
 
-type Boolean =
+type BooleanCSData =
     { falsy: string
       truthy: string }
 
-module Boolean =
-    [<AutoOpenAttribute>]
-    module private Implementation =
-        /// Active pattern for identify color set cases.
-        let (|Falsy|Truthy|Neither|) (value, booleanCS) = 
-            match booleanCS.falsy = value, booleanCS.truthy = value with
-            | true, _ -> Falsy 
-            | _, true -> Truthy
-            | _, _ -> Neither
+type BooleanCS = 
+    | BooleanCS of BooleanCSData
 
+    interface IColorSet<bool> with
+        member _.MetaData = { name = "Boolean"; internalType = false.GetType() }
+        
+        member _.Init = fun () -> false
+        
+        member _.Size = Ok 2
+        
+        member _.All = Ok [ false; true ]
+       
+        member _.IsLegal _colorValue = true
+
+        member _.Color index = 
+            match index with
+            | 0 -> Ok false
+            | 1 -> Ok true
+            | i -> Error <| CSErrors (OutOfRangeIndex i)
+        
+        member _.Ordinal colorValue = 
+            match colorValue with 
+            | false -> Ok 0 
+            | true -> Ok 1
+        
+        member this.Random = (this :> IColorSet<bool>).Color (rnd.Next(0,1))
+
+        member this.ColorValue colorString = 
+            let (BooleanCS booleanCSD) = this
+            let falsyOrTruthy = booleanCSD.falsy = colorString,
+                                booleanCSD.truthy = colorString
+
+            match falsyOrTruthy with
+            | true, _ -> Ok false
+            | _, true -> Ok true
+            | false, false -> Error <| CSErrors (InvalidValue colorString)
+                   
+        member this.ColorString colorValue = 
+            let (BooleanCS booleanCSD) = this
+
+            match (this :> IColorSet<bool>).IsLegal colorValue with
+            | false -> Error <| CSErrors (InvalidValue (sprintf "%A" colorValue))
+            | true -> Ok <| if colorValue then booleanCSD.truthy 
+                                          else booleanCSD.falsy
+        
+    member this.Show = Common.asString (this :> IColorSet<bool>)
+
+
+module BooleanCS =
     /// Given an optional initinalization string it return a color set.
     let create = function
-        | None -> Ok { falsy = "false"; truthy = "true" }
+        | None -> Ok <| BooleanCS { falsy = "false"; truthy = "true" }
         | Some(falsyVal, truthyVal) when falsyVal <> truthyVal -> 
-            Ok { falsy = falsyVal; truthy = truthyVal }
+            Ok <| BooleanCS { falsy = falsyVal; truthy = truthyVal }
         | Some _ -> 
             Error <| CSErrors (InvalidInitialState "falsy and truthy must be different")
-        
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's actual value if it is.
-    let colorVal supposedMember booleanCS =
-        match (supposedMember, booleanCS) with
-        | Falsy -> Ok false
-        | Truthy -> Ok true
-        | Neither -> Error <| CSErrors (InvalidValue supposedMember)
-
-    /// Return the default actual value for this color set.
-    let init = false
-
-    /// Given a value of the type it checks if it's a legal one
-    let isLegal (_: bool) (_: Boolean) = true
-
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's string color set value if it is.
-    let makeString supposedMember booleanCS = 
-        match isLegal supposedMember booleanCS with
-        | false -> Error <| CSErrors (InvalidValue (sprintf "%A" supposedMember))
-        | true -> Ok <| if supposedMember then booleanCS.truthy 
-                                          else booleanCS.falsy
-
-    /// Return a list of all posible values for this color set.
-    let all (_: Boolean) = Ok [ false; true ]
-
-    /// Return the number of different vaules in this color set.
-    let size (_: Boolean) = Ok 2
-
-    /// Return the ordinal position of every value in this color set.
-    let ordinal b (_: Boolean) =
-        match b with
-        | false -> Ok 0
-        | true -> Ok 1
-    
-    /// Return the actual value for the given position in this color set.
-    let color i (_: Boolean) =
-        match i with
-        | 0 -> Ok false
-        | 1 -> Ok true
-        | i -> Error <| CSErrors (OutOfRangeIndex i)
-
-    /// Return a random value of this color set.
-    let random booleanCS = color (rnd.Next(0,1)) booleanCS
-
-    /// Return a string representing the Color Set
-    let asString booleanCS = 
-        let allValues = 
-            match (all booleanCS) with
-            | Error _ -> ""
-            | Ok list -> sprintf "%A" list
-
-        sprintf "Boolean = %s" allValues

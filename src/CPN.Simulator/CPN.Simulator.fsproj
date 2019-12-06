@@ -8,6 +8,7 @@
     <Compile Include="Operators.fs" />
     <Compile Include="Domain\Errors.fs" />
     <Compile Include="Domain\ColorSets\Common.fs" />
+    <Compile Include="Domain\ColorSets\Void.fs" />
     <Compile Include="Domain\ColorSets\Unit.fs" />
     <Compile Include="Domain\ColorSets\Boolean.fs" />
     <Compile Include="Domain\ColorSets\Numeric.fs" />

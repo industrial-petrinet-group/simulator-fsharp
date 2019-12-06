@@ -27,9 +27,9 @@ The modules are defined inside `src/CPN.Simulator`
 ## Simple
 - [x] Unit
 - [x] Boolean
-- [x] Integer
-- [x] BigInteger (old IntInf)
-- [x] Double (old Real)
+- [?] Integer
+- [?] BigInteger (old IntInf)
+- [?] Double (old Real)
 - [ ] Time
 - [ ] String
 - [ ] Enumerated
@@ -47,7 +47,7 @@ The modules are defined inside `src/CPN.Simulator`
 ## All colours
 - [x] init (old base)
 - [x] isLegal (old legal)
-- [x] makeString (old mkstr)
+- [x] colorString (old mkstr)
 - [ ] makeStringMS (old mkstr_ms)
 - [ ] input
 - [ ] output

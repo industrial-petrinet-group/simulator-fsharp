@@ -3,61 +3,30 @@ namespace CPN.Simulator.Domain
 open CPN.Simulator.Operators
 open CPN.Simulator.Domain.ColorSets
 
-/// Type representing all posible Color Sets values; it's restricted to Unit and 
-/// Boolean for now.
-type ColorSetVal =     
-    | UnitVal of unit
-    | BooleanVal of bool
-
-/// Type representing all posible Color Sets; it's restricted to Unit and 
-/// Boolean for now.
-[<StructuredFormatDisplay("{Show}")>]
 type ColorSet =
-    | VoidCS
-    | UnitCS of Unit
-    | BooleanCS of Boolean
+    | Void of VoidCS
+    | Unit of UnitCS
+    | Boolean of UnitCS
 
-    /// Reimplements the way of showing the CPN
-    member this.Show = 
-        match this with
-        | VoidCS -> "Void Color Set"
-        | UnitCS unit -> Unit.asString unit
-        | BooleanCS boolean -> Boolean.asString boolean    
+// Look for a way to compare colors in multiset and have the ability to check
+// for the internal type. Also think if it's plausible to use this way of 
+// constraining through members or should be better to use an Interface that will
+// provide the abobe kind of comparission for free without the choice type.
 
 /// Module implementing ColorSet's operations
 module ColorSet =
     /// Return an empty Color Set
-    let empty = VoidCS
+    let empty = Void <| VoidCS
 
-    /// Given a supposed member and a Color Set it returns a string of the 
-    /// value only if it actually was a member of the Color Set.
-    let colorVal supposedMember = function
-        | VoidCS ->
-            Error <| CSErrors (NotUsable "colorVal")
-        | UnitCS unit -> 
-            unit 
-            |> Unit.colorVal supposedMember 
-            >>= fun colorVal -> Ok <| UnitVal colorVal
-        | BooleanCS boolean -> 
-            boolean 
-            |> Boolean.colorVal supposedMember 
-            >>= fun colorVal -> Ok <| BooleanVal colorVal
+    let inline colorValue colorString cs = 
+        (^T: (member ColorValue:_->_) (cs, colorString))
     
-    let makeString colorVal colorSet =
-        match colorVal, colorSet with
-        | UnitVal unitVal, UnitCS unit -> Unit.makeString unitVal unit
-        | BooleanVal boolVal, BooleanCS bool -> Boolean.makeString boolVal bool
+    let inline colorString colorValue cs = 
+        (^T: (member ColorString:_->_) (cs, colorValue))
 
-    /// Given a Color Set it returns a random value from it; only work for 
-    /// small Color Sets.
-    let randomVal = function
-        | VoidCS ->
-            Error <| CSErrors (NotUsable "randomVal")
-        | UnitCS unit -> 
-            unit 
-            |> Unit.random 
-            >>= fun randomVal -> Unit.makeString randomVal unit
-        | BooleanCS boolean -> 
-            boolean 
-            |> Boolean.random 
-            >>= fun randomVal -> Boolean.makeString randomVal boolean
+    let inline randomValue cs =
+        (^T: (member Random: _) cs)
+    
+    let inline randomString cs =
+        (^T: (member Random: Result<_,_>) cs) 
+        >>= fun randomValue -> colorString randomValue cs

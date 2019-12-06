@@ -3,15 +3,15 @@ namespace CPN.Simulator.Domain
 open CPN.Simulator.Operators
 
 /// Type representing the data of a Multiset
-type MultiSetData =
-    { values: Map<string, int>
+type MultiSetData<'T when 'T: comparison> =
+    { values: Map<'T, int>
       color: ColorSet }
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
 [<CustomEquality; CustomComparison>]
-type MultiSet = 
-    | MS of MultiSetData
+type MultiSet<'T when 'T: comparison> = 
+    | MS of MultiSetData<'T>
     
     member xMS.colorMatch yMS = 
         let (MS x, MS y) = xMS, yMS
@@ -19,7 +19,7 @@ type MultiSet =
 
     override xMS.Equals(yObj) =
         match yObj with
-        | :? MultiSet as yMS -> 
+        | :? MultiSet<'T> as yMS -> 
             let (MS x, MS y) = xMS, yMS
             (x.color = y.color) && (x.values = y.values)
         | _ -> false
@@ -31,13 +31,13 @@ type MultiSet =
             let disjointCompare = compareMap "cannot compare disjoint multisets"
 
             match yObj with
-            | :? MultiSet as yMS when xMS = yMS -> 0
-            | :? MultiSet as yMS when xMS.colorMatch yMS -> 
+            | :? MultiSet<'T> as yMS when xMS = yMS -> 0
+            | :? MultiSet<'T> as yMS when xMS.colorMatch yMS -> 
                 let (MS x, MS y) = xMS, yMS
                 match compare (x.values |> Map.count) (y.values |> Map.count) with
                 | 1 -> disjointCompare 1 y.values x.values
                 | compared -> disjointCompare compared x.values y.values
-            | :? MultiSet -> invalidArg "yObj" "cannot compare multisets of different colors"
+            | :? MultiSet<'T> -> invalidArg "yObj" "cannot compare multisets of different colors"
             | _ -> invalidArg "yObj" "cannot compare values of different types"
 
 
@@ -72,10 +72,10 @@ module MultiSet =
                 //        RandomSet (token, rest |> Map.ofList) 
 
         /// Empty Token Set
-        let emptyTS = Map.empty<string, int>
+        let emptyTS<'T when 'T: comparison> = Map.empty<'T, int>
 
         /// Given two MultiSets it returns if they colors match
-        let colorMatch (xMS: MultiSet) yMS = xMS.colorMatch yMS
+        let colorMatch (xMS: MultiSet<_>) yMS = xMS.colorMatch yMS
 
         /// Given a Token list ir reduce it
         let reduceTokenList redundantTokenList = 
@@ -93,10 +93,11 @@ module MultiSet =
     
 
     /// It creates and empty MultiSet
-    let empty = MS { values = emptyTS ; color = ColorSet.empty }
+    let empty = MS { values = emptyTS<unit> ; color = ColorSet.empty }
 
     /// Given a color it creates and empty MultiSet color-bound
-    let emptyWithColor color = MS { values = emptyTS ; color = color }
+    let emptyWithColor<'T when 'T: comparison> color : MultiSet<'T> = 
+        MS { values = emptyTS<'T> ; color = color }
 
     /// Given a MultiSet check if it's empty
     // TODO: Check if it's needed to differentiate empty for emptyWithColor
@@ -115,7 +116,7 @@ module MultiSet =
                 resAcc
                 >>= fun acc ->
                     color 
-                    |> ColorSet.colorVal value
+                    |> ColorSet.colorValue value
                     >>= fun _colorVal -> 
                         match qty |> System.Int32.TryParse with
                         | true, intVal -> Ok (value, intVal)
@@ -130,8 +131,8 @@ module MultiSet =
     let asString (MS { values = placeMarking }) = 
         "" |> Map.foldBack (fun value qty acc ->
             match acc with
-            | "" -> sprintf "%i`%s" qty value 
-            | acc -> sprintf "%s++%i`%s" acc qty value 
+            | "" -> sprintf "%i`%A" qty value 
+            | acc -> sprintf "%s++%i`%A" acc qty value 
         ) placeMarking
     
     /// Given two MultiSets it returns the first with the elements of the
@@ -244,7 +245,7 @@ module MultiSet =
     let addTokens addQty (MS { values = multiSet; color = color }) =  
         match multiSet with
         | Empty ->
-            match color |> ColorSet.randomVal with
+            match color |> ColorSet.randomValue with
             | Error err -> Error err
             | Ok random -> Ok <| emptyTS.Add(random, addQty)
         | Unique (value, qty) -> Ok <| emptyTS.Add(value, qty + addQty)
