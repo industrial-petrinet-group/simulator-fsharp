@@ -19,7 +19,7 @@ type BooleanCS =
               colorSetHash = hash booleanCSD }
         
         member _.Init = fun () -> false
-        
+ 
         member _.Size = Ok 2
         
         member _.All = Ok [ false; true ]

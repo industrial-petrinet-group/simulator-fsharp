@@ -2,6 +2,7 @@
 
 open CPN.Simulator.Domain
 
+[<StructuredFormatDisplay("VoidCS = {Show}")>]
 type VoidCS = 
     | VoidCS
     
@@ -28,4 +29,6 @@ type VoidCS =
         member _.Ordinal _colorValue = Error <| CSErrors (NotUsable "ordinal")
     
         member _.Color _index = Error <| CSErrors (NotUsable "color")
+
+    member this.Show = Common.asString (this :> IColorSet<unit>)
 

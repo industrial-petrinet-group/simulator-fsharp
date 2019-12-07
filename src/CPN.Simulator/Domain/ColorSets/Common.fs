@@ -8,6 +8,7 @@ type CSMetaData =
       internalType: System.Type
       colorSetHash: int }
 
+/// Interface implemented by all ColorSets
 type IColorSet<'T> =
     /// Return the Meta Data asociated with the Color Set
     abstract member MetaData : CSMetaData
@@ -41,15 +42,16 @@ type IColorSet<'T> =
     /// Return a random value of this color set.
     abstract member Random : Result<'T, Errors>
 
+/// Module implementing common functions for ColorSets
 module Common =
+    /// Random generator 
     let rnd = System.Random()
 
-    let inline asString cs =
-        let allValues = 
-            match (^T: (member All: Result<'a list,_>) cs) with
-            | Error _ -> ""
-            | Ok list -> sprintf "%A" list
-    
-        sprintf "%s" allValues   
+    /// Given a IColorSet it returns a String representing it.
+    let inline asString (cs: IColorSet<_>) =
+        match cs.All with
+        | Error _ -> ""
+        | Ok list -> sprintf "%A" list
+        |> sprintf "%s"
    
 

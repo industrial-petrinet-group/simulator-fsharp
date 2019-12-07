@@ -3,25 +3,26 @@ namespace CPN.Simulator.Domain
 open CPN.Simulator.Operators
 open CPN.Simulator.Domain.ColorSets
 
-// Look for a way to compare colors in multiset and have the ability to check
-// for the internal type. Also think if it's plausible to use this way of 
-// constraining through members or should be better to use an Interface that 
-// will provide the abobe kind of comparission for free without the choice type.
-
 /// Module implementing ColorSet's operations
 module ColorSet =
-    /// Return an empty Color Set
+    /// Return an empty colorset
     let empty = VoidCS :> IColorSet<unit>
-
-    let inline colorValue colorString cs = 
-        (^T: (member ColorValue:_->_) (cs, colorString))
     
-    let inline colorString colorValue cs = 
-        (^T: (member ColorString:_->_) (cs, colorValue))
-
-    let inline randomValue cs =
-        (^T: (member Random: _) cs)
+    /// Given a supposed member it checks if is an actual member of the 
+    /// colorset and return it's value if it is. 
+    let inline colorValue colorString (cs: IColorSet<_>) = 
+        cs.ColorValue colorString
     
-    let inline randomString cs =
-        (^T: (member Random: Result<_,_>) cs) 
+    /// Given a supposed member and a colorset it checks if the value is a 
+    /// member of the set and return it's string color set value if it is. 
+    let inline colorString colorValue (cs: IColorSet<_>) = 
+        cs.ColorString colorValue
+    
+    /// Return a random value of this colorset.
+    let inline randomValue (cs: IColorSet<_>) =
+        cs.Random
+    
+    /// Return a random value of this colorset as a string.
+    let inline randomString (cs: IColorSet<_>) =
+        cs.Random
         >>= fun randomValue -> colorString randomValue cs

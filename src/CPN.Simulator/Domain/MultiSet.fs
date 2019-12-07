@@ -14,10 +14,10 @@ type MultiSetData<'T when 'T: comparison> =
 type MultiSet<'T when 'T: comparison> = 
     | MS of MultiSetData<'T>
     
-    member xMS.colorMatch yMS = 
+    member xMS.SameColor yMS = 
         let (MS x, MS y) = xMS, yMS in x.color.MetaData = y.color.MetaData
 
-    member xMS.atLeastOneIsEmpty yMS =
+    member xMS.OneIsEmpty yMS =
         let (MS x, MS y) = xMS, yMS
         x.color.MetaData = ColorSet.empty.MetaData || 
         y.color.MetaData = ColorSet.empty.MetaData
@@ -39,7 +39,7 @@ type MultiSet<'T when 'T: comparison> =
             // values for diferent maps; I need to treat Empty as an special Case
             match yObj with
             | :? MultiSet<'T> as yMS when xMS = yMS -> 0
-            | :? MultiSet<'T> as yMS when xMS.atLeastOneIsEmpty yMS ->
+            | :? MultiSet<'T> as yMS when xMS.OneIsEmpty yMS ->
                 let (MS x, MS y) = xMS, yMS
                 let bothEmpty = x.color.MetaData = ColorSet.empty.MetaData,
                                 y.color.MetaData = ColorSet.empty.MetaData    
@@ -47,12 +47,12 @@ type MultiSet<'T when 'T: comparison> =
                 | true, true -> 0
                 | true, false -> -1
                 | false, true -> 1
-            | :? MultiSet<'T> as yMS when xMS.colorMatch yMS -> 
+            | :? MultiSet<'T> as yMS when xMS.SameColor yMS -> 
                 let (MS x, MS y) = xMS, yMS
                 match compare (x.values |> Map.count) (y.values |> Map.count) with
                 | 1 -> disjointCompare 1 y.values x.values
                 | compared -> disjointCompare compared x.values y.values
-            | :? MultiSet<'T> -> invalidArg "yObj" "cannot compare multisets of different colors"
+            | :? MultiSet<_> -> invalidArg "yObj" "cannot compare multisets of different colors"
             | _ -> invalidArg "yObj" "cannot compare values of different types"
 
 
@@ -90,7 +90,8 @@ module MultiSet =
         let emptyTS<'T when 'T: comparison> = Map.empty<'T, int>
 
         /// Given two MultiSets it returns if they colors match
-        let colorMatch (xMS: MultiSet<_>) yMS = xMS.colorMatch yMS
+        let sameColorOrEmpty (xMS: MultiSet<_>) yMS = 
+            xMS.SameColor yMS || xMS.OneIsEmpty yMS
 
         /// Given a Token list ir reduce it
         let reduceTokenList redundantTokenList = 
@@ -153,7 +154,7 @@ module MultiSet =
     /// Given two MultiSets it returns the first with the elements of the
     /// second added.
     let add (MS x as xMS) (MS y as yMS) =
-        match (colorMatch xMS yMS) with
+        match (sameColorOrEmpty xMS yMS) with
         | false -> Error <| MSErrors (UnmatchedColors [x.color.ToString(); y.color.ToString()])
         | true -> 
             let { values = xVals }, { values = yVals } = x, y
@@ -170,7 +171,7 @@ module MultiSet =
     /// Given two MultiSets it returns the first without the elements of the 
     /// second; it only works if the second one is less than or equal.
     let remove (MS x as xMS) (MS y as yMS) =
-        match (colorMatch xMS yMS) with
+        match (sameColorOrEmpty xMS yMS) with
         | false -> Error <| MSErrors (UnmatchedColors [x.color.ToString(); y.color.ToString()])
         | true -> 
             try 
@@ -278,9 +279,6 @@ type MultiSet with
     /// Static operator ( ** ) implementation of MultiSet.scalarMultiply
     static member Pow (xMS, k) = MultiSet.scalarMultiply k xMS
 
-    ///// Static operator implementation of MultiSet.scalar
-    //static member ( ** ) (xMS, k) = MultiSet.scalar k xMS
-  
     /// Reimplements the way of showing the MultiSet
     member this.Show =
         let (MS { color = color }) = this
