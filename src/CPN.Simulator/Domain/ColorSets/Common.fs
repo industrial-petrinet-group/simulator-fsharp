@@ -2,7 +2,7 @@ namespace CPN.Simulator.Domain.ColorSets
 
 open CPN.Simulator.Domain
 
-/// Type representing MetaData for all Color Sets
+/// Type representing MetaData for all ColorSets
 type CSMetaData = 
     { name: string
       internalType: System.Type
@@ -10,10 +10,10 @@ type CSMetaData =
 
 /// Interface implemented by all ColorSets
 type IColorSet<'T> =
-    /// Return the Meta Data asociated with the Color Set
+    /// Return the Meta Data asociated with the colorset
     abstract member MetaData : CSMetaData
     
-    /// Return the base initial value for this color set.
+    /// Return the base initial value for this colorset.
     abstract member Init : (unit -> 'T)
     
     /// Given a value of the type it checks if it's a legal one
@@ -23,23 +23,23 @@ type IColorSet<'T> =
     /// return it's value if it is.
     abstract member ColorValue : string -> Result<'T, Errors>
     
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's string color set value if it is. 
+    /// Given a supposed member and a colorset it checks if the value is a 
+    /// member of the set and return it's string colorset value if it is. 
     abstract member ColorString : 'T -> Result<string, Errors>
     
-    /// Return a list of all posible values for this color set.
+    /// Return a list of all posible values for this colorset.
     abstract member All : Result<'T list, Errors>
 
-    /// Return the number of different vaules in this color set.
+    /// Return the number of different vaules in this colorset.
     abstract member Size : Result<int, Errors>
 
-    /// Return the ordinal position of every value in this color set.
+    /// Return the ordinal position of every value in this colorset.
     abstract member Ordinal : 'T -> Result<int, Errors>
 
-    /// Return the actual value for the given position in this color set.
+    /// Return the actual value for the given position in this colorset.
     abstract member Color : int -> Result<'T, Errors>
     
-    /// Return a random value of this color set.
+    /// Return a random value of this colorset.
     abstract member Random : Result<'T, Errors>
 
 /// Module implementing common functions for ColorSets

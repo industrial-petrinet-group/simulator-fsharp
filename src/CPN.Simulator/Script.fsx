@@ -1,18 +1,19 @@
 #load "./Operators.fs" 
 #load "./Domain/Errors.fs"
 #load "./Domain/ColorSets/Common.fs"
+#load "./Domain/ColorSets/Void.fs"
 #load "./Domain/ColorSets/Unit.fs"
 #load "./Domain/ColorSets/Boolean.fs"
-//#load "./Domain/ColorSet.fs"
-//#load "./Domain/MultiSet.fs"
-//#load "./Domain/Place.fs"
-//#load "./Domain/Transition.fs"
-//#load "./Domain/Arc.fs"
-//#load "./Domain/Net.fs"
+#load "./Domain/ColorSet.fs"
+#load "./Domain/MultiSet.fs"
+#load "./Domain/Place.fs"
+#load "./Domain/Transition.fs"
+#load "./Domain/Arc.fs"
+#load "./Domain/Net.fs"
 
-//#load "./Domain/CPN.fs"
-//#load "./SampleNets.fs"
-//#load "./Runtime.fs" 
+#load "./Domain/CPN.fs"
+#load "./SampleNets.fs"
+#load "./Runtime.fs" 
 
 
 open CPN.Simulator
@@ -27,7 +28,32 @@ open CPN.Simulator.Domain.ColorSets;;
 //let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
 
 
-let steps = SampleNets.notSoSimpleNet |> Runtime.allSteps
+let inline specify (placeData: IPlaceData) : PlaceData<_> = 
+    let internalType =
+        (placeData :?> PlaceData<_>).color.MetaData.internalType
+
+    let resultType =
+        typeof<PlaceData<_>>.MakeGenericType internalType
+
+    System.Convert.ChangeType(placeData, resultType) :?> PlaceData<_>
+
+type EspecificList =
+    | IntList of int list
+    | BoolList of bool list
+
+let listLength = function
+    | IntList list -> List.length list
+    | BoolList list -> List.length list
+
+let listGenericFunc (func: List<'a> -> 'b) = function
+    | IntList list -> func list
+    | BoolList list -> func list
+
+    
+
+
+
+let steps = SampleNets.simpleBooleanNet |> Runtime.allSteps
 
 steps |> Seq.length
 

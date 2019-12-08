@@ -5,19 +5,23 @@ open CPN.Simulator.Domain.ColorSets
 
 module SampleNets =
     // Simple definitions for convinience
-    let (Ok unitCS) = Unit.create None
-    let unitColor = UnitCS unitCS
-    let emptyMS = MultiSet.emptyWithColor<string> unitColor
+    let (Ok unitColor) = UnitCS.create None
+    let (Ok boolColor) = BooleanCS.create None
+    let emptyMS = MultiSet.emptyWithColor unitColor
+    let emptyBMS = MultiSet.emptyWithColor boolColor
     let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1
     let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
+    let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1
+
+    let mIPD (pd : PlaceData<_>) = pd :> IPlaceData 
 
     /// Definition of the most simple petri net
     let simpleNet : CPN =
    
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS }).
-                Add(P 2, { name = "P2"; color = unitColor; marking = emptyMS })
+                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS }).
+                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -34,16 +38,38 @@ module SampleNets =
         
         CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
     
+    /// Definition of the most simple booleanpetri net
+    let simpleBooleanNet : CPN =
+   
+        let places = 
+            Map.empty.
+                Add(P 1, mIPD { name = "P1"; color = boolColor; marking = boolMS }).
+                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = emptyMS })
+
+        let transitions = 
+            Map.empty.
+                Add(T 1, { name = "T1"; bindings = [] })
+
+        let arcs = 
+            Map.empty.
+                Add(A 1, {expression = ""}).
+                Add(A 2, {expression = ""})
+        
+        let net = 
+            Map.empty.
+                Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
+        
+        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
     /// Definition of an slightly more complex net
     let notSoSimpleNet : CPN = 
         
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS3 }).
-                Add(P 2, { name = "P2"; color = unitColor; marking = unitMS }).
-                Add(P 3, { name = "P3"; color = unitColor; marking = emptyMS }).
-                Add(P 4, { name = "P4"; color = unitColor; marking = emptyMS }).
-                Add(P 5, { name = "P5"; color = unitColor; marking = emptyMS })
+                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS3 }).
+                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = unitMS }).
+                Add(P 3, mIPD { name = "P3"; color = unitColor; marking = emptyMS }).
+                Add(P 4, mIPD { name = "P4"; color = unitColor; marking = emptyMS }).
+                Add(P 5, mIPD { name = "P5"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -74,11 +100,11 @@ module SampleNets =
     let randomlyPathedNet =
         let places = 
             Map.empty.
-                Add(P 1, { name = "P1"; color = unitColor; marking = unitMS }).
-                Add(P 2, { name = "P2"; color = unitColor; marking = unitMS }).
-                Add(P 3, { name = "P3"; color = unitColor; marking = unitMS }).
-                Add(P 4, { name = "P4"; color = unitColor; marking = emptyMS }).
-                Add(P 5, { name = "P5"; color = unitColor; marking = emptyMS })
+                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS }).
+                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = unitMS }).
+                Add(P 3, mIPD { name = "P3"; color = unitColor; marking = unitMS }).
+                Add(P 4, mIPD { name = "P4"; color = unitColor; marking = emptyMS }).
+                Add(P 5, mIPD { name = "P5"; color = unitColor; marking = emptyMS })
 
         let transitions = 
             Map.empty.

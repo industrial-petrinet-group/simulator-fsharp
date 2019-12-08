@@ -1,17 +1,18 @@
 namespace CPN.Simulator.Domain
 
+open CPN.Simulator.Domain
 open CPN.Simulator.Operators
 open CPN.Simulator.Domain.ColorSets
 
 /// Type representing the data of a Multiset
-type MultiSetData<'T when 'T: comparison> =
+type MultiSetData<'T when 'T : comparison> =
     { values: Map<'T, int>
       color: IColorSet<'T> }
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
 [<CustomEquality; CustomComparison>]
-type MultiSet<'T when 'T: comparison> = 
+type MultiSet<'T when 'T : comparison> = 
     | MS of MultiSetData<'T>
     
     member xMS.SameColor yMS = 
@@ -107,13 +108,14 @@ module MultiSet =
             |> reduceTokenList
             |> List.fold (fun acc (value, qty) -> acc |> Map.add value qty) emptyTS
     
+    let unbox func = fun (MS msData as ms) -> func ms
 
     /// It creates and empty MultiSet
     let empty = MS { values = emptyTS<unit> ; color = ColorSet.empty }
 
     /// Given a color it creates and empty MultiSet color-bound
-    let emptyWithColor<'T when 'T: comparison> color : MultiSet<'T> = 
-        MS { values = emptyTS<'T> ; color = color }
+    let emptyWithColor color = 
+        MS { values = emptyTS ; color = color }
 
     /// Given a MultiSet check if it's empty
     // TODO: Check if it's needed to differentiate empty for emptyWithColor
@@ -142,7 +144,7 @@ module MultiSet =
             >>= switch mapOfTokenList
             >>= fun tokenMap -> Ok (MS { values = tokenMap; color = color })
         | _ -> Error <| MSErrors (BadFormattedInputString inputString)
-
+        
     /// Given a MultiSet it returns it's elements parsed as a single string.
     let asString (MS { values = placeMarking }) = 
         "" |> Map.foldBack (fun value qty acc ->
@@ -150,7 +152,7 @@ module MultiSet =
             | "" -> sprintf "%i`%A" qty value 
             | acc -> sprintf "%s++%i`%A" acc qty value 
         ) placeMarking
-    
+
     /// Given two MultiSets it returns the first with the elements of the
     /// second added.
     let add (MS x as xMS) (MS y as yMS) =
@@ -205,14 +207,14 @@ module MultiSet =
         multiset |> Map.fold (fun acc _ qty -> acc + qty) 0
     
     /// Given a multiset it returs a random value
-    let random (MS { values = multiset } as ms) =
+    let random (MS { values = multiset; color = color} as ms) =
         multiset 
         |> Map.fold (fun (finish, acc, result) value qty ->
             match finish, acc < qty with
             | true, _ -> finish, acc, result
             | false, true -> true, acc, value
             | false, false -> false, acc - qty, result
-        ) (false, random.Next(ms |> size), "")
+        ) (false, random.Next(ms |> size), color.Init())
         |> fun (_, _, result) -> result
     
     /// Given a color value and a multiset it returns the number of ocurrences 
@@ -269,7 +271,7 @@ module MultiSet =
         >>= fun newValues ->
             Ok <| MS { values = newValues; color = color }
 
-type MultiSet with
+type MultiSet<'T when 'T: comparison> with
     /// Static operator implementation of MultiSet.add
     static member ( ++ ) (xMS, yMS) = MultiSet.add xMS yMS
     
