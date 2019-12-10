@@ -20,6 +20,10 @@ open CPN.Simulator
 open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets;;
 
+let (Ok unitCS) = UnitCS.create None
+
+let steps = SampleNets.simpleBooleanNet
+
 //let (Ok unitCS) = Unit.create None
 //let unitColour = UnitCS unitCS;;
 
@@ -45,13 +49,99 @@ let listLength = function
     | IntList list -> List.length list
     | BoolList list -> List.length list
 
-let listGenericFunc (func: List<'a> -> 'b) = function
-    | IntList list -> func list
-    | BoolList list -> func list
+let listGenericFunc func = function
+    | IntList list -> list |> box |> func |> unbox
+    | BoolList list -> list |> box |> func |> unbox
 
+let listGenericFunc2 func list = list |> func
+
+let pdType = typeof<PlaceData<_>>.MakeGenericType typeof<unit>
+
+System.Convert.ChangeType(obj, pdType);
+
+let (x : int) =
+    [1; 2; 3]
+    |> listGenericFunc2 List.length
+
+let (y : int) =
+    [true; false]
+    |> listGenericFunc2 List.length
+
+type UniversalListLength = abstract member Eval<'a> : 'a -> 'a
+
+let id : UniversalId =
+    { new UniversalId with
+        member __.Eval<'a> (x : 'a) : 'a = x }
+
+let id2 =
+    { new UniversalId with
+        member __.Eval<'a> (x : 'a) : 'a = x }.Eval
+
+type Id3 = Id3 with static member ( $ ) (Id3, x) = x
+
+let a = id.Eval("pepe")
+let b = id2 "pepe"
+let c = id.Eval(3)
+let d = id2 3
+
+// work
+let execute (func : UniversalId) (x: obj) =
+    match x with
+    | :? int as i -> sprintf "Int %i" (func.Eval i)
+    | :? bool as b -> sprintf "Bool %b" (func.Eval b)
+    | :? string as s -> sprintf "Str %s" (func.Eval s)
+
+// Does not work
+let execute2 (func: 'a -> 'a) (x: obj) =
+    match x with
+    | :? int as i -> sprintf "Int %i" (func i)
+    | :? bool as b -> sprintf "Bool %b" (func b)
+    | :? string as s -> sprintf "Str %s" (func s)
+
+
+type ListLength = ListLength with static member ( $ ) (ListLength, x) = x |> List.length
+
+let inline applier f x = f $ x
+
+let listGenericFuncInline func = function
+    | IntList list -> applier func list
+    | BoolList list -> applier func list
+
+listGenericFuncInline ListLength (IntList [1; 2; 3]) 
+listGenericFuncInline ListLength (BoolList [true; false])
+
+//work
+let execute3 func (x: obj) =
+    match x with
+    | :? int as i -> sprintf "Int %i" (applier func i)
+    | :? bool as b -> sprintf "Bool %b" (applier func b)
+    | :? string as s -> sprintf "Str %s" (applier func s)
+
+
+execute id 3
+execute id true
+execute id "pepe"
+//execute2 id2 3 "pepe"
+
+execute3 Id3 3
+execute3 Id3 true
+execute3 Id3 "pepe"
+
+module MSCrate =
     
+    let make (ms : MultiSet<'a>) =
+        { new MSCrate with
+            member __.Apply e = e.Eval ms }
+    
+    let extract (msCrate : MSCrate) =
+        msCrate.Apply 
+            { new MSCrateEvaluator<obj> with
+                 member __.Eval ms = box ms } |> unbox
 
-
+    let asString (msCrate : MSCrate) = //MultiSet.asString
+        msCrate.Apply 
+            { new MSCrateEvaluator<string> with
+                member __.Eval ms = ms |> MultiSet.asString }
 
 let steps = SampleNets.simpleBooleanNet |> Runtime.allSteps
 

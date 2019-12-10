@@ -1,51 +1,67 @@
 namespace CPN.Simulator.Domain
 
-open System.Collections
 open CPN.Simulator.Operators
-open CPN.Simulator.Domain.ColorSets
 
 /// Type representing a Place Id
 type PlaceId = P of int
 
-type IPlaceData =
-    abstract member Name: string
+type MSCrate =
+    abstract member Apply : MSCrateEvaluator<'ret> -> 'ret
+and MSCrateEvaluator<'ret> =
+    abstract member Eval<'a when 'a : comparison> : MultiSet<'a> -> 'ret  
+
+module MSCrate =
+    
+    let make (ms : MultiSet<'a>) =
+        { new MSCrate with
+            member __.Apply e = e.Eval ms }
+            
+    let extract (msCrate : MSCrate) =
+        msCrate.Apply 
+            { new MSCrateEvaluator<obj> with
+                 member __.Eval ms = box ms } |> unbox
+
+    let isEmpty (msCrate : MSCrate) = //MultiSet.asString
+        msCrate.Apply 
+            { new MSCrateEvaluator<_> with
+                member __.Eval ms = ms |> MultiSet.isEmpty }
+    
+    let addTokens addQty (msCrate : MSCrate) =
+        msCrate.Apply 
+            { new MSCrateEvaluator<_> with
+                member __.Eval ms = 
+                    ms |> MultiSet.addTokens addQty
+                    >>= fun modifiedMS -> Ok <| make modifiedMS }
+
+    let removeTokens removeQty (msCrate : MSCrate) =
+        msCrate.Apply 
+            { new MSCrateEvaluator<_> with
+                member __.Eval ms = 
+                    ms |> MultiSet.removeTokens removeQty
+                    >>= fun modifiedMS -> Ok <| make modifiedMS }
+
+    let asString (msCrate : MSCrate) = //MultiSet.asString
+        msCrate.Apply 
+            { new MSCrateEvaluator<_> with
+                member __.Eval ms = ms |> MultiSet.asString }
 
 /// Type representing a Place Data
-type PlaceData<'T when 'T : comparison> = 
+type PlaceData = 
     { name: string
-      color: IColorSet<'T> 
-      marking: MultiSet<'T> }
-
-    interface IPlaceData with member this.Name = this.name
+      marking: MSCrate }
 
 /// Type representing a collection of places
 type Places = 
-    | Places of Map<PlaceId, IPlaceData>
-
-module GenericMultiSet =
-    let asString (placeData: IPlaceData) =      
-        match placeData with
-        | :? PlaceData<unit> as pd -> pd.marking |> MultiSet.asString
-        | :? PlaceData<bool> as pd -> pd.marking |> MultiSet.asString
+    | Places of Map<PlaceId, PlaceData>
 
 /// Module implementing Place's operations.
 module Place =
     /// Module for for private implementation details
     [<AutoOpen>]
     module private Implementation =
-        
-        let inline specify (placeData: IPlaceData) : PlaceData<_> = 
-            let internalType =
-                (placeData :?> PlaceData<_>).color.MetaData.internalType
-        
-            let resultType =
-                typeof<PlaceData<_>>.MakeGenericType internalType
-        
-            System.Convert.ChangeType(placeData, resultType) :?> PlaceData<_>
-        
 
         /// Given a PlaceData it return it's marking parsed as a string.
-        let markingAsString = GenericMultiSet.asString
+        let markingAsString placeData = placeData.marking |> MSCrate.asString 
     
         /// Given Places and a list of PlacesId to filter it returns a list of the 
         /// marking of all places parsed as a string and filtered based on the 
@@ -68,7 +84,7 @@ module Place =
     let hasTokens pid (Places places) =
         match places |> Map.tryFind pid with
         | None -> false
-        | Some placeData -> not ((specify placeData).marking |> MultiSet.isEmpty)  
+        | Some placeData -> not (placeData.marking |> MSCrate.isEmpty)  
     
     /// Given the places it returns the string list marking for every PlaceID
     let placesMarkingAsStringList (Places places) =
@@ -84,25 +100,25 @@ module Place =
         match places |> Map.tryFind pid with
         | None -> Error <| PErrors (InexistenPid (pid, Places places))
         | Some placeData -> 
-            (specify placeData).marking 
-            |> MultiSet.removeTokens removeQty
+            placeData.marking
+            |> MSCrate.removeTokens removeQty
             |> function
                 | Error _ -> Error <| PErrors (InsufficientTokensOn (pid, Places places))
                 | Ok newMarking ->
                     Ok (Places <| places.
                                     Remove(pid).
-                                    Add(pid, { (specify placeData) with marking = newMarking }))
+                                    Add(pid, { placeData with marking = newMarking }))
     
     let addTokens addQty pid (Places places) =
         match places |> Map.tryFind pid with
         | None -> Error <| PErrors (InexistenPid (pid, Places places))
         | Some placeData -> 
-            (specify placeData).marking 
-            |> MultiSet.addTokens addQty
+            placeData.marking
+            |> MSCrate.addTokens addQty
             >>= fun newMarking ->
                 Ok (Places <| places.
                                 Remove(pid).
-                                Add(pid, { (specify placeData) with marking = newMarking }))
+                                Add(pid, { placeData with marking = newMarking}))
     
     let modifyTokensForList modifyFunc qty pids places =        
         pids 

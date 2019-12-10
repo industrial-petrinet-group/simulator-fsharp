@@ -1,5 +1,5 @@
 namespace CPN.Simulator
-
+open CPN.Simulator.Operators
 open CPN.Simulator.Domain
 open CPN.Simulator.Domain.ColorSets
 
@@ -7,21 +7,19 @@ module SampleNets =
     // Simple definitions for convinience
     let (Ok unitColor) = UnitCS.create None
     let (Ok boolColor) = BooleanCS.create None
-    let emptyMS = MultiSet.emptyWithColor unitColor
-    let emptyBMS = MultiSet.emptyWithColor boolColor
-    let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1
-    let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
-    let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1
-
-    let mIPD (pd : PlaceData<_>) = pd :> IPlaceData 
+    let emptyMS = MultiSet.emptyWithColor unitColor |> MSCrate.make
+    let emptyBMS = MultiSet.emptyWithColor boolColor |> MSCrate.make
+    let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1 >>= fun x -> Ok (MSCrate.make x)
+    let (Ok unitMS3) = unitMS |> MSCrate.addTokens 2
+    let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1 >>= fun x -> Ok (MSCrate.make x)
 
     /// Definition of the most simple petri net
     let simpleNet : CPN =
    
         let places = 
             Map.empty.
-                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS }).
-                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = emptyMS })
+                Add(P 1, { name = "P1"; marking = unitMS }).
+                Add(P 2, { name = "P2"; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -43,8 +41,8 @@ module SampleNets =
    
         let places = 
             Map.empty.
-                Add(P 1, mIPD { name = "P1"; color = boolColor; marking = boolMS }).
-                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = emptyMS })
+                Add(P 1, { name = "P1"; marking = boolMS }).
+                Add(P 2, { name = "P2"; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -65,11 +63,11 @@ module SampleNets =
         
         let places = 
             Map.empty.
-                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS3 }).
-                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = unitMS }).
-                Add(P 3, mIPD { name = "P3"; color = unitColor; marking = emptyMS }).
-                Add(P 4, mIPD { name = "P4"; color = unitColor; marking = emptyMS }).
-                Add(P 5, mIPD { name = "P5"; color = unitColor; marking = emptyMS })
+                Add(P 1, { name = "P1"; marking = unitMS3 }).
+                Add(P 2, { name = "P2"; marking = unitMS }).
+                Add(P 3, { name = "P3"; marking = emptyMS }).
+                Add(P 4, { name = "P4"; marking = emptyMS }).
+                Add(P 5, { name = "P5"; marking = emptyMS })
 
         let transitions = 
             Map.empty.
@@ -100,11 +98,11 @@ module SampleNets =
     let randomlyPathedNet =
         let places = 
             Map.empty.
-                Add(P 1, mIPD { name = "P1"; color = unitColor; marking = unitMS }).
-                Add(P 2, mIPD { name = "P2"; color = unitColor; marking = unitMS }).
-                Add(P 3, mIPD { name = "P3"; color = unitColor; marking = unitMS }).
-                Add(P 4, mIPD { name = "P4"; color = unitColor; marking = emptyMS }).
-                Add(P 5, mIPD { name = "P5"; color = unitColor; marking = emptyMS })
+                Add(P 1, { name = "P1"; marking = unitMS }).
+                Add(P 2, { name = "P2"; marking = unitMS }).
+                Add(P 3, { name = "P3"; marking = unitMS }).
+                Add(P 4, { name = "P4"; marking = emptyMS }).
+                Add(P 5, { name = "P5"; marking = emptyMS })
 
         let transitions = 
             Map.empty.
