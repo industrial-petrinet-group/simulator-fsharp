@@ -248,3 +248,135 @@ SampleNets.notSoSimpleNet |> Runtime.allSteps;;
 // let a = SampleNets.notSoSimpleNet |> Runtime.step
 // let b = net1 |> Runtime.step
 // let c = net2 |> Runtime.step;;
+
+
+type Cell =
+    abstract Accept : CellFunc<'R> -> 'R
+    abstract Extract : 'a -> 'a
+
+and Cell<'T> = { Items : 'T list }
+with
+    member cell.Id = cell
+    interface Cell with
+      member cell.Accept f = f.Invoke<'T> cell
+      member cell.Extract cell2 = cell2
+
+and CellFunc<'R> =
+    abstract Invoke<'T> : Cell<'T> -> 'R
+
+let pack (cell : Cell<'T>) = cell :> Cell
+let unpack (cell : Cell) (f : CellFunc<'R>) : 'R = cell.Accept f
+let extract (cell : Cell) = cell.Extract (cell :?> Cell<'a>)
+
+type UniversalId =
+    abstract member Eval<'a> : 'a -> 'a
+
+type UniversalFunc<'ret, 'err> =
+    abstract member Eval<'a> : 'a -> Result<'ret, 'err>
+
+let func (x : 'a) =
+    match box x with
+    | :? string as s -> Ok (System.Int32.TryParse s |> snd)
+    | _ -> Error "Unimplemented"
+
+let p = pack {Items = ["45";"2"]}
+
+
+let map (func : UniversalFunc<_,_>) (c : Cell) = unpack c {
+    new CellFunc<Cell> with
+        member __.Invoke cell =
+               pack { Items = cell.Items |> List.map func.Eval |> List.map (function Ok x -> x) }}
+
+let cell = map {
+            new UniversalFunc<int, string> with
+                member __.Eval x = func x } p
+
+let z () = extract cell
+
+type CSErrors =
+    | InvalidColorValue
+    | InvalidColorString
+
+type CS =
+    abstract member _ColorValue<'T> : string -> (string -> Result<'T, CSErrors>) -> Result<'T, CSErrors>
+    abstract member ColorString<'T> : 'T -> Result<string, CSErrors>
+
+type UnitCSData = 
+    { unit : string }
+
+type UnitCS =
+    | Unit of UnitCSData
+
+    interface CS with
+        member __._ColorValue colorString parse = parse colorString
+        
+        member this.ColorString _colorValue = 
+            let (Unit unitCSD) = this in Ok unitCSD.unit
+    
+    member __.Deserializer _colorString = Ok ()
+
+    member this.ColorValue colorString = (this :> CS)._ColorValue colorString this.Deserializer
+
+type BoolCSData = 
+    { falsy : string 
+      truthy : string }
+    
+type BoolCS =
+    | Bool of BoolCSData
+    
+    interface CS with
+        member __._ColorValue colorString parse = parse colorString
+            
+        member this.ColorString colorValue = 
+            let (Bool boolCSD) = this
+
+            match box colorValue with
+            | :? bool as cv -> Ok <| if cv then boolCSD.truthy else boolCSD.falsy
+            | _ -> Error <| InvalidColorValue
+            
+        
+    member private this._Deserializer colorString = 
+        let (Bool boolCSD) = this
+        let falsyOrTruthy = boolCSD.falsy = colorString,
+                            boolCSD.truthy = colorString
+
+        match falsyOrTruthy with
+        | true, _ -> Ok false
+        | _, true -> Ok true
+        | _ -> Error <| InvalidColorString
+    
+    member this.ColorValue colorString = (this :> CS)._ColorValue colorString this._Deserializer
+ 
+
+ module ColorSet =
+
+    let inline colorValue colorString cs = 
+        (^T: (member ColorValue:_->_) (cs, colorString))
+
+    let inline ofColor< ^T when ^T :> CS> colorValue : ^T=
+        match box colorValue with
+        | :? unit ->  Unit {unit = "()"} :> CS
+        | :? bool ->  Bool {falsy = "falsy"; truthy = "truthy"} :> CS
+        |> fun cs -> cs :?> ^T
+
+
+
+let unitCS = Unit {unit = "()"} 
+let boolCS = Bool {falsy = "falsy"; truthy = "truthy"} 
+
+ColorSet.colorValue "()" unitCS
+ColorSet.colorValue "falsy" boolCS
+
+
+type F2 = 
+    member this.Value func = func ()
+
+type MSData =
+    { values : Map<string, int>
+      color : CS }
+
+type MS =
+    | MS of MSData
+
+
+    
