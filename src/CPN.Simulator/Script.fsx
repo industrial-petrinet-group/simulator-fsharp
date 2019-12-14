@@ -304,6 +304,9 @@ type CSValue =
     | Bigint of bigint
     | Float of float
     | String of string
+    | List of CSValue list // All of the same value
+    | Product of CSValue list // All of any value
+    | Record of (string * CSValue) list
 
 type CS =
     abstract member Deserialize : string -> Result<CSValue, CSErrors>
@@ -313,7 +316,11 @@ type UnitCS =
     { unit : string }
     
     interface CS with
-        member __.Deserialize _colorString = Ok <| Unit ()
+        member this.Deserialize colorString = 
+             match this.unit = colorString with
+             | true -> Ok <| Unit ()
+             | false -> Error InvalidColorString
+
         member this.Serialize colorValue = 
             match colorValue with
             | Unit _ -> Ok <| this.unit
@@ -340,11 +347,22 @@ type BoolCS =
 open CPN.Simulator.Operators
 
 module ColorSet =
+    
+    let packColor color =
+        match box color with
+        | :? unit as unitColor -> Unit unitColor
+        | :? bool as boolColor -> Bool boolColor
+        | :? int as intColor -> Int intColor
+        | :? bigint as bigintColor -> Bigint bigintColor
+        | :? float as floatColor -> Float floatColor
+        | :? string as stringColor -> String stringColor
+    
+    let 
 
-    let inline colorValue colorString (cs : CS) = 
+    let colorValue colorString (cs : CS) = 
         cs.Deserialize colorString
     
-    let inline ofColor color =
+    let defaultColorSet color =
         match color with
         | Unit _ -> Ok ({ unit = "()" } :> CS)
         | Bool _ -> Ok ({ falsy = "falsy"; truthy = "truthy" } :> CS)
@@ -357,27 +375,15 @@ let boolCS = {falsy = "falsy"; truthy = "truthy"}
 ColorSet.colorValue "()" unitCS
 ColorSet.colorValue "falsy" boolCS
 
-Bool true |> ColorSet.ofColor 
->>= ColorSet.colorValue "falsy"
+() 
+|> ColorSet.packColor
+|> ColorSet.defaultColorSet 
+>>= ColorSet.colorValue "()"
 
 
 
-type MS<'T when 'T : comparison> =
-    | MS of Map<'T, int>
-
-
-
-type I = abstract Cond : 'T -> bool 
-
-type A =
-    | A
-    member this.Value = true
-    interface I with member this.Cond _ = match box this.Value with :? bool -> true
-
-type B =
-    | B
-    member this.Value = ()
-    interface I with member this.Cond _ = match box this.Value with :? unit -> false
+type MS =
+    | MS of Map<CSValue, int>
 
 
 open System
