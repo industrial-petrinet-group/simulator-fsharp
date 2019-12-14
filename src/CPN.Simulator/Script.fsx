@@ -297,86 +297,89 @@ type CSErrors =
     | InvalidColorValue
     | InvalidColorString
 
-type CS =
-    abstract member _ColorValue<'T> : string -> (string -> Result<'T, CSErrors>) -> Result<'T, CSErrors>
-    abstract member ColorString<'T> : 'T -> Result<string, CSErrors>
+type CSValue =
+    | Unit of unit
+    | Bool of bool
+    | Int of int
+    | Bigint of bigint
+    | Float of float
+    | String of string
 
-type UnitCSData = 
-    { unit : string }
+type CS =
+    abstract member Deserialize : string -> Result<CSValue, CSErrors>
+    abstract member Serialize : CSValue -> Result<string, CSErrors>
 
 type UnitCS =
-    | Unit of UnitCSData
-
-    interface CS with
-        member __._ColorValue colorString parse = parse colorString
-        
-        member this.ColorString _colorValue = 
-            let (Unit unitCSD) = this in Ok unitCSD.unit
+    { unit : string }
     
-    member __.Deserializer _colorString = Ok ()
-
-    member this.ColorValue colorString = (this :> CS)._ColorValue colorString this.Deserializer
-
-type BoolCSData = 
-    { falsy : string 
-      truthy : string }
+    interface CS with
+        member __.Deserialize _colorString = Ok <| Unit ()
+        member this.Serialize colorValue = 
+            match colorValue with
+            | Unit _ -> Ok <| this.unit
+            | _ -> Error <| InvalidColorValue
     
 type BoolCS =
-    | Bool of BoolCSData
+    { falsy : string 
+      truthy : string } 
     
     interface CS with
-        member __._ColorValue colorString parse = parse colorString
-            
-        member this.ColorString colorValue = 
-            let (Bool boolCSD) = this
+        member this.Deserialize colorString = 
+            match this.falsy = colorString, this.truthy = colorString with
+            | true, _ -> Ok <| Bool false
+            | _, true -> Ok <| Bool true
+            | _ -> Error <| InvalidColorString
 
-            match box colorValue with
-            | :? bool as cv -> Ok <| if cv then boolCSD.truthy else boolCSD.falsy
+        member this.Serialize colorValue = 
+            match colorValue with
+            | Bool bool -> Ok <| if bool then this.truthy else this.falsy
             | _ -> Error <| InvalidColorValue
-            
-        
-    member private this._Deserializer colorString = 
-        let (Bool boolCSD) = this
-        let falsyOrTruthy = boolCSD.falsy = colorString,
-                            boolCSD.truthy = colorString
-
-        match falsyOrTruthy with
-        | true, _ -> Ok false
-        | _, true -> Ok true
-        | _ -> Error <| InvalidColorString
-    
-    member this.ColorValue colorString = (this :> CS)._ColorValue colorString this._Deserializer
  
 
- module ColorSet =
+#load "./Operators.fs" 
+open CPN.Simulator.Operators
 
-    let inline colorValue colorString cs = 
-        (^T: (member ColorValue:_->_) (cs, colorString))
+module ColorSet =
 
-    let inline ofColor< ^T when ^T :> CS> colorValue : ^T=
-        match box colorValue with
-        | :? unit ->  Unit {unit = "()"} :> CS
-        | :? bool ->  Bool {falsy = "falsy"; truthy = "truthy"} :> CS
-        |> fun cs -> cs :?> ^T
+    let inline colorValue colorString (cs : CS) = 
+        cs.Deserialize colorString
+    
+    let inline ofColor color =
+        match color with
+        | Unit _ -> Ok ({ unit = "()" } :> CS)
+        | Bool _ -> Ok ({ falsy = "falsy"; truthy = "truthy" } :> CS)
+        | _ -> Error InvalidColorValue
 
 
-
-let unitCS = Unit {unit = "()"} 
-let boolCS = Bool {falsy = "falsy"; truthy = "truthy"} 
+let unitCS = {unit = "()"} 
+let boolCS = {falsy = "falsy"; truthy = "truthy"} 
 
 ColorSet.colorValue "()" unitCS
 ColorSet.colorValue "falsy" boolCS
 
-
-type F2 = 
-    member this.Value func = func ()
-
-type MSData =
-    { values : Map<string, int>
-      color : CS }
-
-type MS =
-    | MS of MSData
+Bool true |> ColorSet.ofColor 
+>>= ColorSet.colorValue "falsy"
 
 
-    
+
+type MS<'T when 'T : comparison> =
+    | MS of Map<'T, int>
+
+
+
+type I = abstract Cond : 'T -> bool 
+
+type A =
+    | A
+    member this.Value = true
+    interface I with member this.Cond _ = match box this.Value with :? bool -> true
+
+type B =
+    | B
+    member this.Value = ()
+    interface I with member this.Cond _ = match box this.Value with :? unit -> false
+
+
+open System
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
