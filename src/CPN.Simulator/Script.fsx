@@ -293,10 +293,6 @@ let cell = map {
             new UniversalFunc<int, string> with
                 member __.Eval x = func x } p
 
-let x = cell.GetType().GetMethod("Extract").MakeGenericMethod(typeof<>)
-
-
-
 type CSErrors =
     | InvalidColorValue
     | InvalidColorString
@@ -308,9 +304,6 @@ type CSValue =
     | Bigint of bigint
     | Float of float
     | String of string
-    | List of CSValue list // All of the same value
-    | Product of CSValue list // All of any value
-    | Record of (string * CSValue) list
 
 type CS =
     abstract member Name : string

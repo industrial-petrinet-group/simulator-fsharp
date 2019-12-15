@@ -11,7 +11,7 @@ type BoolCS =
     | BoolCS of BooleanCSData
 
     interface ColorSet with
-        member this.MetaData = { Name = "BooleanCS"; Hash = hash this }
+        member _.Name = "BooleanCS"
         
         member _.Init = Bool false
         

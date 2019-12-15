@@ -9,7 +9,7 @@ type UnitCS =
     | UnitCS of UnitCSData
 
     interface ColorSet with
-        member this.MetaData = { Name = "UnitCS"; Hash = hash this }    
+        member _.Name = "UnitCS"   
 
         member _.Init = Unit ()
         
