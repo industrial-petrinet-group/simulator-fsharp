@@ -8,42 +8,37 @@ type UnitCSData = { unit: string }
 type UnitCS = 
     | UnitCS of UnitCSData
 
-    interface IColorSet<unit> with
-        member this.MetaData = 
-            let (UnitCS unitCSD) = this
+    interface ColorSet with
+        member this.MetaData = { Name = "UnitCS"; Hash = hash this }    
 
-            { name = "UnitCS"
-              internalType = typeof<unit>
-              colorSetHash = hash unitCSD }
-    
-        member _.Init = fun () -> ()
-
+        member _.Init = Unit ()
+        
+        member this.Deserialize colorString = 
+            match this with
+            | UnitCS unitCSD when unitCSD.unit = colorString -> Ok <| Unit ()
+            | _ -> Error <| CSErrors (InvalidValue colorString)
+        
+        member this.Serialize colorValue = 
+            match colorValue, this with
+            | Unit _, UnitCS unitCSD -> Ok unitCSD.unit 
+            | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)  
+        
         member _.IsLegal _colorValue = true
 
-        member this.ColorValue colorString = 
-            let (UnitCS unitCSD) = this
-            
-            match unitCSD.unit = colorString with
-            | true -> Ok <| ()
-            | false -> Error <| CSErrors (InvalidValue colorString)
-    
-        member this.ColorString _colorValue = 
-            let (UnitCS unitCSD) = this in Ok unitCSD.unit         
+        member _.All = Ok [ Unit () ]
 
-        member _.Size = Ok 1
-           
-        member _.All = Ok [ () ]
-        
+        member _.Size = Ok 1 
+
         member _.Ordinal _colorValue = Ok 0
         
         member _.Color index = 
             match index with
-            | 0 -> Ok <| ()
+            | 0 -> Ok <| Unit ()
             | i -> Error <| CSErrors (OutOfRangeIndex i)
 
-        member _.Random = Ok <| ()
+        member _.Random = Ok <| Unit ()
 
-    member this.Show = Common.asString (this :> IColorSet<unit>)
+    member this.Show = Common.asString (this :> ColorSet)
 
 
 module UnitCS =

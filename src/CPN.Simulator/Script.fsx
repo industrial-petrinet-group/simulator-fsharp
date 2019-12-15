@@ -251,22 +251,24 @@ SampleNets.notSoSimpleNet |> Runtime.allSteps;;
 
 
 type Cell =
+    abstract Type : System.Type
     abstract Accept : CellFunc<'R> -> 'R
-    abstract Extract : 'a -> 'a
+    abstract Extract<'a> : Cell -> Cell<'a>
 
-and Cell<'T> = { Items : 'T list }
-with
-    member cell.Id = cell
+and Cell<'T> = 
+    { Items : 'T list } 
+
     interface Cell with
-      member cell.Accept f = f.Invoke<'T> cell
-      member cell.Extract cell2 = cell2
+        member __.Type = typeof<'T>
+        member this.Accept f = f.Invoke<'T> this
+        member __.Extract<'a> (cell2 : Cell) = cell2 :?> Cell<'a>
 
 and CellFunc<'R> =
     abstract Invoke<'T> : Cell<'T> -> 'R
 
 let pack (cell : Cell<'T>) = cell :> Cell
 let unpack (cell : Cell) (f : CellFunc<'R>) : 'R = cell.Accept f
-let extract (cell : Cell) = cell.Extract (cell :?> Cell<'a>)
+let extract<'a> (cell : Cell) = cell.Extract<'a> cell
 
 type UniversalId =
     abstract member Eval<'a> : 'a -> 'a
@@ -291,7 +293,9 @@ let cell = map {
             new UniversalFunc<int, string> with
                 member __.Eval x = func x } p
 
-let z () = extract cell
+let x = cell.GetType().GetMethod("Extract").MakeGenericMethod(typeof<>)
+
+
 
 type CSErrors =
     | InvalidColorValue
