@@ -351,9 +351,6 @@ type BoolCS =
 #load "./Operators.fs" 
 open CPN.Simulator.Operators
 
-type UniversalFunc<'R> =
-    abstract member Invoke<'T> : 'T -> 'R
-
 module ColorSet =
     
     let asString colorValue (cs : CS) =
@@ -379,14 +376,10 @@ module ColorSet =
         | Float floatColor -> box floatColor
         | String stringColor -> box stringColor
     
-    let universalMap (func : UniversalFunc<'R>) colorValue =
-        match colorValue with
-        | Unit unitColor -> func.Invoke unitColor
-        | Bool boolColor -> func.Invoke boolColor
-        | Int intColor -> func.Invoke intColor
-        | Bigint bigintColor -> func.Invoke bigintColor
-        | Float floatColor -> func.Invoke floatColor
-        | String stringColor -> func.Invoke stringColor
+    let map (func : obj -> 'R) colorValue = 
+        colorValue
+        |> unpackValue
+        |> func
         |> packValue
 
     let colorValue colorString (cs : CS) = 
@@ -410,16 +403,13 @@ ColorSet.colorValue "falsy" boolCS
 let (Ok csu) = () |> ColorSet.packValue |> ColorSet.defaultColorSet 
 let (Ok csb) = true |> ColorSet.ofColor
 
-let universalAsString cs = { new UniversalFunc<_> with member __.Invoke color = ColorSet.asString (ColorSet.packValue color) cs }
-
 csu
 |> ColorSet.colorValue "()"
->>= fun csv -> Ok (ColorSet.universalMap (universalAsString csu) csv)
+>>= fun csv -> Ok (ColorSet.map (sprintf "%A") csv)
 
-csu
-|> ColorSet.colorValue "truth"
->>= fun csv -> Ok (ColorSet.universalMap (universalAsString csb) csv)
-
+csb
+|> ColorSet.colorValue "falsy"
+>>= fun csv -> Ok (ColorSet.map (sprintf "%A") csv)
 
 
 
