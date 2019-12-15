@@ -298,7 +298,7 @@ type CSErrors =
     | InvalidColorString
 
 type CSValue =
-    | Unit of unit
+    | Unit of unit 
     | Bool of bool
     | Int of int
     | Bigint of bigint
@@ -309,6 +309,7 @@ type CSValue =
     | Record of (string * CSValue) list
 
 type CS =
+    abstract member Name : string
     abstract member Deserialize : string -> Result<CSValue, CSErrors>
     abstract member Serialize : CSValue -> Result<string, CSErrors>
 
@@ -316,6 +317,8 @@ type UnitCS =
     { unit : string }
     
     interface CS with
+        member __.Name = "Unit"
+
         member this.Deserialize colorString = 
              match this.unit = colorString with
              | true -> Ok <| Unit ()
@@ -324,13 +327,15 @@ type UnitCS =
         member this.Serialize colorValue = 
             match colorValue with
             | Unit _ -> Ok <| this.unit
-            | _ -> Error <| InvalidColorValue
+            | _ -> Error <| InvalidColorValue           
     
 type BoolCS =
     { falsy : string 
       truthy : string } 
     
     interface CS with
+        member __.Name = "Bool"
+
         member this.Deserialize colorString = 
             match this.falsy = colorString, this.truthy = colorString with
             | true, _ -> Ok <| Bool false
@@ -341,14 +346,22 @@ type BoolCS =
             match colorValue with
             | Bool bool -> Ok <| if bool then this.truthy else this.falsy
             | _ -> Error <| InvalidColorValue
- 
+
 
 #load "./Operators.fs" 
 open CPN.Simulator.Operators
 
+type UniversalFunc<'R> =
+    abstract member Invoke<'T> : 'T -> 'R
+
 module ColorSet =
     
-    let packColor color =
+    let asString colorValue (cs : CS) =
+        match cs.Serialize colorValue with
+        | Ok colorString -> sprintf "%s : %s" colorString cs.Name
+        | Error _ -> sprintf "Invalid %s Color" cs.Name
+
+    let packValue color =
         match box color with
         | :? unit as unitColor -> Unit unitColor
         | :? bool as boolColor -> Bool boolColor
@@ -357,7 +370,24 @@ module ColorSet =
         | :? float as floatColor -> Float floatColor
         | :? string as stringColor -> String stringColor
     
-    let 
+    let unpackValue colorValue =
+        match colorValue with
+        | Unit unitColor -> box unitColor
+        | Bool boolColor -> box boolColor
+        | Int intColor -> box intColor
+        | Bigint bigintColor -> box bigintColor
+        | Float floatColor -> box floatColor
+        | String stringColor -> box stringColor
+    
+    let universalMap (func : UniversalFunc<'R>) colorValue =
+        match colorValue with
+        | Unit unitColor -> func.Invoke unitColor
+        | Bool boolColor -> func.Invoke boolColor
+        | Int intColor -> func.Invoke intColor
+        | Bigint bigintColor -> func.Invoke bigintColor
+        | Float floatColor -> func.Invoke floatColor
+        | String stringColor -> func.Invoke stringColor
+        |> packValue
 
     let colorValue colorString (cs : CS) = 
         cs.Deserialize colorString
@@ -368,6 +398,8 @@ module ColorSet =
         | Bool _ -> Ok ({ falsy = "falsy"; truthy = "truthy" } :> CS)
         | _ -> Error InvalidColorValue
 
+    let inline ofColor color = (packValue >> defaultColorSet) color
+
 
 let unitCS = {unit = "()"} 
 let boolCS = {falsy = "falsy"; truthy = "truthy"} 
@@ -375,10 +407,19 @@ let boolCS = {falsy = "falsy"; truthy = "truthy"}
 ColorSet.colorValue "()" unitCS
 ColorSet.colorValue "falsy" boolCS
 
-() 
-|> ColorSet.packColor
-|> ColorSet.defaultColorSet 
->>= ColorSet.colorValue "()"
+let (Ok csu) = () |> ColorSet.packValue |> ColorSet.defaultColorSet 
+let (Ok csb) = true |> ColorSet.ofColor
+
+let universalAsString cs = { new UniversalFunc<_> with member __.Invoke color = ColorSet.asString (ColorSet.packValue color) cs }
+
+csu
+|> ColorSet.colorValue "()"
+>>= fun csv -> Ok (ColorSet.universalMap (universalAsString csu) csv)
+
+csu
+|> ColorSet.colorValue "truth"
+>>= fun csv -> Ok (ColorSet.universalMap (universalAsString csb) csv)
+
 
 
 
