@@ -15,8 +15,14 @@ module Operators =
         | Error err -> Error err
         | Ok x -> f x
 
-    /// Result map function, converting a normal function to the result world
+    /// Result return function, converting a normal function to the result world
     let switch f x = Ok <| f x
+
+    /// Result monadic composition function
+    let (>=>) switch1 switch2 x = 
+        match switch1 x with
+        | Ok s -> switch2 s
+        | Error e -> Error e 
 
     /// Get the keys of a Map
     let getKeys map =

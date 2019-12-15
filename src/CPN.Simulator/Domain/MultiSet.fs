@@ -5,27 +5,28 @@ open CPN.Simulator.Operators
 open CPN.Simulator.Domain.ColorSets
 
 /// Type representing the data of a Multiset
-type MultiSetData<'T when 'T : comparison> =
-    { values: Map<'T, int>
-      color: IColorSet<'T> }
+type MultiSetData =
+    { values: Map<CSValue, int>
+      color: IColorSet }
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]
 [<CustomEquality; CustomComparison>]
-type MultiSet<'T when 'T : comparison> = 
-    | MS of MultiSetData<'T>
+type MultiSet = 
+    | MS of MultiSetData
     
     member xMS.SameColor yMS = 
-        let (MS x, MS y) = xMS, yMS in x.color.MetaData = y.color.MetaData
+        let (MS x, MS y) = xMS, yMS in x.color = y.color
 
-    member xMS.OneIsEmpty yMS =
-        let (MS x, MS y) = xMS, yMS
-        x.color.MetaData = ColorSet.empty.MetaData || 
-        y.color.MetaData = ColorSet.empty.MetaData
+    member xMS.IsTheEmptyMS = 
+        let (MS x) = xMS
+        x.values = Map.empty && x.color = ColorSet.empty
+
+    member xMS.OneIsEmpty (yMS: MultiSet) = xMS.IsTheEmptyMS || yMS.IsTheEmptyMS
 
     override xMS.Equals(yObj) =
         match yObj with
-        | :? MultiSet<'T> as yMS -> 
+        | :? MultiSet as yMS -> 
             let (MS x, MS y) = xMS, yMS
             (x.color = y.color) && (x.values = y.values)
         | _ -> false
@@ -36,30 +37,26 @@ type MultiSet<'T when 'T : comparison> =
         member xMS.CompareTo yObj =
             let disjointCompare = compareMap "cannot compare disjoint multisets"
 
-            // CHeck that colormatch accept the Empty set but it cannot compare
-            // values for diferent maps; I need to treat Empty as an special Case
             match yObj with
-            | :? MultiSet<'T> as yMS when xMS = yMS -> 0
-            | :? MultiSet<'T> as yMS when xMS.OneIsEmpty yMS ->
-                let (MS x, MS y) = xMS, yMS
-                let bothEmpty = x.color.MetaData = ColorSet.empty.MetaData,
-                                y.color.MetaData = ColorSet.empty.MetaData    
-                match bothEmpty with
+            | :? MultiSet as yMS when xMS = yMS -> 0
+            | :? MultiSet as yMS when xMS.OneIsEmpty yMS ->
+                match xMS.IsTheEmptyMS, yMS.IsTheEmptyMS with
                 | true, true -> 0
                 | true, false -> -1
                 | false, true -> 1
-            | :? MultiSet<'T> as yMS when xMS.SameColor yMS -> 
+                | _ -> invalidOp "one of the two multisets should be empty"
+            | :? MultiSet as yMS when xMS.SameColor yMS -> 
                 let (MS x, MS y) = xMS, yMS
                 match compare (x.values |> Map.count) (y.values |> Map.count) with
                 | 1 -> disjointCompare 1 y.values x.values
                 | compared -> disjointCompare compared x.values y.values
-            | :? MultiSet<_> -> invalidArg "yObj" "cannot compare multisets of different colors"
+            | :? MultiSet -> invalidArg "yObj" "cannot compare multisets of different colors"
             | _ -> invalidArg "yObj" "cannot compare values of different types"
 
 
 /// Module implementing MultiSet's operations
 module MultiSet =
-    /// Module for for private implementation details
+    /// Module for private implementation details
     [<AutoOpen>]
     module private Implementation =
         /// Active pattern for MultiSet pattern matching. 
@@ -87,11 +84,8 @@ module MultiSet =
                 //    |> fun (token :: rest) ->
                 //        RandomSet (token, rest |> Map.ofList) 
 
-        /// Empty Token Set
-        let emptyTS<'T when 'T: comparison> = Map.empty<'T, int>
-
         /// Given two MultiSets it returns if they colors match
-        let sameColorOrEmpty (xMS: MultiSet<_>) yMS = 
+        let sameColorOrEmpty (MS _ as xMS) yMS = 
             xMS.SameColor yMS || xMS.OneIsEmpty yMS
 
         /// Given a Token list ir reduce it
@@ -106,16 +100,14 @@ module MultiSet =
         let mapOfTokenList tokenList =
             tokenList
             |> reduceTokenList
-            |> List.fold (fun acc (value, qty) -> acc |> Map.add value qty) emptyTS
-    
-    let unbox func = fun (MS msData as ms) -> func ms
+            |> List.fold (fun acc (value, qty) -> acc |> Map.add value qty) Map.empty
 
     /// It creates and empty MultiSet
-    let empty = MS { values = emptyTS<unit> ; color = ColorSet.empty }
+    let empty = MS { values = Map.empty ; color = ColorSet.empty}
 
     /// Given a color it creates and empty MultiSet color-bound
     let emptyWithColor color = 
-        MS { values = emptyTS ; color = color }
+        MS { values = Map.empty ; color = color }
 
     /// Given a MultiSet check if it's empty
     // TODO: Check if it's needed to differentiate empty for emptyWithColor
@@ -133,11 +125,11 @@ module MultiSet =
             |> List.fold (fun resAcc [ qty; value ] ->
                 resAcc
                 >>= fun acc ->
-                    color 
-                    |> ColorSet.colorValue value
-                    >>= fun _colorVal -> 
+                    value 
+                    |> ColorSet.deserialize color
+                    >>= fun colorVal -> 
                         match qty |> System.Int32.TryParse with
-                        | true, intVal -> Ok (value, intVal)
+                        | true, intVal -> Ok (colorVal, intVal)
                         | false, _ -> Error <| MSErrors (BadFormattedInputString inputString)
                     >>= fun token -> Ok (token :: acc)
             ) (Ok [])
@@ -199,7 +191,7 @@ module MultiSet =
     /// the values of the multiset by the scalar.
     let scalarMultiply k (MS ms) =
         ms.values 
-        |> Map.fold (fun acc key qty -> acc |> Map.add key (k * qty)) emptyTS
+        |> Map.fold (fun acc key qty -> acc |> Map.add key (k * qty)) Map.empty
         |> fun multipliedValues -> MS { ms with values = multipliedValues }
     
     /// Given a multiset it returns it's size
@@ -214,7 +206,7 @@ module MultiSet =
             | true, _ -> finish, acc, result
             | false, true -> true, acc, value
             | false, false -> false, acc - qty, result
-        ) (false, random.Next(ms |> size), color.Init())
+        ) (false, random.Next(ms |> size), color.Init)
         |> fun (_, _, result) -> result
     
     /// Given a color value and a multiset it returns the number of ocurrences 
@@ -234,7 +226,7 @@ module MultiSet =
     let mapColors mapping (MS ({ values = multiset } as ms)) =
         multiset 
         |> Map.fold (fun acc key qty -> 
-            acc |> Map.add (mapping key) qty) emptyTS
+            acc |> Map.add (mapping key) qty) Map.empty
         |> fun mappedValues -> MS { ms with values = mappedValues }
     
     /// Given a mapping function that turns a value into a MultiSet and a Multiset
@@ -252,8 +244,8 @@ module MultiSet =
         match multiSet with
         | Empty -> Error <| MSErrors InsufficientTokens 
         | Unique (_, qty) when qty < rmQty -> Error <| MSErrors InsufficientTokens 
-        | Unique (_, qty) when qty = rmQty -> Ok <| emptyTS
-        | Unique (value, qty) -> Ok <| emptyTS.Add((value, qty - rmQty))
+        | Unique (_, qty) when qty = rmQty -> Ok <| Map.empty
+        | Unique (value, qty) -> Ok <| Map.empty.Add((value, qty - rmQty))
         | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty - rmQty)  // FIXME: It should check all of the above
         >>= fun newValues ->
             Ok <| MS { values = newValues; color = color }
@@ -263,15 +255,15 @@ module MultiSet =
     let addTokens addQty (MS { values = multiSet; color = color }) =  
         match multiSet with
         | Empty ->
-            match color |> ColorSet.randomValue with
+            match color |> ColorSet.random with
             | Error err -> Error err
-            | Ok random -> Ok <| emptyTS.Add(random, addQty)
-        | Unique (value, qty) -> Ok <| emptyTS.Add(value, qty + addQty)
+            | Ok random -> Ok <| Map.empty.Add(random, addQty)
+        | Unique (value, qty) -> Ok <| Map.empty.Add(value, qty + addQty)
         | Set ((value, qty), restOfVal) -> Ok <| restOfVal.Add(value, qty + addQty)
         >>= fun newValues ->
             Ok <| MS { values = newValues; color = color }
 
-type MultiSet<'T when 'T: comparison> with
+type MultiSet with
     /// Static operator implementation of MultiSet.add
     static member ( ++ ) (xMS, yMS) = MultiSet.add xMS yMS
     

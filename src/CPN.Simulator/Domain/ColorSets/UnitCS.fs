@@ -8,7 +8,7 @@ type UnitCSData = { unit: string }
 type UnitCS = 
     | UnitCS of UnitCSData
 
-    interface ColorSet with
+    interface IColorSet with
         member __.Name = "UnitCS"   
 
         member __.Init = Unit ()
@@ -23,7 +23,10 @@ type UnitCS =
             | Unit _, UnitCS unitCSD -> Ok unitCSD.unit 
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)  
         
-        member __.IsLegal _colorValue = true
+        member __.IsLegal colorValue = 
+            match colorValue with
+            | Unit _ -> Ok true
+            | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
 
         member __.All = Ok [ Unit () ]
 
@@ -38,7 +41,7 @@ type UnitCS =
 
         member __.Random = Ok <| Unit ()
 
-    member this.Show = Common.asString (this :> ColorSet)
+    member this.Show = Common.asString (this :> IColorSet)
 
 
 module UnitCS =

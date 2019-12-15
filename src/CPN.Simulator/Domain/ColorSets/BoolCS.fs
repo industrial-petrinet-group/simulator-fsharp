@@ -10,7 +10,7 @@ type BooleanCSData =
 type BoolCS = 
     | BoolCS of BooleanCSData
 
-    interface ColorSet with
+    interface IColorSet with
         member __.Name = "BooleanCS"
         
         member __.Init = Bool false
@@ -27,11 +27,14 @@ type BoolCS =
         
         member this.Serialize colorValue = 
             match colorValue, this with
-            | Bool bool, BoolCS boolCSD -> Ok <| if bool then boolCSD.truthy 
-                                                         else boolCSD.falsy
+            | Bool bool, BoolCS boolCSD -> 
+                Ok <| if bool then boolCSD.truthy else boolCSD.falsy
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
         
-        member __.IsLegal _colorValue = true
+        member __.IsLegal colorValue = 
+            match colorValue with
+            | Bool _ -> Ok true
+            | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
 
         member __.All = Ok [ Bool false; Bool true ]
        
@@ -49,12 +52,12 @@ type BoolCS =
             | Bool true -> Ok 1
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
         
-        member this.Random = (this :> ColorSet).Color (rnd.Next(0,1))
+        member this.Random = (this :> IColorSet).Color (rnd.Next(0,1))
         
-    member this.Show = Common.asString (this :> ColorSet)
+    member this.Show = Common.asString (this :> IColorSet)
 
 
-module BooleanCS =
+module BoolCS =
     /// Given an optional initinalization string it return a color set.
     let create = function
         | None -> Ok <| BoolCS { falsy = "false"; truthy = "true" }

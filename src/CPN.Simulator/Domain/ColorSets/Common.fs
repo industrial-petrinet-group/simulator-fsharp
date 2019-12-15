@@ -8,7 +8,7 @@ module Common =
     let rnd = System.Random()
     
     /// Given a IColorSet it returns a String representing it.
-    let asString (cs: ColorSet) =
+    let asString (cs: IColorSet) =
         match cs.All with
         | Error _ -> ""
         | Ok list -> sprintf "%A" list

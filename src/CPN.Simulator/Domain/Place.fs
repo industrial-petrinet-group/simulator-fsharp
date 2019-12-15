@@ -5,50 +5,10 @@ open CPN.Simulator.Operators
 /// Type representing a Place Id
 type PlaceId = P of int
 
-type MSCrate =
-    abstract member Apply : MSCrateEvaluator<'ret> -> 'ret
-and MSCrateEvaluator<'ret> =
-    abstract member Eval<'a when 'a : comparison> : MultiSet<'a> -> 'ret  
-
-module MSCrate =
-    
-    let make (ms : MultiSet<'a>) =
-        { new MSCrate with
-            member __.Apply e = e.Eval ms }
-            
-    let extract (msCrate : MSCrate) =
-        msCrate.Apply 
-            { new MSCrateEvaluator<obj> with
-                 member __.Eval ms = box ms } |> unbox
-
-    let isEmpty (msCrate : MSCrate) = //MultiSet.asString
-        msCrate.Apply 
-            { new MSCrateEvaluator<_> with
-                member __.Eval ms = ms |> MultiSet.isEmpty }
-    
-    let addTokens addQty (msCrate : MSCrate) =
-        msCrate.Apply 
-            { new MSCrateEvaluator<_> with
-                member __.Eval ms = 
-                    ms |> MultiSet.addTokens addQty
-                    >>= fun modifiedMS -> Ok <| make modifiedMS }
-
-    let removeTokens removeQty (msCrate : MSCrate) =
-        msCrate.Apply 
-            { new MSCrateEvaluator<_> with
-                member __.Eval ms = 
-                    ms |> MultiSet.removeTokens removeQty
-                    >>= fun modifiedMS -> Ok <| make modifiedMS }
-
-    let asString (msCrate : MSCrate) = //MultiSet.asString
-        msCrate.Apply 
-            { new MSCrateEvaluator<_> with
-                member __.Eval ms = ms |> MultiSet.asString }
-
 /// Type representing a Place Data
 type PlaceData = 
     { name: string
-      marking: MSCrate }
+      marking: MultiSet }
 
 /// Type representing a collection of places
 type Places = 
@@ -61,7 +21,7 @@ module Place =
     module private Implementation =
 
         /// Given a PlaceData it return it's marking parsed as a string.
-        let markingAsString placeData = placeData.marking |> MSCrate.asString 
+        let markingAsString placeData = placeData.marking |> MultiSet.asString 
     
         /// Given Places and a list of PlacesId to filter it returns a list of the 
         /// marking of all places parsed as a string and filtered based on the 
@@ -84,7 +44,7 @@ module Place =
     let hasTokens pid (Places places) =
         match places |> Map.tryFind pid with
         | None -> false
-        | Some placeData -> not (placeData.marking |> MSCrate.isEmpty)  
+        | Some placeData -> not (placeData.marking |> MultiSet.isEmpty)  
     
     /// Given the places it returns the string list marking for every PlaceID
     let placesMarkingAsStringList (Places places) =
@@ -101,7 +61,7 @@ module Place =
         | None -> Error <| PErrors (InexistenPid (pid, Places places))
         | Some placeData -> 
             placeData.marking
-            |> MSCrate.removeTokens removeQty
+            |> MultiSet.removeTokens removeQty
             |> function
                 | Error _ -> Error <| PErrors (InsufficientTokensOn (pid, Places places))
                 | Ok newMarking ->
@@ -114,7 +74,7 @@ module Place =
         | None -> Error <| PErrors (InexistenPid (pid, Places places))
         | Some placeData -> 
             placeData.marking
-            |> MSCrate.addTokens addQty
+            |> MultiSet.addTokens addQty
             >>= fun newMarking ->
                 Ok (Places <| places.
                                 Remove(pid).

@@ -7,15 +7,15 @@
   <ItemGroup>
     <Compile Include="Operators.fs" />
     <Compile Include="Domain\Errors.fs" />
+    <Compile Include="Domain\CSValue.fs" />
+    <Compile Include="Domain\ColorSet.fs" />
     <Compile Include="Domain\ColorSets\Common.fs" />
-    <Compile Include="Domain\ColorSets\Void.fs" />
-    <Compile Include="Domain\ColorSets\Unit.fs" />
-    <Compile Include="Domain\ColorSets\Boolean.fs" />
+    <Compile Include="Domain\ColorSets\UnitCS.fs" />
+    <Compile Include="Domain\ColorSets\BoolCS.fs" />
     <Compile Include="Domain\ColorSets\Numeric.fs" />
     <Compile Include="Domain\ColorSets\Integer.fs" />
     <Compile Include="Domain\ColorSets\BigInteger.fs" />
     <Compile Include="Domain\ColorSets\Double.fs" />
-    <Compile Include="Domain\ColorSet.fs" />
     <Compile Include="Domain\MultiSet.fs" />
     <Compile Include="Domain\Place.fs" />
     <Compile Include="Domain\Transition.fs" />
