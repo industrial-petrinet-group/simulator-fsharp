@@ -7,16 +7,16 @@ type VoidCS =
     | VoidCS
     
     interface ColorSet with
-        member _.Name = "VoidCS"
-        member _.Init = Unit ()
-        member _.Serialize _colorString = Error <| CSErrors (NotUsable "colorValue")
-        member _.Deserialize _colorValue = Error <| CSErrors (NotUsable "colorString")
-        member _.IsLegal _colorValue = false
-        member _.All = Ok []
-        member _.Size = Ok 0
-        member _.Ordinal _colorValue = Error <| CSErrors (NotUsable "ordinal")
-        member _.Color _index = Error <| CSErrors (NotUsable "color")
-        member _.Random = Error <| CSErrors (NotUsable "random")
+        member __.Name = "VoidCS"
+        member __.Init = Unit ()
+        member __.Serialize _colorString = Error <| CSErrors (NotUsable "colorValue")
+        member __.Deserialize _colorValue = Error <| CSErrors (NotUsable "colorString")
+        member __.IsLegal _colorValue = false
+        member __.All = Ok []
+        member __.Size = Ok 0
+        member __.Ordinal _colorValue = Error <| CSErrors (NotUsable "ordinal")
+        member __.Color _index = Error <| CSErrors (NotUsable "color")
+        member __.Random = Error <| CSErrors (NotUsable "random")
     
     member this.Show = Common.asString (this :> ColorSet)
 

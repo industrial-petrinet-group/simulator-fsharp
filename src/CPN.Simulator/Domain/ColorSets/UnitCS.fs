@@ -9,9 +9,9 @@ type UnitCS =
     | UnitCS of UnitCSData
 
     interface ColorSet with
-        member _.Name = "UnitCS"   
+        member __.Name = "UnitCS"   
 
-        member _.Init = Unit ()
+        member __.Init = Unit ()
         
         member this.Deserialize colorString = 
             match this with
@@ -23,20 +23,20 @@ type UnitCS =
             | Unit _, UnitCS unitCSD -> Ok unitCSD.unit 
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)  
         
-        member _.IsLegal _colorValue = true
+        member __.IsLegal _colorValue = true
 
-        member _.All = Ok [ Unit () ]
+        member __.All = Ok [ Unit () ]
 
-        member _.Size = Ok 1 
+        member __.Size = Ok 1 
 
-        member _.Ordinal _colorValue = Ok 0
+        member __.Ordinal _colorValue = Ok 0
         
-        member _.Color index = 
+        member __.Color index = 
             match index with
             | 0 -> Ok <| Unit ()
             | i -> Error <| CSErrors (OutOfRangeIndex i)
 
-        member _.Random = Ok <| Unit ()
+        member __.Random = Ok <| Unit ()
 
     member this.Show = Common.asString (this :> ColorSet)
 

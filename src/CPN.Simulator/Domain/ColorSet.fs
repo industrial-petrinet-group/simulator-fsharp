@@ -41,23 +41,18 @@ type ColorSet =
 /// Module implementing ColorSet's operations
 module ColorSet =
     /// Return an empty colorset
-    let empty = VoidCS :> IColorSet<unit>
+    ///let empty = VoidCS :> ColorSet
     
     /// Given a supposed member it checks if is an actual member of the 
     /// colorset and return it's value if it is. 
-    let inline colorValue colorString (cs: IColorSet<_>) = 
-        cs.ColorValue colorString
+    let deserialize (cs: ColorSet) = cs.Deserialize
     
     /// Given a supposed member and a colorset it checks if the value is a 
     /// member of the set and return it's string color set value if it is. 
-    let inline colorString colorValue (cs: IColorSet<_>) = 
-        cs.ColorString colorValue
+    let serialize (cs : ColorSet) = cs.Serialize 
     
     /// Return a random value of this colorset.
-    let inline randomValue (cs: IColorSet<_>) =
-        cs.Random
+    let random (cs: ColorSet) = cs.Random
     
     /// Return a random value of this colorset as a string.
-    let inline randomString (cs: IColorSet<_>) =
-        cs.Random
-        >>= fun randomValue -> colorString randomValue cs
+    let inline randomAsString (cs: ColorSet) = cs.Random >>= (serialize cs)

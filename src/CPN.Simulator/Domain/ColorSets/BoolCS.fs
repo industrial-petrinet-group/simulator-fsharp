@@ -11,9 +11,9 @@ type BoolCS =
     | BoolCS of BooleanCSData
 
     interface ColorSet with
-        member _.Name = "BooleanCS"
+        member __.Name = "BooleanCS"
         
-        member _.Init = Bool false
+        member __.Init = Bool false
         
         member this.Deserialize colorString = 
             let (BoolCS booleanCSD) = this
@@ -31,19 +31,19 @@ type BoolCS =
                                                          else boolCSD.falsy
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
         
-        member _.IsLegal _colorValue = true
+        member __.IsLegal _colorValue = true
 
-        member _.All = Ok [ Bool false; Bool true ]
+        member __.All = Ok [ Bool false; Bool true ]
        
-        member _.Size = Ok 2
+        member __.Size = Ok 2
 
-        member _.Color index = 
+        member __.Color index = 
             match index with
             | 0 -> Ok <| Bool false
             | 1 -> Ok <| Bool true
             | i -> Error <| CSErrors (OutOfRangeIndex i)
         
-        member _.Ordinal colorValue = 
+        member __.Ordinal colorValue = 
             match colorValue with 
             | Bool false -> Ok 0 
             | Bool true -> Ok 1
