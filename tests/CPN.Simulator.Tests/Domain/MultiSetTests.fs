@@ -10,13 +10,11 @@ open CPN.Simulator.Domain.ColorSets
 
 module MultiSetTests =
     
-    let (Ok unitCS1) = Unit.create None
-    let (Ok unitCS2) = Unit.create (Some "none")
-    let unitColour1, unitColour2 = UnitCS unitCS1, UnitCS unitCS2
+    let (Ok unitColour1) = UnitCS.create None
+    let (Ok unitColour2) = UnitCS.create (Some "none")
     
-    let (Ok boolCS1) = Boolean.create None
-    let (Ok boolCS2) = Boolean.create (Some ("none", "whole"))
-    let boolColour1, boolColour2 = BooleanCS boolCS1, BooleanCS boolCS2
+    let (Ok boolColour1) = BoolCS.create None
+    let (Ok boolColour2) = BoolCS.create (Some ("none", "whole"))
 
     [<Tests>]
     let tests = 
@@ -33,10 +31,11 @@ module MultiSetTests =
                 3 =! qty1
                 qty1 =! qty2
 
-                Ok <| UnitVal () =! ColorSet.colorVal value1 unitColour1
+                Ok <| "()" =! ColorSet.serialize unitColour1 value1
+                Ok <| "none" =! ColorSet.serialize unitColour1 value1
 
-                ColorSet.colorVal value1 unitColour1 =! 
-                ColorSet.colorVal value2 unitColour2
+                ColorSet.deserialize unitColour1 "()" <>! 
+                ColorSet.deserialize unitColour2 "none"
 
                 let (Ok msAsString) = 
                     unitMSStr1 
@@ -58,17 +57,14 @@ module MultiSetTests =
                 (2, 1) =! (qtyFalse1, qtyTrue1)
                 (qtyFalse1, qtyTrue1) =! (qtyFalse2, qtyTrue2) 
                 
-                Ok <| BooleanVal false =! 
-                ColorSet.colorVal valueFalse1 boolColour1
+                Ok <| "false" =! ColorSet.serialize boolColour1 valueFalse1
                 
-                ColorSet.colorVal valueFalse1 boolColour1 =! 
-                ColorSet.colorVal valueFalse2 boolColour2
+                ColorSet.deserialize boolColour1 "true" <>! 
+                ColorSet.deserialize boolColour2 "whole"
 
-                Ok <| BooleanVal true =! 
-                ColorSet.colorVal valueTrue1 boolColour1
+                Ok <| false =!  ColorSet.deserialize boolColour2 "none"
                 
-                ColorSet.colorVal valueTrue1 boolColour1 =! 
-                ColorSet.colorVal valueTrue2 boolColour2
+                Ok <| "whole" =! ColorSet.serialize boolColour1 valueTrue2 <>! 
 
                 let (Ok msAsString) = 
                     boolMSStr1 
@@ -224,14 +220,12 @@ module MultiSetTests =
                 let randomBool = [for i in [1..10] do (boolMS1 |> MultiSet.random)] 
                 
                 false =! (randomBool |> List.forall (fun b -> b = (randomBool |> List.head)))
-                true =! (randomBool |> List.forall (fun b -> b = "true" || b = "false"))
+                true =! (randomBool |> List.forall (fun b -> b = Bool true || b =  Bool false))
 
-                4 =! (boolMS1 |> MultiSet.colorOcurrences "false")
-                2 =! (boolMS1 |> MultiSet.colorOcurrences "true")
-                0 =! (boolMS1 |> MultiSet.colorOcurrences "other")
+                4 =! (boolMS1 |> MultiSet.colorOcurrences (Bool false))
+                2 =! (boolMS1 |> MultiSet.colorOcurrences (Bool true))
 
-                5 =! (unitMS1 |> MultiSet.colorOcurrences "none")
-                0 =! (unitMS1 |> MultiSet.colorOcurrences "()")
+                5 =! (unitMS1 |> MultiSet.colorOcurrences (Bool false))
 
             testCase "test filtering of MultiSets" <| fun () ->
                 let (Ok boolMS1) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
@@ -239,7 +233,7 @@ module MultiSetTests =
                 let falsyFilteredMS =
                     boolMS1 
                     |> MultiSet.filter (fun value _ -> 
-                        Ok (BooleanVal false) = ColorSet.colorVal value boolColour2)
+                        Ok "false" = ColorSet.serialize boolColour2 value)
 
                 "2`none" =! (falsyFilteredMS |> MultiSet.asString)
 
@@ -256,37 +250,22 @@ module MultiSetTests =
                 // old ext_col
                 let notBoolMS2 =
                     boolMS2 
-                    |> MultiSet.mapColors (fun value ->
-                        value
-                        |> ColorSet.colorVal <| boolColour2
-                        >>= fun colorVal -> 
-                            let (BooleanVal bool) = colorVal
-                            
-                            bool
-                            |> not
-                            |> fun b -> BooleanVal b
-                            |> ColorSet.makeString <| boolColour2
-                        |> function
-                            | Ok colorStr -> colorStr
-                            | Error _ -> "")
+                    |> MultiSet.mapColors (fun (Bool bool) ->                           
+                        bool |> not |> CSValue.pack |> function Ok b -> b | _ -> Void )
+                        
 
                 boolMS1 =! notBoolMS2
 
                 // old ext_ms
                 let notBoolMS1x2 =
                     boolMS1 
-                    |> MultiSet.mapMultiSets (fun value ->
-                        value
-                        |> ColorSet.colorVal <| boolColour2
-                        >>= fun colorVal -> 
-                            let (BooleanVal bool) = colorVal
-                            
-                            bool
-                            |> not
-                            |> fun b -> BooleanVal b
-                            |> ColorSet.makeString <| boolColour2
-                            >>= fun colorStr -> 
-                                MultiSet.ofString boolColour2 (sprintf "2`%s" colorStr)
+                    |> MultiSet.mapMultiSets (fun (Bool bool) ->
+                        bool 
+                        |> not
+                        |> CSValue.pack
+                        >>= ColorSet.serialize boolColour2
+                        >>= fun colorStr -> 
+                            MultiSet.ofString boolColour2 (sprintf "2`%s" colorStr)
                         |> function
                             | Ok ms -> ms
                             | Error _ -> MultiSet.empty)

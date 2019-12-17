@@ -1,9 +1,11 @@
 #load "./Operators.fs" 
 #load "./Domain/Errors.fs"
+#load "./Domain/CSValue.fs"
+#load "./Domain/IColorSet.fs"
 #load "./Domain/ColorSets/Common.fs"
-#load "./Domain/ColorSets/Void.fs"
-#load "./Domain/ColorSets/Unit.fs"
-#load "./Domain/ColorSets/Boolean.fs"
+#load "./Domain/ColorSets/VoidCS.fs"
+#load "./Domain/ColorSets/UnitCS.fs"
+#load "./Domain/ColorSets/BoolCS.fs"
 #load "./Domain/ColorSet.fs"
 #load "./Domain/MultiSet.fs"
 #load "./Domain/Place.fs"
@@ -32,15 +34,6 @@ let steps = SampleNets.simpleBooleanNet
 //let (Ok ms3) = MultiSet.ofString unitColour "1`()++1`()"
 
 
-let inline specify (placeData: IPlaceData) : PlaceData<_> = 
-    let internalType =
-        (placeData :?> PlaceData<_>).color.MetaData.internalType
-
-    let resultType =
-        typeof<PlaceData<_>>.MakeGenericType internalType
-
-    System.Convert.ChangeType(placeData, resultType) :?> PlaceData<_>
-
 type EspecificList =
     | IntList of int list
     | BoolList of bool list
@@ -55,9 +48,6 @@ let listGenericFunc func = function
 
 let listGenericFunc2 func list = list |> func
 
-let pdType = typeof<PlaceData<_>>.MakeGenericType typeof<unit>
-
-System.Convert.ChangeType(obj, pdType);
 
 let (x : int) =
     [1; 2; 3]
@@ -67,7 +57,7 @@ let (y : int) =
     [true; false]
     |> listGenericFunc2 List.length
 
-type UniversalListLength = abstract member Eval<'a> : 'a -> 'a
+type UniversalId = abstract member Eval<'a> : 'a -> 'a
 
 let id : UniversalId =
     { new UniversalId with
@@ -152,15 +142,14 @@ steps
 |> CPN.netMarking 
 
 
-let (Ok boolCS1) = Boolean.create None
-let (Ok boolCS2) = Boolean.create (Some ("none", "whole"))
-let boolColour1, boolColour2 = BooleanCS boolCS1, BooleanCS boolCS2
+let (Ok boolCS1) = BoolCS.create None
+let (Ok boolCS2) = BoolCS.create (Some ("none", "whole"))
 
-let (Ok ms1) = MultiSet.ofString boolColour1 "1`true++2`false"
-let (Ok ms2) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
-let (Ok ms3) = MultiSet.ofString boolColour1 "1`true++1`false"
-let (Ok ms4) = MultiSet.ofString boolColour1 "1`false++1`true++1`false"
-let (Ok ms5) = MultiSet.ofString boolColour2 "2`none++1`whole"
+let (Ok ms1) = MultiSet.ofString boolCS1 "1`true++2`false"
+let (Ok ms2) = MultiSet.ofString boolCS2 "1`none++1`whole++1`none"
+let (Ok ms3) = MultiSet.ofString boolCS1 "1`true++1`false"
+let (Ok ms4) = MultiSet.ofString boolCS1 "1`false++1`true++1`false"
+let (Ok ms5) = MultiSet.ofString boolCS2 "2`none++1`whole"
 
 
 SampleNets.randomlyPathedNet |> printfn "%A";;
@@ -293,103 +282,7 @@ let cell = map {
             new UniversalFunc<int, string> with
                 member __.Eval x = func x } p
 
-type CSErrors =
-    | InvalidColorValue
-    | InvalidColorString
-
-type CSValue =
-    | Unit of unit 
-    | Bool of bool
-    | Int of int
-    | Bigint of bigint
-    | Float of float
-    | String of string
-
-type CS =
-    abstract member Name : string
-    abstract member Deserialize : string -> Result<CSValue, CSErrors>
-    abstract member Serialize : CSValue -> Result<string, CSErrors>
-
-type UnitCS =
-    { unit : string }
-    
-    interface CS with
-        member __.Name = "Unit"
-
-        member this.Deserialize colorString = 
-             match this.unit = colorString with
-             | true -> Ok <| Unit ()
-             | false -> Error InvalidColorString
-
-        member this.Serialize colorValue = 
-            match colorValue with
-            | Unit _ -> Ok <| this.unit
-            | _ -> Error <| InvalidColorValue           
-    
-type BoolCS =
-    { falsy : string 
-      truthy : string } 
-    
-    interface CS with
-        member __.Name = "Bool"
-
-        member this.Deserialize colorString = 
-            match this.falsy = colorString, this.truthy = colorString with
-            | true, _ -> Ok <| Bool false
-            | _, true -> Ok <| Bool true
-            | _ -> Error <| InvalidColorString
-
-        member this.Serialize colorValue = 
-            match colorValue with
-            | Bool bool -> Ok <| if bool then this.truthy else this.falsy
-            | _ -> Error <| InvalidColorValue
-
-
-#load "./Operators.fs" 
-open CPN.Simulator.Operators
-
-module ColorSet =
-    
-    let asString colorValue (cs : CS) =
-        match cs.Serialize colorValue with
-        | Ok colorString -> sprintf "%s : %s" colorString cs.Name
-        | Error _ -> sprintf "Invalid %s Color" cs.Name
-
-    let packValue color =
-        match box color with
-        | :? unit as unitColor -> Unit unitColor
-        | :? bool as boolColor -> Bool boolColor
-        | :? int as intColor -> Int intColor
-        | :? bigint as bigintColor -> Bigint bigintColor
-        | :? float as floatColor -> Float floatColor
-        | :? string as stringColor -> String stringColor
-    
-    let unpackValue colorValue =
-        match colorValue with
-        | Unit unitColor -> box unitColor
-        | Bool boolColor -> box boolColor
-        | Int intColor -> box intColor
-        | Bigint bigintColor -> box bigintColor
-        | Float floatColor -> box floatColor
-        | String stringColor -> box stringColor
-    
-    let map (func : obj -> 'R) colorValue = 
-        colorValue
-        |> unpackValue
-        |> func
-        |> packValue
-
-    let colorValue colorString (cs : CS) = 
-        cs.Deserialize colorString
-    
-    let defaultColorSet color =
-        match color with
-        | Unit _ -> Ok ({ unit = "()" } :> CS)
-        | Bool _ -> Ok ({ falsy = "falsy"; truthy = "truthy" } :> CS)
-        | _ -> Error InvalidColorValue
-
-    let inline ofColor color = (packValue >> defaultColorSet) color
-
+[[1]; [""]]    
 
 let unitCS = {unit = "()"} 
 let boolCS = {falsy = "falsy"; truthy = "truthy"} 
@@ -410,8 +303,7 @@ csb
 
 
 
-type MS =
-    | MS of Map<CSValue, int>
+
 
 
 open System

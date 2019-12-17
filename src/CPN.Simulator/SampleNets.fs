@@ -5,13 +5,13 @@ open CPN.Simulator.Domain.ColorSets
 
 module SampleNets =
     // Simple definitions for convinience
-    let (Ok unitColor) = UnitCS.create None
-    let (Ok boolColor) = BooleanCS.create None
-    let emptyMS = MultiSet.emptyWithColor unitColor |> MSCrate.make
-    let emptyBMS = MultiSet.emptyWithColor boolColor |> MSCrate.make
-    let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1 >>= fun x -> Ok (MSCrate.make x)
-    let (Ok unitMS3) = unitMS |> MSCrate.addTokens 2
-    let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1 >>= fun x -> Ok (MSCrate.make x)
+    let (Ok unitColor) = ColorSet.ofColor ()
+    let (Ok boolColor) = ColorSet.ofColor true
+    let emptyMS = MultiSet.emptyWithColor unitColor 
+    let emptyBMS = MultiSet.emptyWithColor boolColor
+    let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1 
+    let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
+    let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1 
 
     /// Definition of the most simple petri net
     let simpleNet : CPN =

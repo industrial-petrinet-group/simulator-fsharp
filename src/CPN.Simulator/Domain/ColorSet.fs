@@ -16,7 +16,7 @@ module ColorSet =
             | Bool _ -> BoolCS.create None >>= switch toIColorSet
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" color)
 
-    let inline ofColor color = (CSValue.pack >=> defaultColorSet) color
+    let ofColor color = (CSValue.pack >=> defaultColorSet) color
     
     /// Return an empty colorset
     let empty = VoidCS |> toIColorSet
