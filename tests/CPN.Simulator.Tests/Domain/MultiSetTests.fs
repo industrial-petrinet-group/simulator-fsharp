@@ -10,11 +10,10 @@ open CPN.Simulator.Domain.ColorSets
 
 module MultiSetTests =
     
-    let (Ok unitColour1) = UnitCS.create None
-    let (Ok unitColour2) = UnitCS.create (Some "none")
-    
-    let (Ok boolColour1) = BoolCS.create None
-    let (Ok boolColour2) = BoolCS.create (Some ("none", "whole"))
+    let unitColour1 = CS "unit"
+    let unitColour2 = CS "unit'" 
+    let boolColour1 = CS "bool"
+    let boolColour2 = CS "bool'"
 
     [<Tests>]
     let tests = 
@@ -62,7 +61,7 @@ module MultiSetTests =
                 ColorSet.deserialize boolColour1 "true" <>! 
                 ColorSet.deserialize boolColour2 "whole"
 
-                Ok <| false =!  ColorSet.deserialize boolColour2 "none"
+                Ok <| Bool false =! ColorSet.deserialize boolColour2 "none"
                 
                 Ok <| "whole" =! ColorSet.serialize boolColour1 valueTrue2 <>! 
 
@@ -251,7 +250,7 @@ module MultiSetTests =
                 let notBoolMS2 =
                     boolMS2 
                     |> MultiSet.mapColors (fun (Bool bool) ->                           
-                        bool |> not |> CSValue.pack |> function Ok b -> b | _ -> Void )
+                        bool |> not |> Color.pack |> function Ok b -> b | _ -> Void )
                         
 
                 boolMS1 =! notBoolMS2
@@ -262,7 +261,7 @@ module MultiSetTests =
                     |> MultiSet.mapMultiSets (fun (Bool bool) ->
                         bool 
                         |> not
-                        |> CSValue.pack
+                        |> Color.pack
                         >>= ColorSet.serialize boolColour2
                         >>= fun colorStr -> 
                             MultiSet.ofString boolColour2 (sprintf "2`%s" colorStr)

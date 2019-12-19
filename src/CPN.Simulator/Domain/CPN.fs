@@ -6,7 +6,7 @@ open CPN.Simulator.Operators
 [<StructuredFormatDisplay("CPN = {Show}")>]
 type CPN = CPN of Net * (Places * Transitions * Arcs * Declarations)
 
-
+ //TODO: should use declaratiosn !!!! instead of default ones
 /// Module for implementing all CPN's operations
 module CPN =
     // TODO: Remove the opening of types; moving logic towards every type when

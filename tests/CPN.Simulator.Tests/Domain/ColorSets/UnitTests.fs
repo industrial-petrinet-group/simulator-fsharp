@@ -12,55 +12,52 @@ module UnitTests =
     let tests =
         testList "Domain.ColorSets.UnitTests." [
             testCase "Unit color set can be created and it's value is ()" <| fun () ->
-                Unit.create None >>= Unit.colorVal "()" =! Ok ()
+                Ok <| Unit () =! ColorSet.deserialize (CS "unit") "()"
             
-            testCase "create and colorVal work as expected for Unit" <| fun () ->
-                let unitCS = Unit.create None
-                let unitWithedCS = Unit.create (Some "void")
+            //testCase "create and Deserialize work as expected for Unit" <| fun () ->
+            //    (ColorSet.deserialize (CS "unit") "()") =! (ColorSet.deserialize (CS "unit'")  "none")
+            //    Ok <| Unit () =! (ColorSet.deserialize (CS "unit'")  "none")
 
-                (unitCS >>= Unit.colorVal "()") =! (unitWithedCS >>= Unit.colorVal "void")
-                (unitCS >>= Unit.colorVal "()") =! Ok ()
+            //    (ColorSet.deserialize (CS "unit") "null") =! (ColorSet.deserialize (CS "unit'")  "null")
+            //    (Error <| CSErrors (InvalidValue "null")) =! (ColorSet.deserialize (CS "unit'")  "null")
 
-                (unitCS >>= Unit.colorVal "null") =! (unitWithedCS >>= Unit.colorVal "null")
-                (unitCS >>= Unit.colorVal "null") =! (Error <| CSErrors (InvalidValue "null"))
+            //testCase "Functions init and legal work as expected for Unit" <| fun () ->
+            //    let unitCS = UnitCS.create None
+            //    let unitWithedCS = UnitCS.create (Some "no")
 
-            testCase "Functions init and legal work as expected for Unit" <| fun () ->
-                let unitCS = Unit.create None
-                let unitWithedCS = Unit.create (Some "no")
-
-                Unit.init =! ()
+            //    UnitCS.init =! ()
                 
-                unitCS >>= switch (Unit.isLegal ()) =! Ok true
-                unitWithedCS >>= switch (Unit.isLegal ()) =! Ok true
+            //    unitCS >>= switch (UnitCS.isLegal ()) =! Ok true
+            //    unitWithedCS >>= switch (UnitCS.isLegal ()) =! Ok true
 
-            testCase "Small color set functions work as expected for Unit" <| fun () ->
-                let unitCS = Unit.create None
-                let unitWithedCS = Unit.create (Some "nulo")
+            //testCase "Small color set functions work as expected for Unit" <| fun () ->
+            //    let unitCS = UnitCS.create None
+            //    let unitWithedCS = UnitCS.create (Some "nulo")
 
-                (unitCS >>= Unit.all) =! (unitWithedCS >>= Unit.all)
-                (unitCS >>= Unit.all) =! Ok [ () ]
+            //    (unitCS >>= UnitCS.all) =! (unitWithedCS >>= UnitCS.all)
+            //    (unitCS >>= UnitCS.all) =! Ok [ () ]
 
-                (unitCS >>= Unit.size) =! (unitWithedCS >>= Unit.size)
-                (unitCS >>= Unit.size) =! Ok 1
+            //    (unitCS >>= UnitCS.size) =! (unitWithedCS >>= UnitCS.size)
+            //    (unitCS >>= UnitCS.size) =! Ok 1
 
-                (unitCS >>= Unit.ordinal ()) =! (unitWithedCS >>= Unit.ordinal ())
-                (unitCS >>= Unit.ordinal ()) =! Ok 0
+            //    (unitCS >>= UnitCS.ordinal ()) =! (unitWithedCS >>= UnitCS.ordinal ())
+            //    (unitCS >>= UnitCS.ordinal ()) =! Ok 0
                 
-                (unitCS >>= Unit.color 0) =! (unitWithedCS >>= Unit.color 0)
-                (unitCS >>= Unit.color 0) =! Ok ()
+            //    (unitCS >>= UnitCS.color 0) =! (unitWithedCS >>= UnitCS.color 0)
+            //    (unitCS >>= UnitCS.color 0) =! Ok ()
 
-                (unitCS >>= Unit.color 1) =! (unitWithedCS >>= Unit.color 1)
-                (unitCS >>= Unit.color 1) =! (Error <| CSErrors (OutOfRangeIndex 1))
+            //    (unitCS >>= UnitCS.color 1) =! (unitWithedCS >>= UnitCS.color 1)
+            //    (unitCS >>= UnitCS.color 1) =! (Error <| CSErrors (OutOfRangeIndex 1))
 
-                (unitCS >>= Unit.random) =! (unitWithedCS >>= Unit.random)
-                (unitCS >>= Unit.random) =! Ok ()
+            //    (unitCS >>= UnitCS.random) =! (unitWithedCS >>= UnitCS.random)
+            //    (unitCS >>= UnitCS.random) =! Ok ()
 
-            testCase "makeString work as expected for Unit" <| fun () ->
-                let unitCS = Unit.create None
-                let unitWithedCS = Unit.create (Some "nulo")
+            //testCase "makeString work as expected for Unit" <| fun () ->
+            //    let unitCS = UnitCS.create None
+            //    let unitWithedCS = UnitCS.create (Some "nulo")
 
-                (unitCS >>= Unit.makeString ()) =! Ok "()"
+            //    (unitCS >>= UnitCS.makeString ()) =! Ok "()"
 
-                (unitWithedCS >>= Unit.makeString ()) =! Ok "nulo"
+            //    (unitWithedCS >>= UnitCS.makeString ()) =! Ok "nulo"
 
         ]

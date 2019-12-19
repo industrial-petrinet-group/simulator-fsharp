@@ -2,7 +2,6 @@ namespace CPN.Simulator.Domain
 
 open CPN.Simulator.Domain
 open CPN.Simulator.Operators
-open CPN.Simulator.Domain.ColorSets
 
 /// Type representing the data of a Multiset
 type MultiSetData =
@@ -83,6 +82,10 @@ module MultiSet =
                 //    |> randomizeList         
                 //    |> fun (token :: rest) ->
                 //        RandomSet (token, rest |> Map.ofList) 
+        
+        /// Given a Multiset it returns its first element
+        let first (MS { values = multiset }) =
+            multiset |> Map.pick (fun x _ -> Some x)
 
         /// Given two MultiSets it returns if they colors match
         let sameColorOrEmpty (MS _ as xMS) yMS = 
@@ -199,14 +202,14 @@ module MultiSet =
         multiset |> Map.fold (fun acc _ qty -> acc + qty) 0
     
     /// Given a multiset it returs a random value
-    let random (MS { values = multiset; color = color} as ms) =
+    let random (MS { values = multiset } as ms) =
         multiset 
         |> Map.fold (fun (finish, acc, result) value qty ->
             match finish, acc < qty with
             | true, _ -> finish, acc, result
             | false, true -> true, acc, value
             | false, false -> false, acc - qty, result
-        ) (false, random.Next(ms |> size), color.Init)
+        ) (false, random.Next(ms |> size), first ms)
         |> fun (_, _, result) -> result
     
     /// Given a color value and a multiset it returns the number of ocurrences 

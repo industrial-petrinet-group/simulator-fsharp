@@ -3,6 +3,7 @@
 open CPN.Simulator.Operators
 
 /// Type representing the posible values of every colorset (limited to simple)
+[<StructuredFormatDisplay("{Show}")>]
 [<CustomEquality; CustomComparison>]
 type Color =
     | Void
@@ -35,7 +36,6 @@ type Color =
                 | _ -> invalidArg "yObj" "cannot compare values of different ColorSets"
             | _ -> invalidArg "yObj" "cannot compare values outside of Color type"
 
-
 /// Module implementing Color related operations
 module Color =
     /// Return the empty Color
@@ -67,3 +67,14 @@ module Color =
     /// defaults ColorSetIds 
     let map (mapping : obj -> 'r) = 
         unpack >=> switch mapping >=> pack
+
+type Color with
+    member this.Show =
+        match this with
+        | Void -> sprintf "void"
+        | Unit _ -> sprintf "()"
+        | Bool boolColor -> sprintf "%b" boolColor
+        | Int intColor -> sprintf "%i" intColor
+        | Bigint bigintColor -> sprintf "%O" bigintColor
+        | Float floatColor -> sprintf "%F" floatColor
+        | String stringColor -> stringColor
