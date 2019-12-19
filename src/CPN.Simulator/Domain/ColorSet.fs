@@ -1,7 +1,6 @@
 namespace CPN.Simulator.Domain
 
 open CPN.Simulator.Operators
-open CPN.Simulator.Domain.ColorSets
 
 /// Module implementing ColorSet's operations
 module ColorSet =
@@ -10,20 +9,20 @@ module ColorSet =
     module private Implementation =
         let toIColorSet cs = (cs :> IColorSet)
 
-        let defaultColorSet color =
-            match color with
-            | Unit _ -> UnitCS.create None >>= switch toIColorSet
-            | Bool _ -> BoolCS.create None >>= switch toIColorSet
-            | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" color)
-
-    let ofColor color = (CSValue.pack >=> defaultColorSet) color
+    let ofColor color =
+        color
+        |> Color.defaultPack
+        >>= Color.colorSetId
     
     /// Return an empty colorset
-    let empty = VoidCS |> toIColorSet
+    let empty = CS "void"
     
     /// Given a supposed member it checks if is an actual member of the 
     /// colorset and return it's value if it is. 
-    let deserialize (cs: IColorSet) = cs.Deserialize
+    let deserialize (csid: ColorSetId) = 
+        csid
+        |> Declarations.colorSet 
+        |> fun cs -> cs.Deserialize
     
     /// Given a supposed member and a colorset it checks if the value is a 
     /// member of the set and return it's string color set value if it is. 

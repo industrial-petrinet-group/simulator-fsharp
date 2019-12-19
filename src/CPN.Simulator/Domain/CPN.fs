@@ -4,7 +4,7 @@ open CPN.Simulator.Operators
 
 /// Type representing the Coloured Petri Net
 [<StructuredFormatDisplay("CPN = {Show}")>]
-type CPN = CPN of Net * (Places * Transitions * Arcs)
+type CPN = CPN of Net * (Places * Transitions * Arcs * Declarations)
 
 
 /// Module for implementing all CPN's operations
@@ -13,16 +13,16 @@ module CPN =
     // it's convinient
     /// Given a CPN it return the state of it; i.e the list of places with it's 
     /// respective tokens for every place that have at least one.
-    let netMarking (CPN (_, (places, _, _)))  =
+    let netMarking (CPN (_, (places, _, _, _)))  =
         places 
         |> Place.placesMarkingAsStringList
         |> List.filter (fun (_, marking) -> marking <> "")
 
     /// Given a CPN it returns a Net with transitions avaliable to occur.
-    let enabled (CPN (net, (places, _, _))) = net |> Net.enabledFor places 
+    let enabled (CPN (net, (places, _, _, _))) = net |> Net.enabledFor places 
     
     /// Remove the input tokens for the places reached by the enabled transitions.
-    let removeInputTokens (enabled, CPN (net, (places, transitions, arcs))) =
+    let removeInputTokens (enabled, CPN (net, (places, transitions, arcs, declarations))) =
         let randomKeyList = enabled |> Net.randomKeyList
            
         Ok (Net.empty, places)
@@ -40,11 +40,11 @@ module CPN =
                             Ok (occurred |> Net.add tid tio, modifiedPlaces)
         ) randomKeyList
         >>= fun (ocurred, modifiedPlaces) -> 
-            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs)))
+            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs, declarations)))
 
 
     /// Add the output tokens for the places reached by the enabled transitions.
-    let addOutputTokens (ocurred, CPN (net, (places, transitions, arcs))) =         
+    let addOutputTokens (ocurred, CPN (net, (places, transitions, arcs, declarations))) =         
         let keyList = ocurred |> Net.keyList
         
         Ok places
@@ -56,7 +56,7 @@ module CPN =
                     Place.addTokens 1 (ocurred |> Net.outputs tid)
         ) keyList
         >>= fun modifiedPlaces -> 
-            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs)))
+            Ok (ocurred, CPN (net, (modifiedPlaces, transitions, arcs, declarations)))
 
 /// Type representing a way of showing the CPN
 type ShowableCPN = 

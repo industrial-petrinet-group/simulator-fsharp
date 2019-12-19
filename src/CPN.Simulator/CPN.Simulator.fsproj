@@ -7,7 +7,7 @@
   <ItemGroup>
     <Compile Include="Operators.fs" />
     <Compile Include="Domain\Errors.fs" />
-    <Compile Include="Domain\CSValue.fs" />
+    <Compile Include="Domain\Color.fs" />
     <Compile Include="Domain\IColorSet.fs" />
     <Compile Include="Domain\ColorSets\Common.fs" />
     <Compile Include="Domain\ColorSets\VoidCS.fs" />

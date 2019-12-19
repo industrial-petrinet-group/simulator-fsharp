@@ -6,7 +6,7 @@ open System.Text.RegularExpressions
 module Operators =
     let random = System.Random()
 
-    /// Return the identity inside a Result
+    /// Result return function, return the identity in the Result world
     let rid x = Ok x
 
     /// Result bind operator
@@ -15,7 +15,7 @@ module Operators =
         | Error err -> Error err
         | Ok x -> f x
 
-    /// Result return function, converting a normal function to the result world
+    /// Result map function, converting a normal function to the result world
     let switch f x = Ok <| f x
 
     /// Result monadic composition function
