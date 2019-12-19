@@ -7,7 +7,7 @@ open CPN.Simulator.Domain.ColorSets
 /// Type representing the data of a Multiset
 type MultiSetData =
     { values: Map<Color, int>
-      color: IColorSet }
+      color: ColorSetId }
 
 /// Type representing a Multi Set
 [<StructuredFormatDisplay("MultiSet = {Show}")>]

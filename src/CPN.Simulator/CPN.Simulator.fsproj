@@ -17,6 +17,7 @@
     <Compile Include="Domain\ColorSets\Integer.fs" />
     <Compile Include="Domain\ColorSets\BigInteger.fs" />
     <Compile Include="Domain\ColorSets\Double.fs" />
+    <Compile Include="Domain\Declaration.fs" />
     <Compile Include="Domain\ColorSet.fs" />
     <Compile Include="Domain\MultiSet.fs" />
     <Compile Include="Domain\Place.fs" />

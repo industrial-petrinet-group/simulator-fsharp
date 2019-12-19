@@ -21,8 +21,8 @@ module ColorSet =
     /// colorset and return it's value if it is. 
     let deserialize (csid: ColorSetId) = 
         csid
-        |> Declarations.colorSet 
-        |> fun cs -> cs.Deserialize
+        |> Declarations.colorSet (Declarations.defaults)
+        |> function Some cs -> cs.Deserialize | None -> Error <|
     
     /// Given a supposed member and a colorset it checks if the value is a 
     /// member of the set and return it's string color set value if it is. 
