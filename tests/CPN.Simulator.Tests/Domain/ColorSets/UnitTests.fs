@@ -4,15 +4,15 @@ open Expecto
 open Swensen.Unquote
 open CPN.Simulator.Operators
 open CPN.Simulator.Domain
-open CPN.Simulator.Domain.ColorSets
 
 module UnitTests =
 
-    [<Tests>]
+    //[<Tests>]
     let tests =
         testList "Domain.ColorSets.UnitTests." [
             testCase "Unit color set can be created and it's value is ()" <| fun () ->
-                Ok <| Unit () =! ColorSet.deserialize (CS "unit") "()"
+               1 =! 1
+               ColorSet.deserialize (CS "unit") "()" =! Ok (Unit ())
             
             //testCase "create and Deserialize work as expected for Unit" <| fun () ->
             //    (ColorSet.deserialize (CS "unit") "()") =! (ColorSet.deserialize (CS "unit'")  "none")

@@ -8,7 +8,7 @@ open CPN.Simulator.Domain.ColorSets
 
 module BooleanTests =
 
-    [<Tests>]
+    //[<Tests>]
     let tests =
         testList "Domain.ColorSets.BooleanTests." [
             testCase "Boolean color set can be created and it's value for falsy is false" <| fun () ->

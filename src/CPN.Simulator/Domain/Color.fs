@@ -6,7 +6,6 @@ open CPN.Simulator.Operators
 [<StructuredFormatDisplay("{Show}")>]
 [<CustomEquality; CustomComparison>]
 type Color =
-    | Void
     | Unit of unit
     | Bool of bool
     | Int of int
@@ -19,14 +18,20 @@ type Color =
         | :? Color as yCSV -> xCSV = yCSV
         | _ -> false
 
-    override xCSV.GetHashCode() = hash xCSV
+    override xCSV.GetHashCode() = 
+        match xCSV with
+        | Unit unit -> hash unit
+        | Bool bool -> hash bool
+        | Int int -> hash int
+        | Bigint bigint -> hash bigint
+        | Float float -> hash float
+        | String string -> hash string
 
     interface System.IComparable with      
         member xCSV.CompareTo yObj =
             match yObj with
             | :? Color as yCSV -> 
                 match xCSV, yCSV with
-                | Void, Void -> 0
                 | Unit x, Unit y -> compare x y
                 | Bool x, Bool y -> compare x y
                 | Int x, Int y -> compare x y
@@ -39,7 +44,7 @@ type Color =
 /// Module implementing Color related operations
 module Color =
     /// Return the empty Color
-    let empty = Void
+   // let empty = Void
 
     /// Given a value it tries to pack them inside a Color
     let pack value =
@@ -71,7 +76,7 @@ module Color =
 type Color with
     member this.Show =
         match this with
-        | Void -> sprintf "void"
+        //| Void -> sprintf "void"
         | Unit _ -> sprintf "()"
         | Bool boolColor -> sprintf "%b" boolColor
         | Int intColor -> sprintf "%i" intColor

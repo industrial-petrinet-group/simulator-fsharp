@@ -92,12 +92,21 @@ module MultiSet =
             xMS.SameColor yMS || xMS.OneIsEmpty yMS
 
         /// Given a Token list ir reduce it
-        let reduceTokenList redundantTokenList = 
-            redundantTokenList
-            |> List.groupBy (fun (value, _qty) -> value)
-            |> List.map (fun (value, equalTokenList) -> 
-                value, 
-                equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0)
+        let reduceTokenList (redundantTokenList : (Color*int) list) = 
+            let x = redundantTokenList |> List.groupBy (fun (value, _qty) -> value)
+            let y = x |> List.map (fun (value, equalTokenList) -> 
+                let z = equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0          
+                value, z) 
+
+            y
+                
+          
+          
+            //redundantTokenList
+            //|> List.groupBy (fun (value, _qty) -> value)
+            //|> List.map (fun (value, equalTokenList) -> 
+            //    value, 
+            //    equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0)
     
         // Given a Token list it reduce it and returns a set of them
         let mapOfTokenList tokenList =
