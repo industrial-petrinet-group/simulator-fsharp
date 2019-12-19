@@ -17,9 +17,12 @@
 #load "./SampleNets.fs"
 #load "./Runtime.fs" 
 
-
+#load "./Operators.fs" 
+#load "./Domain/Errors.fs"
+#load "./Domain/Color.fs"
 open CPN.Simulator
 open CPN.Simulator.Domain
+
 open CPN.Simulator.Domain.ColorSets;;
 
 let (Ok unitCS) = UnitCS.create None

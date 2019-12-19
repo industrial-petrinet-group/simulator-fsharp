@@ -8,7 +8,7 @@ type VoidCS =
     
     interface IColorSet with
         member __.Name = "VoidCS"
-        member __.Init = Void
+        member __.Init = invalidOp "Void ColorSet doesn't have elements"
         member __.Serialize _colorString = Error <| CSErrors (NotUsable "serialize")
         member __.Deserialize _colorValue = Error <| CSErrors (NotUsable "deserialize")
         member __.IsLegal _colorValue = Error <| CSErrors (NotUsable "isLegal")
