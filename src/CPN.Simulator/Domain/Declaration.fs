@@ -2,8 +2,11 @@
 
 open CPN.Simulator.Domain.ColorSets
 
-type Declarations = 
-    | D of Map<ColorSetId, IColorSet>
+/// Type representing a Color Set ID
+type ColorSetId = CS of string
+
+/// Type representing a Color Set Declaration
+type Declarations = D of Map<ColorSetId, IColorSet>
 
 module Declarations =
 
@@ -17,4 +20,9 @@ module Declarations =
         |> Map.add (CS "bool") (boolCS :> IColorSet)
         |> D
 
-    let colorSet (D declarations) csid = declarations |> Map.tryFind csid
+    let colorSet (D declarations) csid = 
+        declarations 
+        |> Map.tryFind csid
+        |> function
+            | Some colorSet -> Ok colorSet
+            | None -> Error <| DErrors UndeclaredColorSet

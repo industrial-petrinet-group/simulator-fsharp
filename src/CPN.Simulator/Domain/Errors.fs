@@ -1,7 +1,7 @@
 ﻿namespace CPN.Simulator.Domain
 
 type DeclarationErrors =
-    | NotDeclaredColorSet
+    | UndeclaredColorSet
 
 /// Type representing ColorSet Errors
 type ColorSetErrors = 

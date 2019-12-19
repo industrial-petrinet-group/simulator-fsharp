@@ -1,10 +1,11 @@
 ﻿namespace CPN.Simulator.Domain
 
+
 /// Interface implemented by all ColorSets
 type IColorSet =
     /// Return the Meta Data asociated with the colorset
     abstract member Name : string 
-    
+ 
     /// Return the base initial value for this colorset.
     abstract member Init : Color
 
@@ -33,4 +34,3 @@ type IColorSet =
     
     /// Return a random value of this colorset.
     abstract member Random : Result<Color, Errors>
-

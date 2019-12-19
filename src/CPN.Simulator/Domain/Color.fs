@@ -2,19 +2,16 @@
 
 open CPN.Simulator.Operators
 
-type ColorSetId = CS of string
-
-/// Type representing the posible values of every colorset (limited to simples
-/// for now)
+/// Type representing the posible values of every colorset (limited to simple)
 [<CustomEquality; CustomComparison>]
 type Color =
     | Void
-    | Unit of unit * ColorSetId
-    | Bool of bool * ColorSetId
-    | Int of int * ColorSetId
-    | Bigint of bigint * ColorSetId
-    | Float of float * ColorSetId
-    | String of string * ColorSetId
+    | Unit of unit
+    | Bool of bool
+    | Int of int
+    | Bigint of bigint
+    | Float of float
+    | String of string
 
     override xCSV.Equals(yObj) =
         match yObj with
@@ -29,47 +26,44 @@ type Color =
             | :? Color as yCSV -> 
                 match xCSV, yCSV with
                 | Void, Void -> 0
-                | Unit (x, csx), Unit (y, csy) when csx = csy -> compare x y
-                | Bool (x, csx), Bool (y, csy) when csx = csy -> compare x y
-                | Int (x, csx), Int (y, csy) when csx = csy -> compare x y
-                | Bigint (x, csx), Bigint (y, csy) when csx = csy -> compare x y
-                | Float (x, csx), Float (y, csy) when csx = csy -> compare x y
-                | String (x, csx), String (y, csy) when csx = csy -> compare x y
+                | Unit x, Unit y -> compare x y
+                | Bool x, Bool y -> compare x y
+                | Int x, Int y -> compare x y
+                | Bigint x, Bigint y -> compare x y
+                | Float x, Float y -> compare x y
+                | String x, String y -> compare x y
                 | _ -> invalidArg "yObj" "cannot compare values of different ColorSets"
             | _ -> invalidArg "yObj" "cannot compare values outside of Color type"
 
+
+/// Module implementing Color related operations
 module Color =
+    /// Return the empty Color
     let empty = Void
 
-    let pack csid value =
-        let csOrDefault = defaultArg csid
-
+    /// Given a value it tries to pack them inside a Color
+    let pack value =
         match box value with
-        | :? unit as unitColor -> Ok <| Unit (unitColor, csOrDefault <| CS "unit")
-        | :? bool as boolColor -> Ok <| Bool (boolColor, csOrDefault <| CS "bool")
-        | :? int as intColor -> Ok <| Int (intColor, csOrDefault <| CS "int")
-        | :? bigint as bigintColor -> Ok <| Bigint (bigintColor, csOrDefault <| CS "bigint")
-        | :? float as floatColor -> Ok <| Float (floatColor, csOrDefault <| CS "float")
-        | :? string as stringColor -> Ok <| String (stringColor, csOrDefault <| CS "string")
+        | :? unit as unitColor -> Ok <| Unit unitColor
+        | :? bool as boolColor -> Ok <| Bool boolColor
+        | :? int as intColor -> Ok <| Int intColor
+        | :? bigint as bigintColor -> Ok <| Bigint bigintColor
+        | :? float as floatColor -> Ok <| Float floatColor
+        | :? string as stringColor -> Ok <| String stringColor
         | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" value)
-    
-    let defaultPack value = pack None value   
 
-    let unpack colorValue =
-        match colorValue with
+    /// Given a Color it unpacks it
+    let unpack color =
+        match color with
         | Void -> Error <| CSErrors (InvalidColor <| sprintf "void")
-        | Unit (unitColor, csid) -> Ok (box unitColor, csid)
-        | Bool (boolColor, csid) -> Ok (box boolColor, csid)
-        | Int (intColor, csid) -> Ok (box intColor, csid)
-        | Bigint (bigintColor, csid) -> Ok (box bigintColor, csid)
-        | Float (floatColor, csid) -> Ok (box floatColor, csid)
-        | String (stringColor, csid) -> Ok (box stringColor, csid)
-    
-    let colorValue = unpack >=> switch fst
+        | Unit unitColor -> Ok <| box unitColor
+        | Bool boolColor -> Ok <| box boolColor
+        | Int intColor -> Ok <| box intColor
+        | Bigint bigintColor -> Ok <| box bigintColor
+        | Float floatColor -> Ok <| box floatColor
+        | String stringColor -> Ok <| box stringColor
 
-    let colorSetId = unpack >=> switch snd
-
-    let map (func : obj -> 'r) = 
-        colorValue >=> switch func >=> defaultPack
-
-
+    /// Given a mapping function it maps a Color to a new one based on the 
+    /// defaults ColorSetIds 
+    let map (mapping : obj -> 'r) = 
+        unpack >=> switch mapping >=> pack
