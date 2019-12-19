@@ -1,5 +1,8 @@
 ﻿namespace CPN.Simulator.Domain
 
+type DeclarationErrors =
+    | NotDeclaredColorSet
+
 /// Type representing ColorSet Errors
 type ColorSetErrors = 
     | NotUsable of func: string
@@ -24,7 +27,9 @@ type PlaceErrors =
 
 /// Errors for the whole Domain 
 type Errors =
+    | DErrors of DeclarationErrors
     | CSErrors of ColorSetErrors
     | MSErrors of MultiSetErrors
     | PErrors of PlaceErrors
+
 
