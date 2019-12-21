@@ -22,12 +22,15 @@
 #load "./Domain/Color.fs"
 open CPN.Simulator
 open CPN.Simulator.Domain
+open CPN.Simulator.Domain.ColorSets
 
-open CPN.Simulator.Domain.ColorSets;;
+let (Ok unitCS') = UnitCS.create <| Some "none"
+let (Ok boolCS') = BoolCS.create <| Some ("none", "whole")
+Declaration.update [ (CS "unit'", unitCS' :> IColorSet)
+                     (CS "bool'", boolCS' :> IColorSet) ]
 
-let (Ok unitCS) = UnitCS.create None
 
-let steps = SampleNets.simpleBooleanNet
+
 
 //let (Ok unitCS) = Unit.create None
 //let unitColour = UnitCS unitCS;;

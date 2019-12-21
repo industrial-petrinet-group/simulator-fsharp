@@ -23,6 +23,10 @@ module Operators =
         match switch1 x with
         | Ok s -> switch2 s
         | Error e -> Error e 
+    
+    /// Given a Map it returns its first element
+    let mapFirstKey map =
+        map |> Map.pick (fun x _ -> Some x)
 
     /// Get the keys of a Map
     let getKeys map =

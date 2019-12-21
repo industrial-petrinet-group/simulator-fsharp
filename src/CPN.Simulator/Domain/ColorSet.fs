@@ -17,8 +17,10 @@ module ColorSet =
              csid
              |> Declaration.colorSet (Declaration.actuals())
              >>= callback
+    
+    let ofColor color = color |> defaultColorSet
 
-    let ofColor color = color |> Color.pack >>= defaultColorSet
+    let ofColorValue color = color |> Color.pack >>= defaultColorSet
 
     /// Return the empty ColorSetId
     let empty = CS "void"

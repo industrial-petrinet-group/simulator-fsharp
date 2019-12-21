@@ -82,10 +82,9 @@ module MultiSet =
                 //    |> randomizeList         
                 //    |> fun (token :: rest) ->
                 //        RandomSet (token, rest |> Map.ofList) 
-        
+
         /// Given a Multiset it returns its first element
-        let first (MS { values = multiset }) =
-            multiset |> Map.pick (fun x _ -> Some x)
+        let first (MS { values = multiset }) = multiset |> mapFirstKey
 
         /// Given two MultiSets it returns if they colors match
         let sameColorOrEmpty (MS _ as xMS) yMS = 
@@ -93,20 +92,11 @@ module MultiSet =
 
         /// Given a Token list ir reduce it
         let reduceTokenList (redundantTokenList : (Color*int) list) = 
-            let x = redundantTokenList |> List.groupBy (fun (value, _qty) -> value)
-            let y = x |> List.map (fun (value, equalTokenList) -> 
-                let z = equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0          
-                value, z) 
-
-            y
-                
-          
-          
-            //redundantTokenList
-            //|> List.groupBy (fun (value, _qty) -> value)
-            //|> List.map (fun (value, equalTokenList) -> 
-            //    value, 
-            //    equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0)
+            redundantTokenList
+            |> List.groupBy (fun (value, _qty) -> value)
+            |> List.map (fun (value, equalTokenList) -> 
+                value, 
+                equalTokenList |> List.fold (fun acc (_, qty) -> acc + qty) 0)
     
         // Given a Token list it reduce it and returns a set of them
         let mapOfTokenList tokenList =
@@ -128,7 +118,6 @@ module MultiSet =
     
     /// Given a MultiSet string it evaluates the expressions*, reduce the equal
     /// values and generate a MultiSet.
-    // * TODO
     let ofString color inputString =
         match inputString with
         | Match @"(\d+)`(.+?)(?:\+{2}|$)" matches -> 
@@ -235,17 +224,28 @@ module MultiSet =
         MS { msData with values = multiset |> Map.filter predicate }
     
     /// Given a mapping function it produces a new one mapping every element
-    // FIXME: Cant be a mapping between colors and it should be probably i need 
-    // to rethink if being an string Map is the way to go or
-    // take a generic approach and define multisets of every color.
-    let mapColors mapping (MS ({ values = multiset } as ms)) =
+    // FIXME: Much better now. Try to check what happens if more than one value 
+    // maps to one; i.e. what happens when mapped with ignore
+    let mapColors mapping (MS ({ values = multiset; color = color } as ms)) =
         multiset 
-        |> Map.fold (fun acc key qty -> 
-            acc |> Map.add (mapping key) qty) Map.empty
-        |> fun mappedValues -> MS { ms with values = mappedValues }
-    
+        |> Map.fold (fun accRes key qty -> 
+            accRes 
+            >>= fun acc ->
+                key
+                |> Color.map mapping 
+                >>= fun mapped -> Ok (acc |> Map.add mapped qty)) (Ok Map.empty)
+        >>= fun mappedValues -> 
+            match ColorSet.isLegal color (mappedValues |> mapFirstKey) with
+            | Ok true -> Ok <| MS { ms with values = mappedValues }
+            | _ -> 
+                mappedValues 
+                |> mapFirstKey 
+                |> ColorSet.ofColor
+                >>= fun col -> Ok <| MS { values = mappedValues; color = col }
+
     /// Given a mapping function that turns a value into a MultiSet and a Multiset
     /// it returns a new one created from boths.
+    // FIXME: need to review this based on changes mde to mapColors
     let mapMultiSets mapping (MS { values = multiset; color = color}) =
         multiset 
         |> Map.fold (fun accRes key qty -> 

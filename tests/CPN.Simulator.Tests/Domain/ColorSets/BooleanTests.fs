@@ -2,13 +2,14 @@ namespace CPN.Simulator.Tests.Domain.ColorSets
 
 open Expecto
 open Swensen.Unquote
-open CPN.Simulator.Operators
 open CPN.Simulator.Domain
-open CPN.Simulator.Domain.ColorSets
+open CPN.Simulator.Tests.Domain
 
 module BooleanTests =
+    
+    let preTest = Setup.declarations()
 
-    //[<Tests>]
+    [<Tests>]
     let tests =
         testList "Domain.ColorSets.BooleanTests." [
             testCase "Boolean color set can be created and it's value for falsy is false" <| fun () ->

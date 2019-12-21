@@ -246,17 +246,13 @@ module MultiSetTests =
                 "1`whole" =! (exactlyOneValuesMS |> MultiSet.asString)
 
             testCase "test map and fold functions for Multiset" <| fun () ->
+                let (Ok unitMS) = MultiSet.ofString unitColour1 "2`()"
                 let (Ok boolMS1) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
                 let (Ok boolMS2) = MultiSet.ofString boolColour2 "2`whole++1`none"
 
                 // old ext_col
-                let notBoolMS2 =
-                    boolMS2 
-                    |> MultiSet.mapColors (fun (Bool bool) ->                           
-                        bool |> not |> Color.pack |> function Ok b -> b )
-                        
-
-                boolMS1 =! notBoolMS2
+                Ok boolMS1 =! (boolMS2 |> MultiSet.mapColors not)
+                Ok unitMS =! (boolMS2 |> MultiSet.mapColors ignore)
 
                 // old ext_ms
                 let notBoolMS1x2 =

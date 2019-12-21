@@ -5,8 +5,8 @@ open CPN.Simulator.Domain
 // Should make creation API's
 module SampleNets =
     // Simple definitions for convinience
-    let (Ok unitColor) = ColorSet.ofColor ()
-    let (Ok boolColor) = ColorSet.ofColor true
+    let (Ok unitColor) = ColorSet.ofColorValue ()
+    let (Ok boolColor) = ColorSet.ofColorValue true
     let emptyMS = MultiSet.emptyWithColor unitColor 
     let emptyBMS = MultiSet.emptyWithColor boolColor
     let (Ok unitMS) = MultiSet.emptyWithColor unitColor |> MultiSet.addTokens 1 

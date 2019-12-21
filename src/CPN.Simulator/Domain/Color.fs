@@ -13,12 +13,12 @@ type Color =
 
     member this.Unpack () =
         match this with
-        | Unit -> box ()
-        | Bool boolColor -> box boolColor
-        | Int intColor -> box intColor
-        | Bigint bigintColor -> box bigintColor
-        | Float floatColor -> box floatColor
-        | String stringColor -> box stringColor
+        | Unit -> () |> box |> unbox
+        | Bool boolColor -> boolColor |> box |> unbox
+        | Int intColor -> intColor |> box |> unbox
+        | Bigint bigintColor -> bigintColor |> box |> unbox
+        | Float floatColor -> floatColor |> box |> unbox
+        | String stringColor -> stringColor |> box |> unbox
 
     override xCSV.Equals(yObj) =
         match yObj with
@@ -63,7 +63,7 @@ module Color =
 
     /// Given a mapping function it maps a Color to a new one based on the 
     /// defaults ColorSetIds 
-    let map (mapping : obj -> 'r) = 
+    let map mapping = 
         unpack >> mapping >> pack
 
 type Color with
