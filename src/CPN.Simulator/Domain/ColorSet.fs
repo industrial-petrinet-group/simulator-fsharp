@@ -25,7 +25,7 @@ module ColorSet =
     
     /// Given a coloret id it returns the initial value for the colorset
     let init (csid: ColorSetId) =
-        declaredColorSetAction csid <| fun cs -> Ok cs.Init
+        declaredColorSetAction csid <| fun cs -> rid cs.Init
 
     /// Given a supposed member it checks if is an actual member of the 
     /// colorset and return it's value if it is. 
@@ -37,6 +37,10 @@ module ColorSet =
     let serialize (csid: ColorSetId) color = 
         declaredColorSetAction csid <| fun cs -> cs.Serialize color
     
+    /// Given a colorsetid and a color it checks if the later is a legal one.
+    let isLegal (csid: ColorSetId) color =
+        declaredColorSetAction csid <| fun cs -> cs.IsLegal color
+
     /// Return a random value of this colorset.
     let random (csid: ColorSetId) = 
         declaredColorSetAction csid <| fun cs -> cs.Random

@@ -10,30 +10,23 @@ module UnitTests =
     //[<Tests>]
     let tests =
         testList "Domain.ColorSets.UnitTests." [
-            testCase "Unit color set can be created and it's value is ()" <| fun () ->
-               1 =! 1
+            testCase "Unit colorset can be deserialized as a Unit Color" <| fun () ->
                ColorSet.deserialize (CS "unit") "()" =! Ok Unit
             
-            //testCase "create and Deserialize work as expected for Unit" <| fun () ->
-            //    (ColorSet.deserialize (CS "unit") "()") =! (ColorSet.deserialize (CS "unit'")  "none")
-            //    Ok <| Unit () =! (ColorSet.deserialize (CS "unit'")  "none")
+            testCase "deserialize work as expected for Unit" <| fun () ->
+                (ColorSet.deserialize (CS "unit") "()") =! (ColorSet.deserialize (CS "unit'")  "none")
+                Ok <| Unit =! ColorSet.deserialize (CS "unit'") "none"
 
-            //    (ColorSet.deserialize (CS "unit") "null") =! (ColorSet.deserialize (CS "unit'")  "null")
-            //    (Error <| CSErrors (InvalidValue "null")) =! (ColorSet.deserialize (CS "unit'")  "null")
+                (ColorSet.deserialize (CS "unit") "null") =! (ColorSet.deserialize (CS "unit'")  "null")
+                Error <| CSErrors (InvalidValue "null") =! (ColorSet.deserialize (CS "unit'")  "null")
 
-            //testCase "Functions init and legal work as expected for Unit" <| fun () ->
-            //    let unitCS = UnitCS.create None
-            //    let unitWithedCS = UnitCS.create (Some "no")
-
-            //    UnitCS.init =! ()
+            testCase "init and legal work as expected for Unit" <| fun () ->
+                ColorSet.init (CS "unit") =! Ok Unit
                 
-            //    unitCS >>= switch (UnitCS.isLegal ()) =! Ok true
-            //    unitWithedCS >>= switch (UnitCS.isLegal ()) =! Ok true
+                Ok true =! (ColorSet.isLegal (CS "unit") Unit)
+                Ok true =! (ColorSet.isLegal (CS "unit'") Unit)
 
             //testCase "Small color set functions work as expected for Unit" <| fun () ->
-            //    let unitCS = UnitCS.create None
-            //    let unitWithedCS = UnitCS.create (Some "nulo")
-
             //    (unitCS >>= UnitCS.all) =! (unitWithedCS >>= UnitCS.all)
             //    (unitCS >>= UnitCS.all) =! Ok [ () ]
 
@@ -52,12 +45,9 @@ module UnitTests =
             //    (unitCS >>= UnitCS.random) =! (unitWithedCS >>= UnitCS.random)
             //    (unitCS >>= UnitCS.random) =! Ok ()
 
-            //testCase "makeString work as expected for Unit" <| fun () ->
-            //    let unitCS = UnitCS.create None
-            //    let unitWithedCS = UnitCS.create (Some "nulo")
+            testCase "serialize work as expected for Unit" <| fun () ->
+                Ok "()" =! (ColorSet.serialize (CS "unit") Unit)
 
-            //    (unitCS >>= UnitCS.makeString ()) =! Ok "()"
-
-            //    (unitWithedCS >>= UnitCS.makeString ()) =! Ok "nulo"
+                Ok "none" =! (ColorSet.serialize (CS "unit'") Unit)
 
         ]
