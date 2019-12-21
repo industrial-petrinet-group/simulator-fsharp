@@ -4,7 +4,7 @@
 [<StructuredFormatDisplay("{Show}")>]
 [<CustomEquality; CustomComparison>]
 type Color =
-    | Unit of unit
+    | Unit
     | Bool of bool
     | Int of int
     | Bigint of bigint
@@ -13,7 +13,7 @@ type Color =
 
     member this.Unpack () =
         match this with
-        | Unit unitColor -> box unitColor
+        | Unit -> box ()
         | Bool boolColor -> box boolColor
         | Int intColor -> box intColor
         | Bigint bigintColor -> box bigintColor
@@ -32,7 +32,7 @@ type Color =
             match yObj with
             | :? Color as yCSV -> 
                 match xCSV, yCSV with
-                | Unit x, Unit y -> compare x y
+                | Unit, Unit -> 0
                 | Bool x, Bool y -> compare x y
                 | Int x, Int y -> compare x y
                 | Bigint x, Bigint y -> compare x y
@@ -50,7 +50,7 @@ module Color =
     /// Given a value it tries to pack them inside a Color
     let pack value =
         match box value with
-        | :? unit as unitColor -> Ok <| Unit unitColor
+        | :? unit -> Ok <| Unit
         | :? bool as boolColor -> Ok <| Bool boolColor
         | :? int as intColor -> Ok <| Int intColor
         | :? bigint as bigintColor -> Ok <| Bigint bigintColor
@@ -69,7 +69,7 @@ module Color =
 type Color with
     member this.Show =
         match this with
-        | Unit _ -> sprintf "()"
+        | Unit -> sprintf "()"
         | Bool boolColor -> sprintf "%b" boolColor
         | Int intColor -> sprintf "%i" intColor
         | Bigint bigintColor -> sprintf "%O" bigintColor

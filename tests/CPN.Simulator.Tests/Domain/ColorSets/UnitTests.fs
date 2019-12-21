@@ -12,7 +12,7 @@ module UnitTests =
         testList "Domain.ColorSets.UnitTests." [
             testCase "Unit color set can be created and it's value is ()" <| fun () ->
                1 =! 1
-               ColorSet.deserialize (CS "unit") "()" =! Ok (Unit ())
+               ColorSet.deserialize (CS "unit") "()" =! Ok Unit
             
             //testCase "create and Deserialize work as expected for Unit" <| fun () ->
             //    (ColorSet.deserialize (CS "unit") "()") =! (ColorSet.deserialize (CS "unit'")  "none")

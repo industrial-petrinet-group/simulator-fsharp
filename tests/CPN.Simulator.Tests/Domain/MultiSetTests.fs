@@ -30,9 +30,9 @@ module MultiSetTests =
                 qty1 =! qty2
 
                 Ok <| "()" =! ColorSet.serialize unitColour1 value1
-                Ok <| "none" =! ColorSet.serialize unitColour2 value1
+                Ok <| "none" =! ColorSet.serialize unitColour2 value2
 
-                ColorSet.deserialize unitColour1 "()" <>! 
+                ColorSet.deserialize unitColour1 "()" =! 
                 ColorSet.deserialize unitColour2 "none"
 
                 let (Ok msAsString) = 
@@ -56,13 +56,15 @@ module MultiSetTests =
                 (qtyFalse1, qtyTrue1) =! (qtyFalse2, qtyTrue2) 
                 
                 Ok <| "false" =! ColorSet.serialize boolColour1 valueFalse1
+                Ok <| "none" =! ColorSet.serialize boolColour2 valueFalse2
                 
                 ColorSet.deserialize boolColour1 "true" <>! 
-                ColorSet.deserialize boolColour2 "whole"
+                ColorSet.deserialize boolColour2 "none"
 
                 Ok <| Bool false =! ColorSet.deserialize boolColour2 "none"
                 
-                Ok <| "whole" =! ColorSet.serialize boolColour1 valueTrue2 <>! 
+                Ok <| "true" =! ColorSet.serialize boolColour1 valueTrue1
+                Ok <| "whole" =! ColorSet.serialize boolColour2 valueTrue2
 
                 let (Ok msAsString) = 
                     boolMSStr1 
@@ -179,7 +181,7 @@ module MultiSetTests =
                 // Can't substract a multiset greater than the substracted one
                 Error (MSErrors SubstractorShouldBeLessOrEqual) =! (boolMS3 -- boolMS1)
                 // Or With different colors
-                let colorList = ["Boolean = [false; true]"; "Unit = [()]"]
+                let colorList = ["CS \"bool\""; "CS \"unit\""]
                 Error (MSErrors (UnmatchedColors colorList)) =! (boolMS1 -- unitMS1)
 
                 let empty = MultiSet.empty 
@@ -215,7 +217,7 @@ module MultiSetTests =
                 let empty = MultiSet.empty 
                 0 =! (empty |> MultiSet.size)
 
-                let randomBool = [for i in [1..10] do (boolMS1 |> MultiSet.random)] 
+                let randomBool = [for _ in [1..10] do (boolMS1 |> MultiSet.random)] 
                 
                 false =! (randomBool |> List.forall (fun b -> b = (randomBool |> List.head)))
                 true =! (randomBool |> List.forall (fun b -> b = Bool true || b =  Bool false))
@@ -223,7 +225,7 @@ module MultiSetTests =
                 4 =! (boolMS1 |> MultiSet.colorOcurrences (Bool false))
                 2 =! (boolMS1 |> MultiSet.colorOcurrences (Bool true))
 
-                5 =! (unitMS1 |> MultiSet.colorOcurrences (Bool false))
+                5 =! (unitMS1 |> MultiSet.colorOcurrences Unit)
 
             testCase "test filtering of MultiSets" <| fun () ->
                 let (Ok boolMS1) = MultiSet.ofString boolColour2 "1`none++1`whole++1`none"
@@ -231,7 +233,7 @@ module MultiSetTests =
                 let falsyFilteredMS =
                     boolMS1 
                     |> MultiSet.filter (fun value _ -> 
-                        Ok "false" = ColorSet.serialize boolColour2 value)
+                        Ok "none" = ColorSet.serialize boolColour2 value)
 
                 "2`none" =! (falsyFilteredMS |> MultiSet.asString)
 

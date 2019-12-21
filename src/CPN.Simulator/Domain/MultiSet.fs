@@ -150,11 +150,14 @@ module MultiSet =
         | _ -> Error <| MSErrors (BadFormattedInputString inputString)
         
     /// Given a MultiSet it returns it's elements parsed as a single string.
-    let asString (MS { values = placeMarking }) = 
+    let asString (MS { values = placeMarking ; color = color}) = 
         "" |> Map.foldBack (fun value qty acc ->
+            let deser = value
+                        |> ColorSet.serialize color
+                        |> function Ok deser -> deser | _ -> ""
             match acc with
-            | "" -> sprintf "%i`%A" qty value 
-            | acc -> sprintf "%s++%i`%A" acc qty value 
+            | "" -> sprintf "%i`%s" qty deser
+            | acc -> sprintf "%s++%i`%s" acc qty deser 
         ) placeMarking
 
     /// Given two MultiSets it returns the first with the elements of the
