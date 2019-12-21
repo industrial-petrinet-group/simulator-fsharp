@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Domain\Setup.fs" />
     <Compile Include="Domain\ColorSets\UnitTests.fs" />
     <Compile Include="Domain\ColorSets\BooleanTests.fs" />
     <Compile Include="Domain\ColorSets\IntegerTests.fs" />

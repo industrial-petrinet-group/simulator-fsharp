@@ -8,22 +8,30 @@ type ColorSetId = CS of string
 /// Type representing a Color Set Declaration
 type Declarations = Declarations of Map<ColorSetId, IColorSet>
 
-module Declarations =
-
+module Declaration =
+    
     let defaults =
-        let (Ok unitCS) = UnitCS.create None
-        let (Ok unitCS') = UnitCS.create <| Some "none"
+        let (Ok unitCS) = UnitCS.create None 
         let (Ok boolCS) = BoolCS.create None
-        let (Ok boolCS') = BoolCS.create <| Some ("none", "whole")
 
         Map.empty
         |> Map.add (CS "void") (VoidCS :> IColorSet)
         |> Map.add (CS "unit") (unitCS :> IColorSet)
-        |> Map.add (CS "unit'") (unitCS' :> IColorSet)
         |> Map.add (CS "bool") (boolCS :> IColorSet)
-        |> Map.add (CS "bool'") (boolCS' :> IColorSet)
         |> Declarations
+    
+    let mutable private state = defaults
 
+    let actuals () = state
+
+    let update news =
+        let (Declarations defaultMap) = actuals ()
+
+        news 
+        |> List.fold (fun acc (csid, cs) -> acc |> Map.add csid cs ) defaultMap
+        |> Declarations
+        |> fun newDec -> (state <- newDec)
+        
     let colorSet (Declarations declarations) csid = 
         declarations 
         |> Map.tryFind csid

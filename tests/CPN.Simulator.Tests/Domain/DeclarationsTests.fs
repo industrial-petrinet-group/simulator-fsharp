@@ -11,7 +11,7 @@ module DeclarationsTests =
     let tests = 
         testList "Domain.Declarations." [
             testCase "default declarations exist" <| fun () ->
-               Declarations.defaults |> ignore
+               Declaration.actuals () |> ignore
                1 =! 1
 
         ]

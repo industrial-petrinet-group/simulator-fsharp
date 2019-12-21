@@ -13,10 +13,10 @@ module ColorSet =
             | Bool _ -> Ok <| CS "bool"
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" color)
 
-        let declaredColorSetAction csid action =
+        let declaredColorSetAction csid callback =
              csid
-             |> Declarations.colorSet (Declarations.defaults)
-             >>= action
+             |> Declaration.colorSet (Declaration.actuals())
+             >>= callback
 
     let ofColor color = color |> Color.pack >>= defaultColorSet
 

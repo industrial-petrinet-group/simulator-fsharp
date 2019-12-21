@@ -9,6 +9,8 @@ open CPN.Simulator.Domain
 
 module MultiSetTests =
     
+    let preTest = Setup.declarations()
+    
     let unitColour1 = CS "unit"
     let unitColour2 = CS "unit'" 
     let boolColour1 = CS "bool"
@@ -107,7 +109,7 @@ module MultiSetTests =
                 "1`true++2`false" =! ms1AsString
                 ms1AsString =! ms2AsString
 
-            testCase "comparisson of MultiSets" <| fun () ->            
+            testCase "comparisson of MultiSets" <| fun () ->   
                 let (Ok unitMS1) = MultiSet.ofString unitColour1 "1`()++2`()"
                 let (Ok unitMS2) = MultiSet.ofString unitColour1 "1`()++1`()++1`()"
                 let (Ok unitMS3) = MultiSet.ofString unitColour1 "1`()++1`()"

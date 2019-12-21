@@ -2,12 +2,13 @@ namespace CPN.Simulator.Tests.Domain.ColorSets
 
 open Expecto
 open Swensen.Unquote
-open CPN.Simulator.Operators
 open CPN.Simulator.Domain
+open CPN.Simulator.Tests.Domain
 
 module UnitTests =
+    let preTest = Setup.declarations()
 
-    //[<Tests>]
+    [<Tests>]
     let tests =
         testList "Domain.ColorSets.UnitTests." [
             testCase "Unit colorset can be deserialized as a Unit Color" <| fun () ->

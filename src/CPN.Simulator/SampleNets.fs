@@ -1,8 +1,8 @@
 namespace CPN.Simulator
-open CPN.Simulator.Operators
-open CPN.Simulator.Domain
-open CPN.Simulator.Domain.ColorSets
 
+open CPN.Simulator.Domain
+
+// Should make creation API's
 module SampleNets =
     // Simple definitions for convinience
     let (Ok unitColor) = ColorSet.ofColor ()
@@ -34,7 +34,7 @@ module SampleNets =
             Map.empty.
                 Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
         
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs, Declarations.defaults))
+        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
     
     /// Definition of the most simple booleanpetri net
     let simpleBooleanNet : CPN =
@@ -57,7 +57,7 @@ module SampleNets =
             Map.empty.
                 Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
         
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs, Declarations.defaults))
+        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
     /// Definition of an slightly more complex net
     let notSoSimpleNet : CPN = 
         
@@ -93,7 +93,7 @@ module SampleNets =
                            o = [(P 4, A 6); (P 5, A 7)]})
         
 
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs, Declarations.defaults))
+        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
 
     let randomlyPathedNet =
         let places = 
@@ -128,4 +128,4 @@ module SampleNets =
                            o = [(P 5, A 6)]})
         
 
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs, Declarations.defaults))
+        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
