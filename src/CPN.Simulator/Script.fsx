@@ -1,3 +1,4 @@
+#r "C:/Users/Noonaut/.nuget/packages/fsharp.data/3.3.2/lib/netstandard2.0/FSharp.Data.dll"
 #load "./Operators.fs" 
 #load "./Domain/Errors.fs"
 #load "./Domain/Color.fs"
@@ -15,6 +16,7 @@
 
 #load "./Domain/CPN.fs"
 #load "./SampleNets.fs"
+#load "./JsonParser.fs" 
 #load "./Runtime.fs" 
 
 #load "./Operators.fs" 

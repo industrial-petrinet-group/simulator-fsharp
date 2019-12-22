@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Data\sample-data.json" />
     <Compile Include="Operators.fs" />
     <Compile Include="Domain\Errors.fs" />
     <Compile Include="Domain\Color.fs" />
@@ -25,11 +26,16 @@
     <Compile Include="Domain\Net.fs" />
     <Compile Include="Domain\CPN.fs" />
     <Compile Include="SampleNets.fs" />
+    <Compile Include="JsonParser.fs" />
     <Compile Include="Runtime.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Script.fsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Data" Version="3.3.2" />
   </ItemGroup>
 
 </Project>

@@ -15,7 +15,6 @@ module SampleNets =
 
     /// Definition of the most simple petri net
     let simpleNet : CPN =
-   
         let places = 
             Map.empty.
                 Add(P 1, { name = "P1"; marking = unitMS }).

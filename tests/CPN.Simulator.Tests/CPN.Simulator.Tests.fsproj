@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Data\sample-data.json" />
     <Compile Include="Domain\Setup.fs" />
     <Compile Include="Domain\ColorSets\UnitTests.fs" />
     <Compile Include="Domain\ColorSets\BooleanTests.fs" />
@@ -29,5 +30,7 @@
     <Compile Include="RuntimeTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
 </Project>

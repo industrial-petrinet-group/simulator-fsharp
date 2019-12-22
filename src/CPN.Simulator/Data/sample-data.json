@@ -1,0 +1,44 @@
+﻿{
+    "places": [
+        {
+            "name": "P1",
+            "color": "unit",
+            "marking": "1`()"
+        },
+        {
+            "name": "P2",
+            "color": "bool",
+            "marking": "2`false"
+        }
+    ],
+    "transitions": [
+        { "name": "T1" }
+    ],
+    "arcs": [
+        { "name": "A1" },
+        { "name": "A2" }
+    ],
+    "net": [
+        {
+            "transition": "T1",
+            "input": [
+                {
+                    "place": "P1",
+                    "arc": "A1"
+                }
+            ],
+            "output": [
+                {
+                    "place": "P2",
+                    "arc": "A2"
+                }
+            ]
+
+        }
+    ]
+
+
+
+
+
+}

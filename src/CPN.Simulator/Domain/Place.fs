@@ -33,7 +33,21 @@ module Place =
                 | false -> acc
                 | true -> (pid, markingAsString placeData) :: acc    
             ) places
-
+    
+    /// Given a serialized array of places containing name, color and marking it
+    /// generates the Places
+    let create placesSerializedArray =
+        placesSerializedArray
+        |> Array.fold2 (fun accRes id (name, color, marking) ->
+            match accRes, MultiSet.ofString (CS color) marking with
+            | Error err, _ -> Error err
+            | _, Error err -> Error err
+            | Ok acc, Ok multiset -> 
+                acc
+                |> Map.add (P id) { name = name; marking = multiset }
+                |> Ok
+        ) (Ok Map.empty) [| 1..placesSerializedArray.Length |]
+        >>= fun places -> Ok <| Places places      
 
     /// Given Places it returns new Places with it's multiset values reduced
     let reduceMarking places =
