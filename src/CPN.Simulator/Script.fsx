@@ -10,9 +10,8 @@
 #load "./Domain/ColorSet.fs"
 #load "./Domain/MultiSet.fs"
 #load "./Domain/Place.fs"
-#load "./Domain/Transition.fs"
 #load "./Domain/Arc.fs"
-#load "./Domain/Net.fs"
+#load "./Domain/Transition.fs"
 
 #load "./Domain/CPN.fs"
 #load "./SampleNets.fs"

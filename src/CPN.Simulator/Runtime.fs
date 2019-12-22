@@ -9,7 +9,7 @@ module Runtime =
     let step (cpn: CPN) =
         let enabled = CPN.enabled cpn
 
-        match enabled |> Net.isEmpty with
+        match enabled |> Transition.isEmpty with
         | true -> Ok (false, cpn)
         | false ->
             (enabled, cpn) 

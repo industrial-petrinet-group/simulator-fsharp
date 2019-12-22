@@ -13,27 +13,21 @@ module SampleNets =
     let (Ok unitMS3) = unitMS |> MultiSet.addTokens 2
     let (Ok boolMS) = MultiSet.emptyWithColor boolColor |> MultiSet.addTokens 1 
 
+    let emptyExpr = E ""
+
     /// Definition of the most simple petri net
     let simpleNet : CPN =
         let places = 
             Map.empty.
                 Add(P 1, { name = "P1"; marking = unitMS }).
                 Add(P 2, { name = "P2"; marking = emptyMS })
-
+        
         let transitions = 
             Map.empty.
-                Add(T 1, { name = "T1"; bindings = [] })
-
-        let arcs = 
-            Map.empty.
-                Add(A 1, {expression = ""}).
-                Add(A 2, {expression = ""})
+                Add(T 1, { name = "T1"; guard = emptyExpr 
+                           inputs = [(P 1, emptyExpr)]; outputs = [(P 2, emptyExpr)]})
         
-        let net = 
-            Map.empty.
-                Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
-        
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
+        CPN (Transitions transitions, Places places)
     
     /// Definition of the most simple booleanpetri net
     let simpleBooleanNet : CPN =
@@ -42,21 +36,15 @@ module SampleNets =
             Map.empty.
                 Add(P 1, { name = "P1"; marking = boolMS }).
                 Add(P 2, { name = "P2"; marking = emptyMS })
-
+        
         let transitions = 
             Map.empty.
-                Add(T 1, { name = "T1"; bindings = [] })
-
-        let arcs = 
-            Map.empty.
-                Add(A 1, {expression = ""}).
-                Add(A 2, {expression = ""})
+                Add(T 1, { name = "T1"; guard = emptyExpr 
+                           inputs = [ (P 1, emptyExpr) ]
+                           outputs = [ (P 2, emptyExpr) ] })
         
-        let net = 
-            Map.empty.
-                Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]})
-        
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
+        CPN (Transitions transitions, Places places)
+    
     /// Definition of an slightly more complex net
     let notSoSimpleNet : CPN = 
         
@@ -67,32 +55,19 @@ module SampleNets =
                 Add(P 3, { name = "P3"; marking = emptyMS }).
                 Add(P 4, { name = "P4"; marking = emptyMS }).
                 Add(P 5, { name = "P5"; marking = emptyMS })
-
-        let transitions = 
-            Map.empty.
-                Add(T 1, { name = "T1"; bindings = [] }).
-                Add(T 2, { name = "T2"; bindings = [] })
-
-        let arcs = 
-            Map.empty.
-                Add(A 1, {expression = ""}).
-                Add(A 2, {expression = ""}).
-                Add(A 3, {expression = ""}).
-                Add(A 4, {expression = ""}).
-                Add(A 5, {expression = ""}).
-                Add(A 6, {expression = ""}).
-                Add(A 7, {expression = ""})
         
-        let net =
+        let transitions =
             Map.empty.
-                Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
-                           o = [(P 2, A 3); (P 3, A 4)]}).
+                Add(T 1, { name = "T1"; guard = emptyExpr
+                           inputs = [(P 1, emptyExpr); (P 2, emptyExpr)]
+                           outputs = [(P 2, emptyExpr); (P 3, emptyExpr)] }).
                            
-                Add(T 2, { i = [(P 3, A 5)]
-                           o = [(P 4, A 6); (P 5, A 7)]})
+                Add(T 2, { name = "T2"; guard = emptyExpr
+                           inputs = [(P 3, emptyExpr)]
+                           outputs = [(P 4, emptyExpr); (P 5, emptyExpr)]})
         
 
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
+        CPN (Transitions transitions, Places places)
 
     let randomlyPathedNet =
         let places = 
@@ -102,29 +77,16 @@ module SampleNets =
                 Add(P 3, { name = "P3"; marking = unitMS }).
                 Add(P 4, { name = "P4"; marking = emptyMS }).
                 Add(P 5, { name = "P5"; marking = emptyMS })
-
-        let transitions = 
-            Map.empty.
-                Add(T 1, { name = "T1"; bindings = [] }).
-                Add(T 2, { name = "T2"; bindings = [] })
-
-        let arcs = 
-            Map.empty.
-                Add(A 1, {expression = ""}).
-                Add(A 2, {expression = ""}).
-                Add(A 3, {expression = ""}).
-                Add(A 4, {expression = ""}).
-                Add(A 5, {expression = ""}).
-                Add(A 6, {expression = ""}).
-                Add(A 7, {expression = ""})
         
-        let net =
+        let transitions =
             Map.empty.
-                Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
-                           o = [(P 4, A 3)]}).
+                Add(T 1, { name = "T1"; guard = emptyExpr
+                           inputs = [(P 1, emptyExpr); (P 2, emptyExpr)]
+                           outputs = [(P 4, emptyExpr)]}).
                            
-                Add(T 2, { i = [(P 2, A 4); (P 3, A 5)]
-                           o = [(P 5, A 6)]})
+                Add(T 2, { name = "T2"; guard = emptyExpr
+                           inputs = [(P 2, emptyExpr); (P 3, emptyExpr)]
+                           outputs = [(P 5, emptyExpr)]})
         
 
-        CPN (Net net, (Places places, Transitions transitions, Arcs arcs))
+        CPN (Transitions transitions, Places places)

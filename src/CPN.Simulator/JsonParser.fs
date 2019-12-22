@@ -21,21 +21,19 @@ module JsonParser =
             |> Array.map (fun place -> (place.Name, place.Color, place.Marking))
             |> Place.create
 
-        let transitions =
-            data.Transitions
-            |> Array.map (fun transition -> transition.Name)
-            |> Transition.create
-    
-        let arcs =
-            data.Arcs
-            |> Array.map (fun arc -> arc.Name)
-            |> Arc.create
+        //let transitions =
+        //    data.Net
+        //    |> Array.map (fun net -> net.Transition, net.Guard)
+        //    |> Transition.create
         
-        // Continue from this!
-        let net =
-            data.Net
-            |> Array.map (fun transitionIO -> 
-                transitionIO.Transition, transitionIO.Input, transitionIO.Output)
+        //// Continue from this!
+        //let net =
+        //    data.Net
+        //    |> Array.map (fun transitionIO -> 
+        //        transitionIO.Transition, transitionIO.Input, transitionIO.Output)
+        //    |> Net.create (transitions, places, arcs)
+
+
         2
             
                 

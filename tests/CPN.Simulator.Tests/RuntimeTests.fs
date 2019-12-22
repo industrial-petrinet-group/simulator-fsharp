@@ -8,6 +8,8 @@ open CPN.Simulator.Domain
 
 module RuntimeTests =
     
+    let emptyExpr = E ""
+
     [<Tests>]
     let tests = 
         testList "Base.RuntimeTests." [
@@ -23,12 +25,15 @@ module RuntimeTests =
             testCase "Test the triggered transitions" <| fun () ->              
                 SampleNets.simpleNet
                 |> CPN.enabled
-                =! Net (Map.empty.Add(T 1, {i = [(P 1, A 1)]; o = [(P 2, A 2)]}))
+                =! Transitions (Map.empty.Add(T 1, { name= "T1"; guard = emptyExpr
+                                                     inputs = [(P 1, emptyExpr)]
+                                                     outputs = [(P 2, emptyExpr)] }))
 
                 SampleNets.notSoSimpleNet
                 |> CPN.enabled
-                =! Net (Map.empty.Add(T 1, { i = [(P 1, A 1); (P 2, A 2)]
-                                             o = [(P 2, A 3); (P 3, A 4)]}))
+                =! Transitions (Map.empty.Add(T 1, { name= "T1"; guard = emptyExpr
+                                                     inputs = [(P 1, emptyExpr); (P 2, emptyExpr)]
+                                                     outputs = [(P 2, emptyExpr); (P 3, emptyExpr)] }))
 
             testCase "Test the steps involved in the simple net" <| fun () ->
                 let (Ok (modified, firstStepNet)) = 
@@ -38,7 +43,7 @@ module RuntimeTests =
 
                 firstStepNet 
                 |> CPN.enabled
-                =! Net (Map.empty)
+                =! Transitions (Map.empty)
 
                 firstStepNet
                 |> CPN.netMarking
