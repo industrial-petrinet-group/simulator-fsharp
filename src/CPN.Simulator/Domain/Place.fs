@@ -39,15 +39,16 @@ module Place =
     let create placesSerializedArray =
         placesSerializedArray
         |> Array.fold2 (fun accRes id (name, color, marking) ->
-            match accRes, MultiSet.ofString (CS color) marking with
-            | Error err, _ -> Error err
-            | _, Error err -> Error err
-            | Ok acc, Ok multiset -> 
-                acc
-                |> Map.add (P id) { name = name; marking = multiset }
-                |> Ok
+            accRes >>= fun acc ->
+                MultiSet.ofString (CS color) marking >>= fun multiset ->
+                    Ok (acc |> Map.add (P id) { name = name; marking = multiset })
         ) (Ok Map.empty) [| 1..placesSerializedArray.Length |]
         >>= fun places -> Ok <| Places places      
+    
+    /// Given a Name it returns the ID matching it's name
+    let idFromName name (Places places) =
+        places |> Map.tryPick (fun id { name = actName } -> 
+            if actName = name then Some id else None)
 
     /// Given Places it returns new Places with it's multiset values reduced
     let reduceMarking places =

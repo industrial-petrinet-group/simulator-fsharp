@@ -7,18 +7,26 @@
         },
         {
             "name": "P2",
-            "color": "bool",
+            "color": "unit",
             "marking": "2`()++1`()"
         }
     ],
     "transitions": [
-        { "name": "T1" }
-    ],
-    "net": [
         {
-            "transition": "T1",
-            "input": [ "P1" ],
-            "output": [ "P2" ]
+            "name": "T1",
+            "guard": " ",
+            "inputs": [
+                {
+                    "place": "P1",
+                    "expression": " "
+                }
+            ],
+            "outputs": [
+                {
+                    "place": "P2",
+                    "expression": " "
+                }
+            ]
         }
     ]
 }

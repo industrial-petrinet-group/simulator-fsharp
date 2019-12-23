@@ -27,10 +27,9 @@
     <Compile Include="Domain\ColorSets\DoubleTests.fs" />
     <Compile Include="Domain\DeclarationsTests.fs" />
     <Compile Include="Domain\MultiSetTests.fs" />
+    <Compile Include="JsonParserTests.fs" />
     <Compile Include="RuntimeTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>

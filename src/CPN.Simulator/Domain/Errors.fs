@@ -1,5 +1,6 @@
 ﻿namespace CPN.Simulator.Domain
 
+/// Type representing Declaration Errors
 type DeclarationErrors =
     | UndeclaredColorSet
 
@@ -25,11 +26,17 @@ type PlaceErrors =
     | InexistenPid of pid: obj * places: obj
     | InsufficientTokensOn of pid: obj * places: obj
 
+/// Type representing Parsing Errors
+type ParsingErrors =
+    | PlacesParsingError
+    | TransitionsParsingError
+
 /// Errors for the whole Domain 
 type Errors =
     | DErrors of DeclarationErrors
     | CSErrors of ColorSetErrors
     | MSErrors of MultiSetErrors
     | PErrors of PlaceErrors
+    | PAErrors of ParsingErrors
 
 

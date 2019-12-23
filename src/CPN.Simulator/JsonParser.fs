@@ -16,24 +16,22 @@ module JsonParser =
             | Some path -> CPNJson.Load(new System.IO.StreamReader(path))
             | None -> CPNJson.GetSample()
         
-        let places =
+        let placesRes =
             data.Places
             |> Array.map (fun place -> (place.Name, place.Color, place.Marking))
             |> Place.create
 
-        //let transitions =
-        //    data.Net
-        //    |> Array.map (fun net -> net.Transition, net.Guard)
-        //    |> Transition.create
-        
-        //// Continue from this!
-        //let net =
-        //    data.Net
-        //    |> Array.map (fun transitionIO -> 
-        //        transitionIO.Transition, transitionIO.Input, transitionIO.Output)
-        //    |> Net.create (transitions, places, arcs)
-
-
-        2
+        placesRes
+        >>= fun places ->
+            data.Transitions
+            |> Array.map (fun transition -> 
+                transition.Name, transition.Guard, 
+                transition.Inputs |> Array.foldBack (fun input acc -> 
+                    (input.Place, input.Expression) :: acc) <| [], 
+                transition.Outputs |> Array.foldBack (fun output acc -> 
+                    (output.Place, output.Expression) :: acc) <| [])
+            |> Transition.create places 
+            >>= fun transitions ->
+                Ok <| CPN (transitions, places)
             
                 

@@ -10,9 +10,7 @@
 #load "./Domain/ColorSet.fs"
 #load "./Domain/MultiSet.fs"
 #load "./Domain/Place.fs"
-#load "./Domain/Arc.fs"
 #load "./Domain/Transition.fs"
-
 #load "./Domain/CPN.fs"
 #load "./SampleNets.fs"
 #load "./JsonParser.fs" 
@@ -30,7 +28,7 @@ let (Ok boolCS') = BoolCS.create <| Some ("none", "whole")
 Declaration.update [ (CS "unit'", unitCS' :> IColorSet)
                      (CS "bool'", boolCS' :> IColorSet) ]
 
-
+JsonParser.parse None
 
 
 //let (Ok unitCS) = Unit.create None
