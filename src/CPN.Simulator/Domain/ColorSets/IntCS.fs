@@ -4,8 +4,13 @@ open System
 open CPN.Simulator.Domain
 open CPN.Simulator.Operators
 
-type IntCSData = { low: int; high: int }
+/// Type representing the Int ColorSet Data
+type IntCSData = 
+    { low: int
+      high: int }
 
+/// Type representing the Int ColorSet
+[<StructuredFormatDisplay("IntCS = {Show}")>]
 type IntCS =    
     | IntCS of IntCSData
      
@@ -44,7 +49,8 @@ type IntCS =
         
     member this.Show = Common.asString (this :> IColorSet)
 
-module Integer =
+
+module IntCS =
     /// return the empty Integer CS
     let empty = IntCS { low = 1; high = 0}
     

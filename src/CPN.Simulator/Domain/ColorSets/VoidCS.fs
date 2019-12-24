@@ -2,7 +2,7 @@
 
 open CPN.Simulator.Domain
 
-/// Type representing a Void ColorSet
+/// Type representing the Void ColorSet
 type VoidCS = 
     | VoidCS
     

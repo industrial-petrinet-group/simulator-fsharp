@@ -3,12 +3,15 @@ namespace CPN.Simulator.Domain.ColorSets
 open Common
 open CPN.Simulator.Domain
 
-type BooleanCSData =
+/// Type representing the Bool ColorSet Data
+type BoolCSData =
     { falsy: string
       truthy: string }
 
+/// Type representing a Bool ColorSet
+[<StructuredFormatDisplay("BoolCS = {Show}")>]
 type BoolCS = 
-    | BoolCS of BooleanCSData
+    | BoolCS of BoolCSData
 
     interface IColorSet with
         member __.Name = "BoolCS"

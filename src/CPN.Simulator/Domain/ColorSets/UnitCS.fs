@@ -2,8 +2,10 @@ namespace CPN.Simulator.Domain.ColorSets
 
 open CPN.Simulator.Domain
 
+/// Type representing the Unit ColorSet Data
 type UnitCSData = { unit: string }
 
+/// Type representing a Unit ColorSet
 [<StructuredFormatDisplay("UnitCS = {Show}")>]
 type UnitCS = 
     | UnitCS of UnitCSData

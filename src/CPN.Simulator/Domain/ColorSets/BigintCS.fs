@@ -2,57 +2,60 @@ namespace CPN.Simulator.Domain.ColorSets
 
 open System
 open CPN.Simulator.Domain
+open CPN.Simulator.Operators
 
-type BigInteger =
+/// Type representing the Bigint ColorSet Data
+type BigintCSData = 
     { low: bigint
       high: bigint }
+
+/// Type representing a Bigint ColorSet
+[<StructuredFormatDisplay("BigintCS = {Show}")>]
+type BigintCS =
+    | BigintCS of BigintCSData 
     
     interface INumeric<bigint> with
-        member this.Low = this.low
-        member this.High = this.high 
+        member this.Low = let (BigintCS bicsd) = this in bicsd.low
+        member this.High = let (BigintCS bicsd) = this in bicsd.high 
+        member __.TypeName = "big integer"
+        member __.EmptyValue = (1I, 0I)
+        member __.Parse value = bigint.TryParse value
+    
+    interface IColorSet with
+        member __.Name = "BigintCS"
+    
+        member __.Init = Bigint 0I
+    
+        member this.Deserialize colorString = 
+            this |> Numeric.deserialize colorString >>= Color.pack
+                
+        member this.Serialize colorValue = 
+            this |> Numeric.serialize (colorValue |> Color.unpack)
+    
+        member this.IsLegal colorValue =
+            match colorValue with 
+            | Bigint bigintColor -> Ok <| (this |> Numeric.isLegal bigintColor)
+            | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" colorValue)
+    
+        member this.All =  this |> Numeric.all
+       
+        member this.Size = this |> Numeric.size
 
-module BigInteger =
-    let private typeName = "big integer"
-    let private emptyVal = (1I, 0I)
-    let private parseFunc (value: string ) =  bigint.TryParse value
+        member this.Color index = this |> Numeric.color index 
+    
+        member this.Ordinal colorValue = this |> Numeric.ordinal colorValue
+    
+        member __.Random = Error <| CSErrors (NotUsable "random") // Check for future implementations
+    
+    member this.Show = Common.asString (this :> IColorSet)
 
-    /// Return the default actual value for this color set.
-    let init = 0I
+
+module BigintCS =
+    /// return the empty Big Integer CS
+    let empty = BigintCS { low = 1I; high = 0I }   
     
     /// Given an optional initinalization string it return a color set.
     let create lowAndHigh = 
-        match Numeric.create typeName emptyVal parseFunc lowAndHigh with
+        match Numeric.create empty lowAndHigh with
         | Ok (lowVal, highVal) -> Ok { low = lowVal; high = highVal }
-        | Error err -> Error err      
-
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's actual value if it is.
-    let colorVal supposedMember bigIntegerCS = 
-        Numeric.colorVal emptyVal parseFunc supposedMember bigIntegerCS
-
-    /// Given a value of the type it checks if it's a legal one
-    let isLegal n bigIntegerCS = Numeric.isLegal emptyVal n bigIntegerCS
-
-    /// Given a supposed member and a color set it checks if the value is a 
-    /// member of the set and return it's string color set value if it is.
-    let makeString supposedMember bigIntegerCS = 
-         Numeric.makeString emptyVal parseFunc supposedMember bigIntegerCS
-
-    /// Return a list of all posible values for this color set.
-    let all bigIntegerCS = Numeric.all emptyVal bigIntegerCS
-
-    /// Return the number of different vaules in this color set.
-    let size bigIntegerCS = Numeric.size emptyVal 1I bigIntegerCS
-
-    /// Return the ordinal position of every value in this color set.
-    let ordinal n bigIntegerCS = Numeric.ordinal emptyVal n bigIntegerCS
-
-    /// Return the actual value for the given position in this color set.
-    let color n bigIntegerCS = Numeric.color emptyVal n bigIntegerCS
-
-    /// Return a random value of this color set.
-    // TODO: Try to use NextByte for generating Big Integers
-    let random = function
-        | _ -> Error <| CSErrors (NotUsable "random")
-        // | EmptyRange -> Error <| NotUsable "random"
-        // | Range(low, high) -> Ok <| rnd.Next(low, high)
+        | Error err -> Error err 

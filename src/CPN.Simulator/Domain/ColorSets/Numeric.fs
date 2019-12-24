@@ -12,9 +12,9 @@ type INumeric<'T> =
     abstract member EmptyValue : 'T * 'T
     abstract member Parse : string -> bool * 'T
 
+
 /// Module with helper functions for implementing any Numeric Color Set
 module Numeric =
-    
     /// Auxiliary active pattern for determine if there is a range
     let (|EmptyRange|Range|) ((emptyLow, emptyHigh), (numericCS: INumeric<'T>)) =
         let low, high = numericCS.Low, numericCS.High
@@ -95,7 +95,7 @@ module Numeric =
     let inline color index (numericCS : INumeric<'T>) =
         match (numericCS.EmptyValue, numericCS) with
         | EmptyRange -> Error <| CSErrors (NotUsable "color")
-        | Range(low, high) when index >= low && index <= high -> Color.pack (index + low)
+        | Range(low, high) when index >= int low && index <= int high -> Color.pack (index + int low)
         | Range _ -> Error <| CSErrors (OutOfRangeIndex index)                 
 
     /// Return the ordinal position of every value in this color set.
@@ -103,6 +103,6 @@ module Numeric =
         let num = colorValue |> Color.unpack
         match (numericCS.EmptyValue, numericCS) with
         | EmptyRange -> Error <| CSErrors (NotUsable "ordinal")
-        | Range(low, high) when num >= low && num <= high -> Ok (num - low)
+        | Range(low, high) when num >= low && num <= high -> Ok <| int (num - low)
         | Range _ -> Error <| CSErrors (OutOfRangeValue (string num))
                 
