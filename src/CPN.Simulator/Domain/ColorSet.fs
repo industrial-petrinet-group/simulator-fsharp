@@ -11,6 +11,9 @@ module ColorSet =
             match color with
             | Unit _ -> Ok <| CS "unit"
             | Bool _ -> Ok <| CS "bool"
+            | Int _ -> Ok <| CS "int"
+            | Bigint _ -> Ok <| CS "bigint"
+            | Float _ -> Ok <| CS "float"
             | _ -> Error <| CSErrors (InvalidColor <| sprintf "%A" color)
 
         let declaredColorSetCallback csid callback =

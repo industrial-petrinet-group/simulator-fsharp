@@ -13,11 +13,17 @@ module Declaration =
     let defaults =
         let (Ok unitCS) = UnitCS.create None 
         let (Ok boolCS) = BoolCS.create None
+        let (Ok intCS) = IntCS.create None
+        let (Ok bigintCS) = BigintCS.create None
+        let (Ok floatlCS) = FloatCS.create None
 
         Map.empty
         |> Map.add (CS "void") (VoidCS :> IColorSet)
         |> Map.add (CS "unit") (unitCS :> IColorSet)
         |> Map.add (CS "bool") (boolCS :> IColorSet)
+        |> Map.add (CS "int") (intCS :> IColorSet)
+        |> Map.add (CS "bigint") (bigintCS :> IColorSet)
+        |> Map.add (CS "float") (floatlCS :> IColorSet)
         |> Declarations
     
     let mutable private state = defaults

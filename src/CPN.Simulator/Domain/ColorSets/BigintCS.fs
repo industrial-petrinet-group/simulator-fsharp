@@ -27,10 +27,10 @@ type BigintCS =
         member __.Init = Bigint 0I
     
         member this.Deserialize colorString = 
-            this |> Numeric.deserialize colorString >>= Color.pack
+            this |> Numeric.deserialize colorString
                 
         member this.Serialize colorValue = 
-            this |> Numeric.serialize (colorValue |> Color.unpack)
+            this |> Numeric.serialize colorValue
     
         member this.IsLegal colorValue =
             match colorValue with 
@@ -57,5 +57,5 @@ module BigintCS =
     /// Given an optional initinalization string it return a color set.
     let create lowAndHigh = 
         match Numeric.create empty lowAndHigh with
-        | Ok (lowVal, highVal) -> Ok { low = lowVal; high = highVal }
+        | Ok (lowVal, highVal) -> Ok <| BigintCS { low = lowVal; high = highVal }
         | Error err -> Error err 

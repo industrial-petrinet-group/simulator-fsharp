@@ -14,9 +14,9 @@
     <Compile Include="Domain\ColorSets\UnitCS.fs" />
     <Compile Include="Domain\ColorSets\BoolCS.fs" />
     <Compile Include="Domain\ColorSets\Numeric.fs" />
-    <Compile Include="Domain\ColorSets\Integer.fs" />
-    <Compile Include="Domain\ColorSets\BigInteger.fs" />
-    <Compile Include="Domain\ColorSets\Double.fs" />
+    <Compile Include="Domain\ColorSets\IntCS.fs" />
+    <Compile Include="Domain\ColorSets\BigintCS.fs" />
+    <Compile Include="Domain\ColorSets\FloatCS.fs" />
     <Compile Include="Domain\Declaration.fs" />
     <Compile Include="Domain\ColorSet.fs" />
     <Compile Include="Domain\MultiSet.fs" />

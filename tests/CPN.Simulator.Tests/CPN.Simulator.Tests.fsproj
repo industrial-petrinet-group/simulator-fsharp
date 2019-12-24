@@ -20,11 +20,11 @@
   <ItemGroup>
     <Content Include="Data\sample-data.json" />
     <Compile Include="Domain\Setup.fs" />
-    <Compile Include="Domain\ColorSets\UnitTests.fs" />
-    <Compile Include="Domain\ColorSets\BooleanTests.fs" />
-    <Compile Include="Domain\ColorSets\IntegerTests.fs" />
-    <Compile Include="Domain\ColorSets\BigIntegerTests.fs" />
-    <Compile Include="Domain\ColorSets\DoubleTests.fs" />
+    <Compile Include="Domain\ColorSets\UnitCSTests.fs" />
+    <Compile Include="Domain\ColorSets\BoolCSTests.fs" />
+    <Compile Include="Domain\ColorSets\IntCSTests.fs" />
+    <Compile Include="Domain\ColorSets\BigintCSTests.fs" />
+    <Compile Include="Domain\ColorSets\FloatCSTests.fs" />
     <Compile Include="Domain\DeclarationsTests.fs" />
     <Compile Include="Domain\MultiSetTests.fs" />
     <Compile Include="JsonParserTests.fs" />

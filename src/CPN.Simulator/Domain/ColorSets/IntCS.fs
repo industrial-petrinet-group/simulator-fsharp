@@ -27,10 +27,10 @@ type IntCS =
         member __.Init = Int 0
         
         member this.Deserialize colorString = 
-            this |> Numeric.deserialize colorString >>= Color.pack
+            this |> Numeric.deserialize colorString
                     
         member this.Serialize colorValue = 
-            this |> Numeric.serialize (colorValue |> Color.unpack)
+            this |> Numeric.serialize colorValue
         
         member this.IsLegal colorValue =
             match colorValue with 

@@ -45,7 +45,7 @@ module Common =
     /// Given a IColorSet it returns a String representing it.
     let asString (cs: IColorSet) =
         match cs.All with
-        | Error _ -> ""
+        | Error _ -> sprintf "[%A..]" cs.Init
         | Ok list -> sprintf "%A" list
         |> sprintf "%s"
    
