@@ -29,9 +29,9 @@ The modules are defined inside `src/CPN.Simulator`
 - [x] Void
 - [x] Unit
 - [x] Bool
-- [?] Int
-- [?] Bigint (old IntInf)
-- [?] Float (old Real)
+- [x] Int
+- [x] Bigint (old IntInf)
+- [x] Float (old Real)
 - [ ] Time
 - [ ] String
 - [ ] Enumerated
