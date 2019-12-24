@@ -11,7 +11,7 @@ type BoolCS =
     | BoolCS of BooleanCSData
 
     interface IColorSet with
-        member __.Name = "BooleanCS"
+        member __.Name = "BoolCS"
         
         member __.Init = Bool false
         
